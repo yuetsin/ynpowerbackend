@@ -1,1 +1,1 @@
-from .upload import uploadData
+from .upload import *

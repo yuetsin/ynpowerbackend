@@ -1,2 +1,5 @@
+from dao import *
+
 def uploadData(data):
-    return
+        insertData(data)
+        return
