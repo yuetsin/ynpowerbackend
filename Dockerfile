@@ -1,4 +1,4 @@
-FROM python:buster
+FROM python:3.7-buster
 LABEL maintainer="zhaohda@sjtu.edu.cn"
 RUN mkdir -p /usr/src/app  && \
     mkdir -p /var/log/gunicorn

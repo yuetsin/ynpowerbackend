@@ -1,5 +1,6 @@
 from dao import *
 
 def uploadData(data):
-        insertData(data)
+        #insertData(data)
+        addPowerData(data)
         return

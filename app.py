@@ -1,34 +1,79 @@
+import sqlalchemy
 from flask import Flask, request
 from flask_restful import Resource, Api
+
 from Controller import uploadData
+from Controller.login import login
+from Controller.program import *
 from algorithms import *
-from dao import *
+import dao
 import numpy as np
 
 app = Flask(__name__)
 api = Api(app)
 
+class Login(Resource):
+    def post(self):
+        username = request.json['username'].strip()
+        password = request.json['password']
+        b = login(username, password)
+        if b:
+            re = {
+                "msg": "success",
+                "code": 200
+            }
+            return re
+        else:
+            re = {
+                "msg": "fail",
+                "code": -1
+            }
+            return re
+
+class GetProgramName(Resource):
+    def post(self):
+        name = getProgramNameController()
+        re = {
+            "name": name
+        }
+        return re
+
+
+class GetProgramLastInfo(Resource):
+    def post(self):
+        con = getProgramLastInfo()
+        re = {
+
+        }
+        return re
+
+
+
 
 class UploadCSV(Resource):
     def post(self):
         file = request.files['file']
-        l = file.filename.split('_')
+        print(file.filename.split('.')[0])
+        l = file.filename.split('.')[0].split('_')
         area = l[0]
         grain = l[1]
-
-        datatype = {'Year': 'S'}
-        data = pd.read_csv(file, dtype=datatype)
+        kind = l[2]
+        datatype = {'Year': 'S', 'year': 'S'}
+        #dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d')
+        #data = pd.read_csv(file, encoding='utf-8',  parse_dates=['year'], date_parser=pd.to_datetime)
+        data = pd.read_csv(file, encoding='utf-8', dtype=datatype)
         header = [i for i in data.columns]
         x, y = data.shape
         allData = []
         for i in range(x):
-            t = data.iloc[i][0].strip()
+            t = data.iloc[i][0]
             for j in range(1, y):
-                temp = [t, header[j], data.iloc[i][j], grain, area]
+                temp = [t, header[j], data.iloc[i][j], grain, area, kind]
                 allData.append(temp)
 
         allData = pd.DataFrame(allData)
-        allData.columns = ['datatime', 'dataname', 'datavalue', 'grain', 'area']
+        allData.columns = ['datatime', 'dataname', 'datavalue', 'grain', 'area', 'kind']
+        print(allData)
         uploadData(allData)
         re = {
             "message": 'success'
@@ -43,7 +88,20 @@ class GetDataJson(Resource):
         endTime = request.json['endTime'].strip()
         grain = request.json['grain'].strip()
         area = request.json['area'].strip()
-        re = getData(dataName, startTime, endTime, grain, area)
+        kind = request.json['kind'].strip()
+        re = dao.getData(area + "_" + grain + "_" + kind, dataName, startTime, endTime)
+        return re
+
+    def get(self):
+        dataName = request.args.get('dataName')
+        startTime = request.args.get('startTime')
+        endTime = request.args.get('endTime')
+        location = request.args.get('location')
+        data = dao.getData(location, dataName, startTime, endTime)
+        re = {
+            "data": data,
+            "status": '200'
+        }
         return re
 
 class Compute(Resource):
@@ -278,15 +336,19 @@ class LSTM(Resource):
         re = ""
         return re
 
-
-class ESQRM(Resource):
+#ESQRM 算法
+class Esqrm(Resource):
     def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
 
-        re = ""
-        return re
+        StartYear = request.json['StartYear']
+        EndYear = request.json['EndYear']
+        PreStartYear = request.json['PreStartYear']
+        PreEndYear = request.json['PreEndYear']
+        result = ESQRM(StartYear, EndYear, PreStartYear, PreEndYear, quatile=0.95, pretype="consumption", econamelist=["GDP1"], city="云南省")
+        re = {
+            "result": result
+        }
+        return json.dumps(re, ensure_ascii=False)
 
 
 class QuantileRegression(Resource):
@@ -474,7 +536,7 @@ class TestAlgorithm(Resource):
 
 api.add_resource(UploadCSV, "/api/upload")
 api.add_resource(GetDataJson, '/getDataJson')
-api.add_resource(TestAlgorithm, "/interface.py")
+api.add_resource(TestAlgorithm, "/interface")
 api.add_resource(Compute, "/api/compute")
 api.add_resource(Clamp_force, "/api/clampforce")
 api.add_resource(Search, "/api/search")
@@ -498,7 +560,7 @@ api.add_resource(GBDT, "/api/GBDT")
 api.add_resource(SVM, "/api/SVM")
 api.add_resource(RNN, "/api/RNN")
 api.add_resource(LSTM, "/api/LSTM")
-api.add_resource(ESQRM, "/api/ESQRM")
+api.add_resource(Esqrm, "/api/Esqrm")
 api.add_resource(QuantileRegression, "/api/QuantileRegression")
 api.add_resource(MultiIndustryDailyProfile, "/api/MultiIndustryDailyProfile")
 api.add_resource(MaxUtilizationHourR, "/api/MaxUtilizationHourR")
@@ -515,9 +577,9 @@ api.add_resource(Binarylinear, "/api/Binarylinear")
 api.add_resource(Kmeans, "/api/Kmeans")
 api.add_resource(PCA, "/api/PCA")
 api.add_resource(AssociationRule, "/api/AssociationRule")
-
-
-
+api.add_resource(Login, "/api/login")
+api.add_resource(GetProgramName, "/api/getProgramName")
+api.add_resource(GetProgramLastInfo, "/api/getProgramLastInfo")
 
 if __name__ == '__main__':
     app.run()
