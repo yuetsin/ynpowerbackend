@@ -1,5 +1,6 @@
 import sqlalchemy
 from flask import Flask, request
+from flask_cors import CORS
 from flask_restful import Resource, Api
 
 from Controller import uploadData
@@ -10,14 +11,15 @@ import dao
 import numpy as np
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 api = Api(app)
 
 class Login(Resource):
     def post(self):
         username = request.json['username'].strip()
         password = request.json['password']
-        b = login(username, password)
-        if b:
+        # dummy judgement
+        if username == password:
             re = {
                 "msg": "success",
                 "code": 200

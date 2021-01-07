@@ -2,3 +2,5 @@
 /venv/*
 ./venv/*
 /resource/*
+.DS_Store
+*.pyc
