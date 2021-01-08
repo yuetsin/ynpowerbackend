@@ -236,7 +236,7 @@ RESPONSE with
 	None
 ```
 
-### Schema Delete
+#### Schema Delete
 
 ```python
 POST '/schema/delete' with
