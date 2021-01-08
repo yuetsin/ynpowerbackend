@@ -8,29 +8,12 @@ from Controller.login import login
 from Controller.program import *
 from algorithms import *
 import dao
+import json
 import numpy as np
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 api = Api(app)
-
-class Login(Resource):
-    def post(self):
-        username = request.json['username'].strip()
-        password = request.json['password']
-        # dummy judgement
-        if username == password:
-            re = {
-                "msg": "success",
-                "code": 200
-            }
-            return re
-        else:
-            re = {
-                "msg": "fail",
-                "code": -1
-            }
-            return re
 
 class GetProgramName(Resource):
     def post(self):
@@ -535,6 +518,71 @@ class TestAlgorithm(Resource):
     def post(self):
         test()
 
+"""
+BEGIN
+fore-end related http apis
+dummy version, not functional yet
+"""
+class Login(Resource):
+    def post(self):
+        username = request.json['username'].strip()
+        password = request.json['password']
+        # dummy judgement
+        if username == password:
+            re = {
+                "msg": "success",
+                "code": 200
+            }
+            return re
+        else:
+            re = {
+                "msg": "fail",
+                "code": -1
+            }
+            return re
+
+class Logout(Resource):
+    def post(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+_versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
+
+class GetVersion(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _versions
+        }
+
+class PutVersion(Resource):
+    def post(self):
+        vername = request.json['VersionName'].strip()
+        if vername in _versions:
+            return {
+                "msg": "name existed",
+                "code": -1
+            }
+        _versions.append(vername)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+api.add_resource(Login, "/api/login")
+api.add_resource(Logout, "/api/logout")
+api.add_resource(GetVersion, '/api/vcs/get')
+api.add_resource(PutVersion, '/api/vcs/put')
+
+
+"""
+fore-end related http apis
+END
+"""
 
 api.add_resource(UploadCSV, "/api/upload")
 api.add_resource(GetDataJson, '/getDataJson')
@@ -579,7 +627,6 @@ api.add_resource(Binarylinear, "/api/Binarylinear")
 api.add_resource(Kmeans, "/api/Kmeans")
 api.add_resource(PCA, "/api/PCA")
 api.add_resource(AssociationRule, "/api/AssociationRule")
-api.add_resource(Login, "/api/login")
 api.add_resource(GetProgramName, "/api/getProgramName")
 api.add_resource(GetProgramLastInfo, "/api/getProgramLastInfo")
 
