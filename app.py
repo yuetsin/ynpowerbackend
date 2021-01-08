@@ -575,76 +575,133 @@ class PutVersion(Resource):
 
 class GetMetadata(Resource):
     def get(self):
+        category_name = request.args['Category'].strip()
+        print(category_name)
         return {
             "msg": "success",
             "code": 200,
             "data": [
                 {
-                    "key": "行政",
-                    "value": "白宫",
+                    "value": "行政",
+                    "label": "白宫",
                     "children": [
                         {
-                            "key": "总统",
-                            "value": "唐納·川普",
+                            "value": "总统",
+                            "label": "唐納·川普",
                         },
                         {
-                            "key": "副总统",
-                            "value": "麦克·彭斯",
+                            "value": "副总统",
+                            "label": "麦克·彭斯",
                         }
                     ]
                 },
                 {
-                    "key": "立法",
-                    "value": "国会",
+                    "value": "立法",
+                    "label": "国会",
                     "children": [
                         {
-                            "key": "上院",
-                            "value": "参议院",
+                            "value": "上院",
+                            "label": "参议院",
                             "children": [
                                 {
-                                    "key": "议长",
-                                    "value": "麦克·彭斯"
+                                    "value": "议长",
+                                    "label": "麦克·彭斯"
                                 },
                                 {
-                                    "key": "多数党",
-                                    "value": "共和党"
+                                    "value": "多数党",
+                                    "label": "共和党"
                                 }
                             ]
                         },  {
-                            "key": "下院",
-                            "value": "众议院",
+                            "value": "下院",
+                            "label": "众议院",
                             "children": [
                                 {
-                                    "key": "议长",
-                                    "value": "南希·佩洛西"
+                                    "value": "议长",
+                                    "label": "南希·佩洛西"
                                 },
                                 {
-                                    "key": "多数党",
-                                    "value": "民主党"
+                                    "value": "多数党",
+                                    "label": "民主党"
                                 }
                             ]
                         }
                     ]
                 },
                 {
-                    "key": "司法",
-                    "value": "最高法院",
+                    "value": "司法",
+                    "label": "最高法院",
                     "children": [
                         {
-                            "key": "首席大法官",
-                            "value": "約翰·格洛佛·羅勃茲",
+                            "value": "首席大法官",
+                            "label": "約翰·格洛佛·羅勃茲",
                         }
                     ]
                 }
             ]
         }
 
+class PerformQuery(Resource):
+    def get(self):
+        metadata_list = request.args['Metadata']
+        category_name = request.args['Category']
+        print(metadata_list, category_name)
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    "date": "2021-1-8",
+                    "value": "陈瑞球"
+                },
+                {
+                    "date": "2021-1-7",
+                    "value": "杨咏曼"
+                },
+                {
+                    "date": "2021-1-5",
+                    "value": "蔡翠菊"
+                },
+                {
+                    "date": "2021-1-3",
+                    "value": "包玉刚"
+                }
+            ]
+        }
+
+class PerformCreate(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+class PerformUpdate(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+class PerformDelete(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
 
 api.add_resource(Login, "/api/login")
 api.add_resource(Logout, "/api/logout")
 api.add_resource(GetVersion, '/api/vcs/get')
 api.add_resource(PutVersion, '/api/vcs/put')
 api.add_resource(GetMetadata, '/api/db/metadata')
+api.add_resource(PerformQuery, '/api/db/query')
+api.add_resource(PerformCreate, '/api/db/create')
+api.add_resource(PerformUpdate, '/api/db/update')
+api.add_resource(PerformDelete, '/api/db/delete')
 
 """
 fore-end related http apis

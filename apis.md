@@ -72,7 +72,7 @@ RESPONSE with
 
 ```python
 GET '/db/metadata' with
-	None
+	Category: str		# SocialEco / ElecPower / GeoWeather / All
 RESPONSE with
 	[{
         value: 'value',
@@ -83,5 +83,57 @@ RESPONSE with
     },
         ...
     ]
+```
+
+#### Perform Query
+
+```python
+GET '/db/query' with
+	Metadata: str		# 类似"立法,下院,多数党"这样用逗号分开的数组
+    Category: str		# SocialEco / ElecPower / GeoWeather / All
+RESPONSE with
+	[
+        {
+            date: '2020-12-11',
+        	value: 'some value'
+        },
+        ...
+    ]
+```
+
+#### Perform Update
+
+```python
+POST '/db/Update' with
+	OriginData: dict
+        date: str
+        value: str
+    ModifiedData: dict
+        date: str
+        value: str
+RESPONSE with
+	None
+```
+
+#### Perform Delete
+
+```python
+POST '/db/delete' with
+	OriginData: dict
+        date: str
+        value: str
+RESPONSE with
+	None
+```
+
+#### Perform Create
+
+```python
+POST '/db/create' with
+	NewData: dict
+        date: str
+        value: str
+RESPONSE with
+	None
 ```
 
