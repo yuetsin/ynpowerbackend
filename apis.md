@@ -66,3 +66,22 @@ RESPONSE with
 	None
 ```
 
+### DataBaseCRUD
+
+#### Get Metadata
+
+```python
+GET '/db/metadata' with
+	None
+RESPONSE with
+	[{
+        value: 'value',
+        label: 'label',
+        children: [{
+            ...
+        }]
+    },
+        ...
+    ]
+```
+

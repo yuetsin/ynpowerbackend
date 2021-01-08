@@ -573,11 +573,78 @@ class PutVersion(Resource):
             "code": 200
         }
 
+class GetMetadata(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    "key": "行政",
+                    "value": "白宫",
+                    "children": [
+                        {
+                            "key": "总统",
+                            "value": "唐納·川普",
+                        },
+                        {
+                            "key": "副总统",
+                            "value": "麦克·彭斯",
+                        }
+                    ]
+                },
+                {
+                    "key": "立法",
+                    "value": "国会",
+                    "children": [
+                        {
+                            "key": "上院",
+                            "value": "参议院",
+                            "children": [
+                                {
+                                    "key": "议长",
+                                    "value": "麦克·彭斯"
+                                },
+                                {
+                                    "key": "多数党",
+                                    "value": "共和党"
+                                }
+                            ]
+                        },  {
+                            "key": "下院",
+                            "value": "众议院",
+                            "children": [
+                                {
+                                    "key": "议长",
+                                    "value": "南希·佩洛西"
+                                },
+                                {
+                                    "key": "多数党",
+                                    "value": "民主党"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": "司法",
+                    "value": "最高法院",
+                    "children": [
+                        {
+                            "key": "首席大法官",
+                            "value": "約翰·格洛佛·羅勃茲",
+                        }
+                    ]
+                }
+            ]
+        }
+
+
 api.add_resource(Login, "/api/login")
 api.add_resource(Logout, "/api/logout")
 api.add_resource(GetVersion, '/api/vcs/get')
 api.add_resource(PutVersion, '/api/vcs/put')
-
+api.add_resource(GetMetadata, '/api/db/metadata')
 
 """
 fore-end related http apis
