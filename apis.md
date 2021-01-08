@@ -196,3 +196,52 @@ RESPONSE with
 	None
 ```
 
+### Schemas
+
+#### Schema Query
+
+```python
+GET '/schema/query' with
+	None
+RESPONSE with
+    ['Schema A', 'Schema B', 'Schema C', 'Schema D']
+```
+
+#### Schema Create
+
+```python
+POST '/schema/create' with
+	CurrentSchema: 'Schema A'
+    NewSchemaName: str
+RESPONSE with
+	None
+```
+
+#### Schema View
+
+```python
+GET '/schema/view' with
+    name: 'Schema A'
+RESPONSE with
+	# Everything about this schema
+```
+
+#### Schema Rename
+
+```python
+POST '/schema/rename' with
+	CurrentSchema: 'Schema A'
+    NewSchemaName: str
+RESPONSE with
+	None
+```
+
+### Schema Delete
+
+```python
+POST '/schema/delete' with
+	DeleteSchema: 'Schema A'
+RESPONSE with
+	None
+```
+

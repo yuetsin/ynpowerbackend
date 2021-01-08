@@ -751,20 +751,82 @@ class ExceptionAccept(Resource):
             "code": 200
         }
 
+_schemas = ['瓮中捉鳖', '围魏救赵', '无中生有', '趁火打劫']
+
+class SchemaQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _schemas
+        }
+
+class SchemaView(Resource):
+    def get(self):
+        print(request.args)
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "name": "Plan A",
+                "whatsoever": "blahblahblah"
+            }
+        }
+
+class SchemaCreate(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+class SchemaRename(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200,
+        }
+
+
+class SchemaDelete(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200,
+        }
+
+
+# Account Stuff
 api.add_resource(Login, "/api/login")
 api.add_resource(Logout, "/api/logout")
+
+# VCS Stuff
 api.add_resource(GetVersion, '/api/vcs/get')
 api.add_resource(PutVersion, '/api/vcs/put')
+
+# Database Stuff
 api.add_resource(GetMetadata, '/api/db/metadata')
 api.add_resource(PerformQuery, '/api/db/query')
 api.add_resource(PerformCreate, '/api/db/create')
 api.add_resource(PerformUpdate, '/api/db/update')
 api.add_resource(PerformDelete, '/api/db/delete')
+
+# Exception Correcting Stuff
 api.add_resource(DataTypeQuery, '/api/db/dtypes')
 api.add_resource(ExceptionQuery, '/api/db/except/query')
 api.add_resource(ExceptionResolve, '/api/db/except/resolve')
 api.add_resource(ExceptionAccept, '/api/db/except/accept')
 
+# Schema Stuff
+api.add_resource(SchemaQuery, '/api/schema/query')
+api.add_resource(SchemaCreate, '/api/schema/create')
+api.add_resource(SchemaView, '/api/schema/view')
+api.add_resource(SchemaRename, '/api/schema/rename')
+api.add_resource(SchemaDelete, '/api/schema/delete')
 """
 fore-end related http apis
 END
