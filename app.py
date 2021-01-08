@@ -693,6 +693,64 @@ class PerformDelete(Resource):
             "code": 200
         }
 
+class DataTypeQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": ['int', 'float', 'string', 'char']
+        }
+
+class ExceptionQuery(Resource):
+    def get(self):
+        print(request.args)
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    "date": "2021-1-8",
+                    "type": "int",
+                    "value": 10,
+                    "suggest": 42
+                },
+                {
+                    "date": "2021-1-7",
+                    "type": "string",
+                    "value": "杨咏曼",
+                    "suggest": "蔡翠菊"
+                },
+                {
+                    "date": "2021-1-5",
+                    "type": "float",
+                    "value": 3.141592653589,
+                    "suggest": 2.718281828
+                },
+                {
+                    "date": "2021-1-3",
+                    "type": "bool",
+                    "value": True,
+                    "suggest": False
+                }
+            ]
+        }
+
+class ExceptionResolve(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+class ExceptionAccept(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
 api.add_resource(Login, "/api/login")
 api.add_resource(Logout, "/api/logout")
 api.add_resource(GetVersion, '/api/vcs/get')
@@ -702,6 +760,10 @@ api.add_resource(PerformQuery, '/api/db/query')
 api.add_resource(PerformCreate, '/api/db/create')
 api.add_resource(PerformUpdate, '/api/db/update')
 api.add_resource(PerformDelete, '/api/db/delete')
+api.add_resource(DataTypeQuery, '/api/db/dtypes')
+api.add_resource(ExceptionQuery, '/api/db/except/query')
+api.add_resource(ExceptionResolve, '/api/db/except/resolve')
+api.add_resource(ExceptionAccept, '/api/db/except/accept')
 
 """
 fore-end related http apis

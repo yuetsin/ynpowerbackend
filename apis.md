@@ -6,7 +6,7 @@
 
 > 例如 `http://localhost:5000/api/login`。
 
-在设定了版本号（例如，`v3`）时，请求的地址嵌入在 `/api` 之后、实际功能之前。
+在设定了版本号（例如，`v3`）时，将其嵌入到 `/api` 之后、功能路径之前。
 
 > 例如 `http://localhost:5000/api/v3/logout`。
 
@@ -89,7 +89,7 @@ RESPONSE with
 
 ```python
 GET '/db/query' with
-	Metadata: str		# 类似"立法,下院,多数党"这样用逗号分开的数组
+	Metadata: str		# 类似"甲,乙,丙"这样用逗号分开的数组
     Category: str		# SocialEco / ElecPower / GeoWeather / All
 RESPONSE with
 	[
@@ -104,7 +104,8 @@ RESPONSE with
 #### Perform Update
 
 ```python
-POST '/db/Update' with
+POST '/db/update' with
+	Category: str		# SocialEco / ElecPower / GeoWeather / All
 	OriginData: dict
         date: str
         value: str
@@ -119,6 +120,7 @@ RESPONSE with
 
 ```python
 POST '/db/delete' with
+	Category: str		# SocialEco / ElecPower / GeoWeather / All
 	OriginData: dict
         date: str
         value: str
@@ -130,9 +132,66 @@ RESPONSE with
 
 ```python
 POST '/db/create' with
+	Category: str		# SocialEco / ElecPower / GeoWeather / All
 	NewData: dict
         date: str
         value: str
+RESPONSE with
+	None
+```
+
+#### Data Type Query
+
+```python
+GET '/db/dtype' with
+	None
+RESPONSE with
+	list[str]			# ["int", "float", "double", "string"]
+```
+
+#### Exception Query
+
+```python
+GET '/db/except/query' with
+	Category: str
+    Year: int
+RESPONSE with
+	[
+        {
+            date: '2020-12-11',
+            type: 'int',
+        	value: 'some value',
+            suggest: 'some new value'
+        },
+        ...
+    ]
+```
+
+#### Exception Resolve
+
+```python
+POST '/db/except/resolve' with
+	OriginData: dict
+        date: str
+        type: str
+        value: str
+        suggest: str
+    ModifiedData: dict
+        date: str
+        value: str
+RESPONSE with
+	None
+```
+
+#### Exception Accept
+
+```python
+POST '/db/except/accept' with
+	AcceptData:
+        date: str
+        type: str
+        value: str
+        suggest: str
 RESPONSE with
 	None
 ```
