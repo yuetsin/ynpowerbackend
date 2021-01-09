@@ -548,31 +548,6 @@ class Logout(Resource):
             "code": 200
         }
 
-
-_versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
-
-class GetVersion(Resource):
-    def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": _versions
-        }
-
-class PutVersion(Resource):
-    def post(self):
-        vername = request.json['VersionName'].strip()
-        if vername in _versions:
-            return {
-                "msg": "name existed",
-                "code": -1
-            }
-        _versions.append(vername)
-        return {
-            "msg": "success",
-            "code": 200
-        }
-
 class GetMetadata(Resource):
     def get(self):
         category_name = request.args['Category'].strip()
@@ -751,29 +726,91 @@ class ExceptionAccept(Resource):
             "code": 200
         }
 
-_schemas = ['瓮中捉鳖', '围魏救赵', '无中生有', '趁火打劫']
+_versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
 
-class SchemaQuery(Resource):
+class VersionQuery(Resource):
     def get(self):
         return {
             "msg": "success",
             "code": 200,
-            "data": _schemas
+            "data": sorted(_versions)
         }
 
-class SchemaView(Resource):
-    def get(self):
-        print(request.args)
+class VersionCreate(Resource):
+    def post(self):
+        print(request.json)
+        current_name = request.json['CurrentSchema'].strip()
+        new_name = request.json['NewSchemaName'].strip()
+        if new_name in _versions:
+            return {
+            "msg": "key existed",
+            "code": -1
+        }
+        _versions.append(new_name)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+class VersionRename(Resource):
+    def post(self):
+        print(request.json)
+        current_name = request.json['CurrentSchema'].strip()
+        new_name = request.json['NewSchemaName'].strip()
+        if not current_name in _versions:
+            return {
+            "msg": "no key found",
+            "code": -1
+        }
+        if new_name in _versions:
+            return {
+            "msg": "key existed",
+            "code": -1
+        }
+        _versions.remove(current_name)
+        _versions.append(new_name)
         return {
             "msg": "success",
             "code": 200,
-            "data": {
-                "name": "Plan A",
-                "whatsoever": "blahblahblah"
-            }
         }
 
-class SchemaCreate(Resource):
+
+class VersionDelete(Resource):
+    def post(self):
+        print(request.json)
+        current_name = request.json['DeleteSchema'].strip()
+        if not current_name in _versions:
+            return {
+            "msg": "no key found",
+            "code": -1
+        }
+        _versions.remove(current_name)
+        return {
+            "msg": "success",
+            "code": 200,
+        }
+
+_regions = ['云南省', '丽江市', '红河州', '内比都']
+
+class RegionQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _regions
+        }
+
+_factors = ['GDP', 'GNP', 'GPPPP', 'GNPPP']
+
+class MiningFactorQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _factors
+        }
+
+class MiningRequest(Resource):
     def post(self):
         print(request.json)
         return {
@@ -781,32 +818,19 @@ class SchemaCreate(Resource):
             "code": 200
         }
 
-
-class SchemaRename(Resource):
-    def post(self):
-        print(request.json)
+class MiningKMeansSuggestCategoryCount(Resource):
+    def get(self):
         return {
             "msg": "success",
             "code": 200,
+            "data": {
+                "Count": 2
+            }
         }
-
-
-class SchemaDelete(Resource):
-    def post(self):
-        print(request.json)
-        return {
-            "msg": "success",
-            "code": 200,
-        }
-
 
 # Account Stuff
 api.add_resource(Login, "/api/login")
 api.add_resource(Logout, "/api/logout")
-
-# VCS Stuff
-api.add_resource(GetVersion, '/api/vcs/get')
-api.add_resource(PutVersion, '/api/vcs/put')
 
 # Database Stuff
 api.add_resource(GetMetadata, '/api/db/metadata')
@@ -821,12 +845,20 @@ api.add_resource(ExceptionQuery, '/api/db/except/query')
 api.add_resource(ExceptionResolve, '/api/db/except/resolve')
 api.add_resource(ExceptionAccept, '/api/db/except/accept')
 
-# Schema Stuff
-api.add_resource(SchemaQuery, '/api/schema/query')
-api.add_resource(SchemaCreate, '/api/schema/create')
-api.add_resource(SchemaView, '/api/schema/view')
-api.add_resource(SchemaRename, '/api/schema/rename')
-api.add_resource(SchemaDelete, '/api/schema/delete')
+# VCS Stuff
+api.add_resource(VersionQuery, '/api/schema/query')
+api.add_resource(VersionCreate, '/api/schema/create')
+api.add_resource(VersionRename, '/api/schema/rename')
+api.add_resource(VersionDelete, '/api/schema/delete')
+
+# Data Mining Stuff
+api.add_resource(MiningRequest, '/api/mining/request')
+api.add_resource(MiningFactorQuery, '/api/mining/factor/query')
+api.add_resource(MiningKMeansSuggestCategoryCount, '/api/mining/factor/kmeans/suggest')
+
+# Shared Stuff
+api.add_resource(RegionQuery, '/api/region/query')
+
 """
 fore-end related http apis
 END

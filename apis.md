@@ -48,20 +48,40 @@ RESPONSE with
 
 ### VCS Stuff
 
-#### Get Versions
+#### Version Query
 
 ```python
-GET '/vcs/get' with
-    None
+GET '/version/query' with
+	None
 RESPONSE with
-	list[str]
+    ['v1.0', 'v1.1', 'v2.0', 'v2.2a']
 ```
 
-#### Put Version
+#### Version Create
 
 ```python
-POST '/vcs/post' with
-    VersionName: str
+POST '/version/create' with
+	CurrentSchema: 'v3.3'
+    NewSchemaName: str
+RESPONSE with
+	None
+```
+
+#### Version Rename
+
+```python
+POST '/version/rename' with
+	CurrentSchema: 'v3.3a'
+    NewSchemaName: 'v3.3b'
+RESPONSE with
+	None
+```
+
+#### Version Delete
+
+```python
+POST '/version/delete' with
+	DeleteSchema: 'v1.0'
 RESPONSE with
 	None
 ```
@@ -196,52 +216,65 @@ RESPONSE with
 	None
 ```
 
-### Schemas
+### Data Mining
 
-#### Schema Query
+#### Factors Query
 
 ```python
-GET '/schema/query' with
+GET '/mining/factor/query' with
 	None
 RESPONSE with
-    ['Schema A', 'Schema B', 'Schema C', 'Schema D']
+	['Factor 1', 'Factor 2', ...]
 ```
 
-#### Schema Create
+#### KMeans: Suggested Category Count
 
 ```python
-POST '/schema/create' with
-	CurrentSchema: 'Schema A'
-    NewSchemaName: str
-RESPONSE with
+GET '/mining/factor/kmeans/suggest' with
 	None
+RESPONSE with
+	{
+        Count: 4
+    }
 ```
 
-#### Schema View
+
+
+#### Mining Request
 
 ```python
-GET '/schema/view' with
-    ViewSchemaName: 'Schema A'
+POST '/mining/request' with
+	Region: str
+    Factors: list[str]
+    Method: str							# Pearson / KMeans / PCA / ARL
+    Pearson: {
+        threshold: float				# 皮尔逊系数阈值
+    }
+    KMeans: {
+        suggestCategoryCount: int		# 推荐最佳分类数
+        categoryCount: int				# 分类数
+    }
+    PCA: {
+        absThreshold: float				# 系数绝对值阈值
+    }
+    ARL: {
+        minSupport: float				# 最小支持度
+        minConfidence: float			# 最小置信度
+    }
+    beginYear: int
+    endYear: int
 RESPONSE with
-	# Everything about this schema
+	Not Sure
 ```
 
-#### Schema Rename
+### Shared
+
+#### Region Selection
 
 ```python
-POST '/schema/rename' with
-	CurrentSchema: 'Schema A'
-    NewSchemaName: str
-RESPONSE with
+GET '/region/query' with
 	None
-```
-
-#### Schema Delete
-
-```python
-POST '/schema/delete' with
-	DeleteSchema: 'Schema A'
 RESPONSE with
-	None
+	['云南省', '丽江市', '红河州', '内比都']
 ```
 
