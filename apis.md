@@ -221,7 +221,7 @@ RESPONSE with
 
 ```python
 GET '/schema/view' with
-    name: 'Schema A'
+    ViewSchemaName: 'Schema A'
 RESPONSE with
 	# Everything about this schema
 ```
