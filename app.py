@@ -523,6 +523,16 @@ BEGIN
 fore-end related http apis
 dummy version, not functional yet
 """
+
+def register(*url):
+    def url_param(cls):
+        target_url = '/api/' + '/'.join(url)
+        print('bind', cls, 'to', target_url)
+        api.add_resource(cls, target_url)
+        return cls
+    return url_param
+
+@register('login')
 class Login(Resource):
     def post(self):
         username = request.json['username'].strip()
@@ -541,6 +551,7 @@ class Login(Resource):
             }
             return re
 
+@register('logout')
 class Logout(Resource):
     def post(self):
         return {
@@ -548,7 +559,7 @@ class Logout(Resource):
             "code": 200
         }
 
-
+@register('recent')
 class LoadRecent(Resource):
     def get(self):
         return {
@@ -566,6 +577,7 @@ class LoadRecent(Resource):
             ]
         } 
 
+@register('db', 'metadata')
 class GetMetadata(Resource):
     def get(self):
         return {
@@ -632,6 +644,7 @@ class GetMetadata(Resource):
             ]
         }
 
+@register('db', 'query')
 class PerformQuery(Resource):
     def post(self):
         print(request.json)
@@ -658,6 +671,7 @@ class PerformQuery(Resource):
             ]
         }
 
+@register('db', 'create')
 class PerformCreate(Resource):
     def post(self):
         print(request.json)
@@ -666,6 +680,7 @@ class PerformCreate(Resource):
             "code": 200
         }
 
+@register('db', 'update')
 class PerformUpdate(Resource):
     def post(self):
         print(request.json)
@@ -674,6 +689,7 @@ class PerformUpdate(Resource):
             "code": 200
         }
 
+@register('db', 'delete')
 class PerformDelete(Resource):
     def post(self):
         print(request.json)
@@ -682,14 +698,7 @@ class PerformDelete(Resource):
             "code": 200
         }
 
-class DataTypeQuery(Resource):
-    def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": ['int', 'float', 'string', 'char']
-        }
-
+@register('db', 'except', 'query')
 class ExceptionQuery(Resource):
     def post(self):
         print(request.json)
@@ -728,6 +737,7 @@ class ExceptionQuery(Resource):
             ]
         }
 
+@register('db', 'except', 'resolve')
 class ExceptionResolve(Resource):
     def post(self):
         print(request.json)
@@ -736,6 +746,7 @@ class ExceptionResolve(Resource):
             "code": 200
         }
 
+@register('db', 'except', 'accept')
 class ExceptionAccept(Resource):
     def post(self):
         print(request.json)
@@ -746,6 +757,7 @@ class ExceptionAccept(Resource):
 
 _versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
 
+@register('schema', 'query')
 class SchemaQuery(Resource):
     def get(self):
         return {
@@ -754,6 +766,7 @@ class SchemaQuery(Resource):
             "data": sorted(_versions)
         }
 
+@register('schema', 'create')
 class SchemaCreate(Resource):
     def post(self):
         print(request.json)
@@ -769,6 +782,7 @@ class SchemaCreate(Resource):
             "code": 200
         }
 
+@register('schema', 'rename')
 class SchemaRename(Resource):
     def post(self):
         print(request.json)
@@ -791,7 +805,7 @@ class SchemaRename(Resource):
             "code": 200,
         }
 
-
+@register('schema', 'delete')
 class SchemaDelete(Resource):
     def post(self):
         print(request.json)
@@ -807,18 +821,10 @@ class SchemaDelete(Resource):
             "code": 200,
         }
 
-_regions = ['云南省', '丽江市', '红河州', '内比都']
-
-class RegionQuery(Resource):
-    def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": _regions
-        }
 
 _factors = ['GDP', 'GNP', 'GPPPP', 'GNPPP']
 
+@register('mining', 'factor', 'query')
 class MiningFactorQuery(Resource):
     def get(self):
         return {
@@ -827,6 +833,7 @@ class MiningFactorQuery(Resource):
             "data": _factors
         }
 
+@register('mining', 'request')
 class MiningRequest(Resource):
     def post(self):
         print(request.json)
@@ -836,6 +843,7 @@ class MiningRequest(Resource):
             "data": ['阳光', '空气', '水']
         }
 
+@register('mining', 'factor', 'kmeans', 'suggest')
 class MiningKMeansSuggestCategoryCount(Resource):
     def get(self):
         print(request.args)
@@ -847,6 +855,7 @@ class MiningKMeansSuggestCategoryCount(Resource):
             }
         }
 
+@register('mining', 'results')
 class MiningResults(Resource):
     def get(self):
         return {
@@ -868,47 +877,59 @@ class MiningResults(Resource):
             ]
         } 
 
+
+_regions = ['云南省', '丽江市', '红河州', '内比都']
+
+@register('region', 'query')
+class RegionQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _regions
+        }
+
+@register('grain', 'query')
 class GrainQuery(Resource):
     def get(self):
         return {
             "msg": "success",
             "code": 200,
             "data": ['年', '月', '日', '时', '分', '秒']
-        } 
+        }
 
 # Account Stuff
-api.add_resource(Login, "/api/login")
-api.add_resource(Logout, "/api/logout")
-api.add_resource(LoadRecent, '/api/recent')
+# api.add_resource(Login, "/api/login")
+# api.add_resource(Logout, "/api/logout")
+# api.add_resource(LoadRecent, '/api/recent')
 
 # Database Stuff
-api.add_resource(GetMetadata, '/api/db/metadata')
-api.add_resource(PerformQuery, '/api/db/query')
-api.add_resource(PerformCreate, '/api/db/create')
-api.add_resource(PerformUpdate, '/api/db/update')
-api.add_resource(PerformDelete, '/api/db/delete')
+# api.add_resource(GetMetadata, '/api/db/metadata')
+# api.add_resource(PerformQuery, '/api/db/query')
+# api.add_resource(PerformCreate, '/api/db/create')
+# api.add_resource(PerformUpdate, '/api/db/update')
+# api.add_resource(PerformDelete, '/api/db/delete')
 
 # Exception Correcting Stuff
-api.add_resource(DataTypeQuery, '/api/db/dtypes')
-api.add_resource(ExceptionQuery, '/api/db/except/query')
-api.add_resource(ExceptionResolve, '/api/db/except/resolve')
-api.add_resource(ExceptionAccept, '/api/db/except/accept')
+# api.add_resource(ExceptionQuery, '/api/db/except/query')
+# api.add_resource(ExceptionResolve, '/api/db/except/resolve')
+# api.add_resource(ExceptionAccept, '/api/db/except/accept')
 
 # Schema Stuff
-api.add_resource(SchemaQuery, '/api/schema/query')
-api.add_resource(SchemaCreate, '/api/schema/create')
-api.add_resource(SchemaRename, '/api/schema/rename')
-api.add_resource(SchemaDelete, '/api/schema/delete')
+# api.add_resource(SchemaQuery, '/api/schema/query')
+# api.add_resource(SchemaCreate, '/api/schema/create')
+# api.add_resource(SchemaRename, '/api/schema/rename')
+# api.add_resource(SchemaDelete, '/api/schema/delete')
 
 # Data Mining Stuff
-api.add_resource(MiningRequest, '/api/mining/request')
-api.add_resource(MiningFactorQuery, '/api/mining/factor/query')
-api.add_resource(MiningKMeansSuggestCategoryCount, '/api/mining/factor/kmeans/suggest')
-api.add_resource(MiningResults, '/api/mining/results')
+# api.add_resource(MiningRequest, '/api/mining/request')
+# api.add_resource(MiningFactorQuery, '/api/mining/factor/query')
+# api.add_resource(MiningKMeansSuggestCategoryCount, '/api/mining/factor/kmeans/suggest')
+# api.add_resource(MiningResults, '/api/mining/results')
 
 # Shared Stuff
-api.add_resource(RegionQuery, '/api/region/query')
-api.add_resource(GrainQuery, '/api/grain/query')
+# api.add_resource(RegionQuery, '/api/region/query')
+# api.add_resource(GrainQuery, '/api/grain/query')
 """
 fore-end related http apis
 END
