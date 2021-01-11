@@ -247,14 +247,12 @@ RESPONSE with
 
 ```python
 GET '/mining/factor/kmeans/suggest' with
-	None
+	factors: 'factor1,factor2,factor3'
 RESPONSE with
 	{
         Count: 4
     }
 ```
-
-
 
 #### Mining Request
 

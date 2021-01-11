@@ -838,6 +838,7 @@ class MiningRequest(Resource):
 
 class MiningKMeansSuggestCategoryCount(Resource):
     def get(self):
+        print(request.args)
         return {
             "msg": "success",
             "code": 200,
