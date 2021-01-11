@@ -568,8 +568,6 @@ class LoadRecent(Resource):
 
 class GetMetadata(Resource):
     def get(self):
-        category_name = request.args['Category'].strip()
-        print(category_name)
         return {
             "msg": "success",
             "code": 200,
@@ -635,10 +633,8 @@ class GetMetadata(Resource):
         }
 
 class PerformQuery(Resource):
-    def get(self):
-        metadata_list = request.args['Metadata']
-        category_name = request.args['Category']
-        print(metadata_list, category_name)
+    def post(self):
+        print(request.json)
         return {
             "msg": "success",
             "code": 200,
@@ -695,33 +691,37 @@ class DataTypeQuery(Resource):
         }
 
 class ExceptionQuery(Resource):
-    def get(self):
-        print(request.args)
+    def post(self):
+        print(request.json)
         return {
             "msg": "success",
             "code": 200,
             "data": [
                 {
                     "key": "2021-1-8",
-                    "type": "int",
+                    "category": ['三', '1', 'iv'],
+                    "grain": "天",
                     "value": 10,
                     "suggest": 42
                 },
                 {
                     "key": "2021-1-7",
-                    "type": "string",
+                    "category": ['三', '1', 'i'],
+                    "grain": "年",
                     "value": "杨咏曼",
                     "suggest": "蔡翠菊"
                 },
                 {
                     "key": "2021-1-5",
-                    "type": "float",
+                    "category": ['三', '2', 'iii'],
+                    "grain": "秒",
                     "value": 3.141592653589,
                     "suggest": 2.718281828
                 },
                 {
                     "key": "2021-1-3",
-                    "type": "bool",
+                    "category": ['四', '2', 'ii'],
+                    "grain": "年",
                     "value": True,
                     "suggest": False
                 }
@@ -757,7 +757,7 @@ class SchemaQuery(Resource):
 class SchemaCreate(Resource):
     def post(self):
         print(request.json)
-        new_name = request.json['NewSchemaName'].strip()
+        new_name = request.json['newSchemaName'].strip()
         if new_name in _versions:
             return {
             "msg": "key existed",
@@ -772,8 +772,8 @@ class SchemaCreate(Resource):
 class SchemaRename(Resource):
     def post(self):
         print(request.json)
-        current_name = request.json['CurrentSchema'].strip()
-        new_name = request.json['NewSchemaName'].strip()
+        current_name = request.json['currentSchema'].strip()
+        new_name = request.json['newSchemaName'].strip()
         if not current_name in _versions:
             return {
             "msg": "no key found",
@@ -795,7 +795,7 @@ class SchemaRename(Resource):
 class SchemaDelete(Resource):
     def post(self):
         print(request.json)
-        current_name = request.json['DeleteSchema'].strip()
+        current_name = request.json['deleteSchema'].strip()
         if not current_name in _versions:
             return {
             "msg": "no key found",
@@ -832,7 +832,8 @@ class MiningRequest(Resource):
         print(request.json)
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": ['阳光', '空气', '水']
         }
 
 class MiningKMeansSuggestCategoryCount(Resource):
@@ -842,9 +843,38 @@ class MiningKMeansSuggestCategoryCount(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                "Count": 2
+                "count": 2
             }
         }
+
+class MiningResults(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    'plan': '某个挖掘计划',
+                    'results': ['阳光', '空气', '水']
+                },
+                {
+                    'plan': '另一个挖掘计划',
+                    'results': ['光风', '霁月']
+                },
+                {
+                    'plan': '最后一个挖掘计划',
+                    'results': ['阴雨', '晦冥']
+                },
+            ]
+        } 
+
+class GrainQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": ['年', '月', '日', '时', '分', '秒']
+        } 
 
 # Account Stuff
 api.add_resource(Login, "/api/login")
@@ -874,10 +904,11 @@ api.add_resource(SchemaDelete, '/api/schema/delete')
 api.add_resource(MiningRequest, '/api/mining/request')
 api.add_resource(MiningFactorQuery, '/api/mining/factor/query')
 api.add_resource(MiningKMeansSuggestCategoryCount, '/api/mining/factor/kmeans/suggest')
+api.add_resource(MiningResults, '/api/mining/results')
 
 # Shared Stuff
 api.add_resource(RegionQuery, '/api/region/query')
-
+api.add_resource(GrainQuery, '/api/grain/query')
 """
 fore-end related http apis
 END

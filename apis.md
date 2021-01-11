@@ -77,7 +77,7 @@ RESPONSE with
 
 ```python
 POST '/schema/create' with
-    NewSchemaName: str
+    newSchemaName: str
 RESPONSE with
 	None
 ```
@@ -86,8 +86,8 @@ RESPONSE with
 
 ```python
 POST '/schema/rename' with
-	CurrentSchema: 'v3.3a'
-    NewSchemaName: 'v3.3b'
+	currentSchema: 'v3.3a'
+    newSchemaName: 'v3.3b'
 RESPONSE with
 	None
 ```
@@ -96,7 +96,7 @@ RESPONSE with
 
 ```python
 POST '/schema/delete' with
-	DeleteSchema: 'v1.0'
+	deleteSchema: 'v1.0'
 RESPONSE with
 	None
 ```
@@ -107,7 +107,7 @@ RESPONSE with
 
 ```python
 GET '/db/metadata' with
-	Category: str		# SocialEco / ElecPower / GeoWeather / All
+	None
 RESPONSE with
 	[{
         value: 'value',
@@ -123,9 +123,12 @@ RESPONSE with
 #### Perform Query
 
 ```python
-GET '/db/query' with
-	Metadata: str		# 类似"甲,乙,丙"这样用逗号分开的数组
-    Category: str		# SocialEco / ElecPower / GeoWeather / All
+POST '/db/query' with
+	region: '红河州'
+    grain: '月'
+    beginYear: 2020
+    endYear: 2028, 
+    category: ['行政', '总统']
 RESPONSE with
 	[
         {
@@ -140,11 +143,11 @@ RESPONSE with
 
 ```python
 POST '/db/update' with
-	Category: str		# SocialEco / ElecPower / GeoWeather / All
-	OriginData: dict
+	category: list[str]
+	originData: dict
         key: str
         value: str
-    ModifiedData: dict
+    modifiedData: dict
         key: str
         value: str
 RESPONSE with
@@ -155,8 +158,8 @@ RESPONSE with
 
 ```python
 POST '/db/delete' with
-	Category: str		# SocialEco / ElecPower / GeoWeather / All
-	OriginData: dict
+	category: list[str]
+	originData: dict
         key: str
         value: str
 RESPONSE with
@@ -167,34 +170,27 @@ RESPONSE with
 
 ```python
 POST '/db/create' with
-	Category: str		# SocialEco / ElecPower / GeoWeather / All
-	NewData: dict
+	category: list[str]
+	newData: dict
         key: str
         value: str
 RESPONSE with
 	None
 ```
 
-#### Data Type Query
-
-```python
-GET '/db/dtype' with
-	None
-RESPONSE with
-	list[str]			# ["int", "float", "double", "string"]
-```
-
 #### Exception Query
 
 ```python
-GET '/db/except/query' with
-	Category: str
-    Year: int
+POST '/db/except/query' with
+	category: list[str]
+    beginYear: int
+   	endYear: int
 RESPONSE with
 	[
         {
-            date: '2020-12-11',
-            type: 'int',
+            category: ['A', 'ii'],
+            grain: '秒',
+            key: '2020-12-11',
         	value: 'some value',
             suggest: 'some new value'
         },
@@ -206,14 +202,18 @@ RESPONSE with
 
 ```python
 POST '/db/except/resolve' with
-	OriginData: dict
-        date: str
-        type: str
+	originData: dict
+        category: list[str]
+        grain: str
+        key: str
         value: str
         suggest: str
-    ModifiedData: dict
-        date: str
+    modifiedData: dict
+        category: list[str]
+        grain: str
+        key: str
         value: str
+        suggest: str
 RESPONSE with
 	None
 ```
@@ -222,9 +222,10 @@ RESPONSE with
 
 ```python
 POST '/db/except/accept' with
-	AcceptData:
-        date: str
-        type: str
+	acceptData:
+        category: list[str]
+        grain: str
+        key: str
         value: str
         suggest: str
 RESPONSE with
@@ -249,7 +250,7 @@ GET '/mining/factor/kmeans/suggest' with
 	factors: 'factor1,factor2,factor3'
 RESPONSE with
 	{
-        Count: 4
+        count: 4
     }
 ```
 
@@ -257,13 +258,13 @@ RESPONSE with
 
 ```python
 POST '/mining/request' with
-	Region: str
-    Factors: list[str]
-    Method: str							# Pearson / KMeans / PCA / ARL
-    Pearson: {
+	region: str
+    factors: list[str]
+    method: str							# Pearson / KMeans / PCA / ARL
+    pearson: {
         threshold: float				# 皮尔逊系数阈值
     }
-    KMeans: {
+    kMeans: {
         suggestCategoryCount: int		# 推荐最佳分类数
         categoryCount: int				# 分类数
     }
@@ -277,17 +278,40 @@ POST '/mining/request' with
     beginYear: int
     endYear: int
 RESPONSE with
-	Not Sure
+	['因素 1', '因素 2']
+```
+
+#### Mining Results
+
+```python
+GET '/mining/results' with
+	None
+RESPONSE with
+	[
+        {
+            'plan': '挖掘计划',
+            'results': ['因素 1', '因素 2']
+        }
+    ]
 ```
 
 ### Shared
 
-#### Region Selection
+#### Region Query
 
 ```python
 GET '/region/query' with
 	None
 RESPONSE with
 	['云南省', '丽江市', '红河州', '内比都']
+```
+
+#### Grain Query
+
+```python
+GET '/grain/query' with
+	None
+RESPONSE with
+	['年', '月', '日', '时', '分', '秒']
 ```
 
