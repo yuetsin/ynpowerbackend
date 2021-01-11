@@ -62,9 +62,9 @@ RESPONSE with
     ]
 ```
 
-### VCS Stuff
+### Schema Stuff
 
-#### Version Query
+#### Schema Query
 
 ```python
 GET '/version/query' with
@@ -73,17 +73,16 @@ RESPONSE with
     ['v1.0', 'v1.1', 'v2.0', 'v2.2a']
 ```
 
-#### Version Create
+#### Schema Create
 
 ```python
 POST '/version/create' with
-	CurrentSchema: 'v3.3'
     NewSchemaName: str
 RESPONSE with
 	None
 ```
 
-#### Version Rename
+#### Schema Rename
 
 ```python
 POST '/version/rename' with
@@ -93,7 +92,7 @@ RESPONSE with
 	None
 ```
 
-#### Version Delete
+#### Schema Delete
 
 ```python
 POST '/version/delete' with

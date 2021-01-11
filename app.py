@@ -746,7 +746,7 @@ class ExceptionAccept(Resource):
 
 _versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
 
-class VersionQuery(Resource):
+class SchemaQuery(Resource):
     def get(self):
         return {
             "msg": "success",
@@ -754,7 +754,7 @@ class VersionQuery(Resource):
             "data": sorted(_versions)
         }
 
-class VersionCreate(Resource):
+class SchemaCreate(Resource):
     def post(self):
         print(request.json)
         current_name = request.json['CurrentSchema'].strip()
@@ -770,7 +770,7 @@ class VersionCreate(Resource):
             "code": 200
         }
 
-class VersionRename(Resource):
+class SchemaRename(Resource):
     def post(self):
         print(request.json)
         current_name = request.json['CurrentSchema'].strip()
@@ -793,7 +793,7 @@ class VersionRename(Resource):
         }
 
 
-class VersionDelete(Resource):
+class SchemaDelete(Resource):
     def post(self):
         print(request.json)
         current_name = request.json['DeleteSchema'].strip()
@@ -865,11 +865,11 @@ api.add_resource(ExceptionQuery, '/api/db/except/query')
 api.add_resource(ExceptionResolve, '/api/db/except/resolve')
 api.add_resource(ExceptionAccept, '/api/db/except/accept')
 
-# VCS Stuff
-api.add_resource(VersionQuery, '/api/schema/query')
-api.add_resource(VersionCreate, '/api/schema/create')
-api.add_resource(VersionRename, '/api/schema/rename')
-api.add_resource(VersionDelete, '/api/schema/delete')
+# Schema Stuff
+api.add_resource(SchemaQuery, '/api/schema/query')
+api.add_resource(SchemaCreate, '/api/schema/create')
+api.add_resource(SchemaRename, '/api/schema/rename')
+api.add_resource(SchemaDelete, '/api/schema/delete')
 
 # Data Mining Stuff
 api.add_resource(MiningRequest, '/api/mining/request')
