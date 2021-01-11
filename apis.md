@@ -188,7 +188,7 @@ RESPONSE with
 POST '/db/except/query' with
     category: list[str]
     beginYear: int
-       endYear: int
+    endYear: int
 RESPONSE with
     [
         {
