@@ -34,7 +34,7 @@ POST '/login' with
     username: str
     password: str
 RESPONSE with
-	None
+    None
 ```
 
 #### Logout
@@ -43,16 +43,16 @@ RESPONSE with
 POST '/logout' with
     None
 RESPONSE with
-	None
+    None
 ```
 
 #### Load Recent Files
 
 ```python
 GET '/recent' with
-	None
+    None
 RESPONSE with
-	[
+    [
         {
             'name': 'FOO',
             'url': 'https://xxcdn.net/123'
@@ -68,7 +68,7 @@ RESPONSE with
 
 ```python
 GET '/schema/query' with
-	None
+    None
 RESPONSE with
     ['v1.0', 'v1.1', 'v2.0', 'v2.2a']
 ```
@@ -79,26 +79,26 @@ RESPONSE with
 POST '/schema/create' with
     newSchemaName: str
 RESPONSE with
-	None
+    None
 ```
 
 #### Schema Rename
 
 ```python
 POST '/schema/rename' with
-	currentSchema: 'v3.3a'
+    currentSchema: 'v3.3a'
     newSchemaName: 'v3.3b'
 RESPONSE with
-	None
+    None
 ```
 
 #### Schema Delete
 
 ```python
 POST '/schema/delete' with
-	deleteSchema: 'v1.0'
+    deleteSchema: 'v1.0'
 RESPONSE with
-	None
+    None
 ```
 
 ### DataBaseCRUD
@@ -107,9 +107,9 @@ RESPONSE with
 
 ```python
 GET '/db/metadata' with
-	None
+    None
 RESPONSE with
-	[{
+    [{
         value: 'value',
         label: 'label',
         children: [{
@@ -124,16 +124,16 @@ RESPONSE with
 
 ```python
 POST '/db/query' with
-	region: '红河州'
+    region: '红河州'
     grain: '月'
     beginYear: 2020
     endYear: 2028, 
     category: ['行政', '总统']
 RESPONSE with
-	[
+    [
         {
             key: '2020-12-11',
-        	value: 'some value'
+            value: 'some value'
         },
         ...
     ]
@@ -143,55 +143,59 @@ RESPONSE with
 
 ```python
 POST '/db/update' with
-	category: list[str]
-	originData: dict
+    category: list[str]
+    originData: dict {
         key: str
         value: str
-    modifiedData: dict
+    }
+    modifiedData: dict {
         key: str
         value: str
+    }
 RESPONSE with
-	None
+    None
 ```
 
 #### Perform Delete
 
 ```python
 POST '/db/delete' with
-	category: list[str]
-	originData: dict
+    category: list[str]
+    originData: dict {
         key: str
         value: str
+    }
 RESPONSE with
-	None
+    None
 ```
 
 #### Perform Create
 
 ```python
 POST '/db/create' with
-	category: list[str]
-	newData: dict
+    category: list[str]
+    newData: dict {
         key: str
         value: str
+    }
 RESPONSE with
-	None
+    None
 ```
 
 #### Exception Query
 
 ```python
 POST '/db/except/query' with
-	category: list[str]
+    category: list[str]
     beginYear: int
-   	endYear: int
+       endYear: int
 RESPONSE with
-	[
+    [
         {
             category: ['A', 'ii'],
             grain: '秒',
             key: '2020-12-11',
-        	value: 'some value',
+            value: 'some value',
             suggest: 'some new value'
         },
         ...
@@ -202,34 +206,37 @@ RESPONSE with
 
 ```python
 POST '/db/except/resolve' with
-	originData: dict
+    originData: dict {
         category: list[str]
         grain: str
         key: str
         value: str
         suggest: str
-    modifiedData: dict
+    }
+    modifiedData: dict {
         category: list[str]
         grain: str
         key: str
         value: str
         suggest: str
+    }
 RESPONSE with
-	None
+    None
 ```
 
 #### Exception Accept
 
 ```python
 POST '/db/except/accept' with
-	acceptData:
+    acceptData: dict {
         category: list[str]
         grain: str
         key: str
         value: str
         suggest: str
+    }
 RESPONSE with
-	None
+    None
 ```
 
 ### Data Mining
@@ -238,18 +245,18 @@ RESPONSE with
 
 ```python
 GET '/mining/factor/query' with
-	None
+    None
 RESPONSE with
-	['Factor 1', 'Factor 2', ...]
+    ['Factor 1', 'Factor 2', ...]
 ```
 
 #### KMeans: Suggested Category Count
 
 ```python
 GET '/mining/factor/kmeans/suggest' with
-	factors: 'factor1,factor2,factor3'
+    factors: 'factor1,factor2,factor3'
 RESPONSE with
-	{
+    {
         count: 4
     }
 ```
@@ -258,7 +265,7 @@ RESPONSE with
 
 ```python
 POST '/mining/request' with
-	region: str
+    region: str
     factors: list[str]
     method: str							# Pearson / KMeans / PCA / ARL
     pearson: {
@@ -278,19 +285,19 @@ POST '/mining/request' with
     beginYear: int
     endYear: int
 RESPONSE with
-	['因素 1', '因素 2']
+    ['因素 1', '因素 2']
 ```
 
 #### Mining Results
 
 ```python
 GET '/mining/results' with
-	None
+    None
 RESPONSE with
-	[
+    [
         {
-            'plan': '挖掘计划',
-            'results': ['因素 1', '因素 2']
+            plan: '挖掘计划',
+            results: ['因素 1', '因素 2']
         }
     ]
 ```
@@ -301,17 +308,17 @@ RESPONSE with
 
 ```python
 GET '/region/query' with
-	None
+    None
 RESPONSE with
-	['云南省', '丽江市', '红河州', '内比都']
+    ['云南省', '丽江市', '红河州', '内比都']
 ```
 
 #### Grain Query
 
 ```python
 GET '/grain/query' with
-	None
+    None
 RESPONSE with
-	['年', '月', '日', '时', '分', '秒']
+    ['年', '月', '日', '时', '分', '秒']
 ```
 
