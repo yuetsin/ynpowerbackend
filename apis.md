@@ -67,7 +67,7 @@ RESPONSE with
 #### Schema Query
 
 ```python
-GET '/version/query' with
+GET '/schema/query' with
 	None
 RESPONSE with
     ['v1.0', 'v1.1', 'v2.0', 'v2.2a']
@@ -76,7 +76,7 @@ RESPONSE with
 #### Schema Create
 
 ```python
-POST '/version/create' with
+POST '/schema/create' with
     NewSchemaName: str
 RESPONSE with
 	None
@@ -85,7 +85,7 @@ RESPONSE with
 #### Schema Rename
 
 ```python
-POST '/version/rename' with
+POST '/schema/rename' with
 	CurrentSchema: 'v3.3a'
     NewSchemaName: 'v3.3b'
 RESPONSE with
@@ -95,7 +95,7 @@ RESPONSE with
 #### Schema Delete
 
 ```python
-POST '/version/delete' with
+POST '/schema/delete' with
 	DeleteSchema: 'v1.0'
 RESPONSE with
 	None
@@ -129,7 +129,7 @@ GET '/db/query' with
 RESPONSE with
 	[
         {
-            date: '2020-12-11',
+            key: '2020-12-11',
         	value: 'some value'
         },
         ...
@@ -142,10 +142,10 @@ RESPONSE with
 POST '/db/update' with
 	Category: str		# SocialEco / ElecPower / GeoWeather / All
 	OriginData: dict
-        date: str
+        key: str
         value: str
     ModifiedData: dict
-        date: str
+        key: str
         value: str
 RESPONSE with
 	None
@@ -157,7 +157,7 @@ RESPONSE with
 POST '/db/delete' with
 	Category: str		# SocialEco / ElecPower / GeoWeather / All
 	OriginData: dict
-        date: str
+        key: str
         value: str
 RESPONSE with
 	None
@@ -169,7 +169,7 @@ RESPONSE with
 POST '/db/create' with
 	Category: str		# SocialEco / ElecPower / GeoWeather / All
 	NewData: dict
-        date: str
+        key: str
         value: str
 RESPONSE with
 	None

@@ -644,19 +644,19 @@ class PerformQuery(Resource):
             "code": 200,
             "data": [
                 {
-                    "date": "2021-1-8",
+                    "key": "2021-1-8",
                     "value": "陈瑞球"
                 },
                 {
-                    "date": "2021-1-7",
+                    "key": "2021-1-7",
                     "value": "杨咏曼"
                 },
                 {
-                    "date": "2021-1-5",
+                    "key": "2021-1-5",
                     "value": "蔡翠菊"
                 },
                 {
-                    "date": "2021-1-3",
+                    "key": "2021-1-3",
                     "value": "包玉刚"
                 }
             ]
@@ -702,25 +702,25 @@ class ExceptionQuery(Resource):
             "code": 200,
             "data": [
                 {
-                    "date": "2021-1-8",
+                    "key": "2021-1-8",
                     "type": "int",
                     "value": 10,
                     "suggest": 42
                 },
                 {
-                    "date": "2021-1-7",
+                    "key": "2021-1-7",
                     "type": "string",
                     "value": "杨咏曼",
                     "suggest": "蔡翠菊"
                 },
                 {
-                    "date": "2021-1-5",
+                    "key": "2021-1-5",
                     "type": "float",
                     "value": 3.141592653589,
                     "suggest": 2.718281828
                 },
                 {
-                    "date": "2021-1-3",
+                    "key": "2021-1-3",
                     "type": "bool",
                     "value": True,
                     "suggest": False
@@ -757,7 +757,6 @@ class SchemaQuery(Resource):
 class SchemaCreate(Resource):
     def post(self):
         print(request.json)
-        current_name = request.json['CurrentSchema'].strip()
         new_name = request.json['NewSchemaName'].strip()
         if new_name in _versions:
             return {
