@@ -889,6 +889,18 @@ class RegionQuery(Resource):
             "data": _regions
         }
 
+
+_industries = ['工业', '农业', '医疗业', '餐饮业']
+
+@register('industry', 'query')
+class IndustryQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _industries
+        }
+
 @register('grain', 'query')
 class GrainQuery(Resource):
     def get(self):
