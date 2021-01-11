@@ -46,6 +46,22 @@ RESPONSE with
 	None
 ```
 
+#### Load Recent Files
+
+```python
+GET '/recent' with
+	None
+RESPONSE with
+	[
+        {
+            'name': 'FOO',
+            'url': 'https://xxcdn.net/123'
+        }, {
+            ...
+        }
+    ]
+```
+
 ### VCS Stuff
 
 #### Version Query

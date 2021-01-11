@@ -548,6 +548,24 @@ class Logout(Resource):
             "code": 200
         }
 
+
+class LoadRecent(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    'name': '预测软件页面初步设计方案',
+                    'url': 'https://th.bing.com/th/id/OIP.iLmhNJwXEioFCxt2cisBGgHaES?w=274&h=180&c=7&o=5&dpr=2&pid=1.7'
+                },
+                {
+                    'name': '问题回复',
+                    'url': 'https://th.bing.com/th/id/OIP.LE7rdh-q39ceZfXtus1ifAHaE7?w=270&h=180&c=7&o=5&dpr=2&pid=1.7'
+                }
+            ]
+        } 
+
 class GetMetadata(Resource):
     def get(self):
         category_name = request.args['Category'].strip()
@@ -831,6 +849,7 @@ class MiningKMeansSuggestCategoryCount(Resource):
 # Account Stuff
 api.add_resource(Login, "/api/login")
 api.add_resource(Logout, "/api/logout")
+api.add_resource(LoadRecent, '/api/recent')
 
 # Database Stuff
 api.add_resource(GetMetadata, '/api/db/metadata')
