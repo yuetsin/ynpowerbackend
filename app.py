@@ -577,13 +577,8 @@ class LoadRecent(Resource):
             ]
         } 
 
-@register('db', 'metadata')
-class GetMetadata(Resource):
-    def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": [
+# 简化起见，value 就是 label，label 就是 value，不作区分。
+_metadata = [
                 {
                     "value": "行政",
                     "label": "白宫",
@@ -642,6 +637,41 @@ class GetMetadata(Resource):
                     ]
                 }
             ]
+
+@register('db', 'metadata')
+class GetMetadata(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _metadata
+        }
+
+@register('db', 'metadata', 'create')
+class CreateMetadata(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'metadata', 'rename')
+class RenameMetadata(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'metadata', 'delete')
+class DeleteMetadata(Resource):
+    def post(self):
+        print(request.json)
+        return {
+            "msg": "success",
+            "code": 200
         }
 
 @register('db', 'query')

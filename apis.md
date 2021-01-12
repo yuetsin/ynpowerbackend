@@ -101,7 +101,7 @@ RESPONSE with
     None
 ```
 
-### DataBaseCRUD
+### MetadataCRUD
 
 #### Get Metadata
 
@@ -119,6 +119,39 @@ RESPONSE with
         ...
     ]
 ```
+
+#### Create Metadata
+
+```python
+POST '/db/metadata/create' with
+	path: ['its', 'parent', 'node', 'path']
+    name: 'newName'
+RESPONSE with
+	None
+    # now it looks like 'its' -> 'parent' -> 'node' -> 'path' -> 'newName'
+```
+
+#### Rename Metadata
+
+```python
+POST '/db/metadata/rename' with
+	path: ['the', 'very', 'node', 'path']
+    name: 'newName'
+RESPONSE with
+	None
+    # now it looks like 'the' -> 'very' -> 'node' -> 'newName'
+```
+
+#### Delete Metadata
+
+```python
+POST '/db/metadata/delete' with
+	path: ['the', 'unlucky', 'node', 'path']
+RESPONSE with
+	None
+```
+
+### DataBaseCRUD
 
 #### Perform Query
 
