@@ -1136,6 +1136,74 @@ class IndustryMixPredict(Resource):
             "code": 200,
             "data": payload
         }
+
+@register('predict', 'saturation')
+class SaturationCurvePredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'payload')
+class PayloadDensityPredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+
 # Account Stuff
 # api.add_resource(Login, "/api/login")
 # api.add_resource(Logout, "/api/logout")

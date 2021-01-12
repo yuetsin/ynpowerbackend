@@ -510,6 +510,78 @@ RESPONSE with
     ]
 ```
 
+#### Saturation Curve Predict
+
+```python
+POST '/predict/saturation' with
+	postParams: {
+        beginYear: undefined,
+        endYear: undefined,
+        historyBeginYear: undefined,
+        historyEndYear: undefined,
+        region: '',
+        industry: '',
+        selectedMethods: [],
+      },
+RESPONSE with
+	graphData: [
+        {
+            'xName': '横轴标签',
+            'yValue': '纵轴数字值'
+        }, ...
+    ],
+    tableOneData: [
+        {
+            'index': '评价指标',
+            'r2': '就是 R2',
+            'mape': '就是 MAPE',
+            'rmse': '就是 RMSE'
+        }
+    ],
+    tableTwoData: [
+        {
+            'year': '年份',
+            'predict': '预测值（MVW）'
+        }
+    ]
+```
+
+#### Payload Density Predict
+
+```python
+POST '/predict/payload' with
+	postParams: {
+        beginYear: undefined,
+        endYear: undefined,
+        historyBeginYear: undefined,
+        historyEndYear: undefined,
+        region: '',
+        industry: '',
+        selectedMethods: [],
+      },
+RESPONSE with
+	graphData: [
+        {
+            'xName': '横轴标签',
+            'yValue': '纵轴数字值'
+        }, ...
+    ],
+    tableOneData: [
+        {
+            'index': '评价指标',
+            'r2': '就是 R2',
+            'mape': '就是 MAPE',
+            'rmse': '就是 RMSE'
+        }
+    ],
+    tableTwoData: [
+        {
+            'year': '年份',
+            'predict': '预测值（MVW）'
+        }
+    ]
+```
+
 ### Shared
 
 #### Region Query
