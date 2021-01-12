@@ -851,18 +851,6 @@ class SchemaDelete(Resource):
             "code": 200,
         }
 
-
-_factors = ['GDP', 'GNP', 'GPPPP', 'GNPPP']
-
-@register('mining', 'factor', 'query')
-class MiningFactorQuery(Resource):
-    def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": _factors
-        }
-
 @register('mining', 'request')
 class MiningRequest(Resource):
     def post(self):
@@ -938,6 +926,17 @@ class GrainQuery(Resource):
             "msg": "success",
             "code": 200,
             "data": ['年', '月', '日', '时', '分', '秒']
+        }
+
+_factors = ['GDP', 'GNP', 'GPPPP', 'GNPPP']
+
+@register('factor', 'query')
+class MiningFactorQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _factors
         }
 
 # Account Stuff

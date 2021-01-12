@@ -274,15 +274,6 @@ RESPONSE with
 
 ### Data Mining
 
-#### Factors Query
-
-```python
-GET '/mining/factor/query' with
-    None
-RESPONSE with
-    ['Factor 1', 'Factor 2', ...]
-```
-
 #### KMeans: Suggested Category Count
 
 ```python
@@ -298,6 +289,7 @@ RESPONSE with
 
 ```python
 POST '/mining/request' with
+	tag: str
     region: str
     factors: list[str]
     method: str							# Pearson / KMeans / PCA / ARL
@@ -353,5 +345,14 @@ GET '/grain/query' with
     None
 RESPONSE with
     ['年', '月', '日', '时', '分', '秒']
+```
+
+#### Factors Query
+
+```python
+GET '/factor/query' with
+    None
+RESPONSE with
+    ['Factor 1', 'Factor 2', ...]
 ```
 
