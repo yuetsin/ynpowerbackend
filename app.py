@@ -674,6 +674,15 @@ class DeleteMetadata(Resource):
             "code": 200
         }
 
+@register('db', 'metadata', 'upload')
+class UploadMetadata(Resource):
+    def post(self):
+        pprint(request.files)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
 @register('db', 'query')
 class PerformQuery(Resource):
     def post(self):

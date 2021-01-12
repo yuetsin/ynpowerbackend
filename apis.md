@@ -151,6 +151,15 @@ RESPONSE with
 	None
 ```
 
+#### Upload Metadata
+
+```python
+POST '/db/metadata/upload' with
+	FILE
+RESPSONSE with
+	None
+```
+
 ### DataBaseCRUD
 
 #### Perform Query
