@@ -928,6 +928,33 @@ class IndustryQuery(Resource):
             "data": _industries
         }
 
+_industrial_methods = ['基于ARIMA季节分解的行业电量预测', '基于EEMD的行业用电量预测', '基于主成分因子的行业用电量预测', '基于随机森林的行业用电量预测', '基于神经网络的行业用电量预测']
+
+@register('method', 'industry', 'query')
+class IndustrialMethodQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _industrial_methods
+        }
+
+_regional_methods = ['逐步回归模型', '灰色滑动平均模型', '分数阶灰色模型',
+        '改进的滚动机理灰色预测', '高斯混合回归模型', '模糊线性回归模型',
+        '模糊指数平滑模型', '梯度提升模型', '支持向量机模型', '循环神经网络模型',
+        '长短期神经网络模型', '扩展索洛模型', '分位数回归模型', '分行业典型日负荷曲线叠加法',
+        '负荷最大利用小时数模型', '季节趋势模型', '考虑温度和节假日分布影响的电量预测模型',
+        '一元线性函数', '一元二次函数', '幂函数', '生长函数', '指数函数', '对数函数', '二元一次函数']
+
+@register('method', 'region', 'query')
+class RegionalMethodQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _regional_methods
+        }
+
 @register('grain', 'query')
 class GrainQuery(Resource):
     def get(self):
@@ -948,8 +975,8 @@ class MiningFactorQuery(Resource):
             "data": _factors
         }
 
-@register('predict', 'place', 'single')
-class PlaceSinglePredict(Resource):
+@register('predict', 'region', 'single')
+class RegionSinglePredict(Resource):
     def post(self):
         pprint(request.json)
         from random import randint, random
@@ -981,8 +1008,8 @@ class PlaceSinglePredict(Resource):
             "data": payload
         }
 
-@register('predict', 'place', 'mix', 'validate')
-class PlaceMixModelValidate(Resource):
+@register('predict', 'region', 'mix', 'validate')
+class RegionMixModelValidate(Resource):
     def post(self):
         pprint(request.json)
         from random import randint
@@ -996,8 +1023,8 @@ class PlaceMixModelValidate(Resource):
         }
 
 
-@register('predict', 'place', 'mix')
-class PlaceMixPredict(Resource):
+@register('predict', 'region', 'mix')
+class RegionMixPredict(Resource):
     def post(self):
         pprint(request.json)
         from random import randint, random
@@ -1029,6 +1056,86 @@ class PlaceMixPredict(Resource):
             "data": payload
         }
 
+@register('predict', 'industry', 'single')
+class IndustrySinglePredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'industry', 'mix', 'validate')
+class IndustryMixModelValidate(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint
+        ok = (randint(0, 1) == 0)
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "ok": ok
+            }
+        }
+
+
+@register('predict', 'industry', 'mix')
+class IndustryMixPredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
 # Account Stuff
 # api.add_resource(Login, "/api/login")
 # api.add_resource(Logout, "/api/logout")

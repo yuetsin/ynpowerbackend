@@ -338,13 +338,15 @@ RESPONSE with
 
 ### Predict
 
-#### Place Single Model Predict
+#### Region Single Model Predict
 
 ```python
-POST '/predict/place/single' with
+POST '/predict/region/single' with
 	postParams: {
         beginYear: undefined,
         endYear: undefined,
+        historyBeginYear: undefined,
+        historyEndYear: undefined,
         region: '',
         industry: '',
         method: '',
@@ -382,22 +384,105 @@ RESPONSE with
     ]
 ```
 
-#### Place Mix Model Validate
+#### Region Mix Model Validate
 
 ```python
-POST '/predict/place/mix/validate' with
+POST '/predict/region/mix/validate' with
 	methods: ['梯度提升', '模糊指数平滑', ...]
 RESPONSE with
 	ok: True # or False
 ```
 
-#### Place Mix Model Predict
+#### Region Mix Model Predict
 
 ```python
-POST '/predict/place/mix' with
+POST '/predict/region/mix' with
 	postParams: {
         beginYear: undefined,
         endYear: undefined,
+        historyBeginYear: undefined,
+        historyEndYear: undefined,
+        region: '',
+        industry: '',
+        selectedMethods: [],
+      },
+RESPONSE with
+	graphData: [
+        {
+            'xName': '横轴标签',
+            'yValue': '纵轴数字值'
+        }, ...
+    ],
+    tableOneData: [
+        {
+            'index': '评价指标',
+            'r2': '就是 R2',
+            'mape': '就是 MAPE',
+            'rmse': '就是 RMSE'
+        }
+    ],
+    tableTwoData: [
+        {
+            'year': '年份',
+            'predict': '预测值（MVW）'
+        }
+    ]
+```
+
+#### Industry Single Model Predict
+
+```python
+POST '/predict/industry/single' with
+	{
+        'beginYear': 2024,
+         'endYear': 2029,
+         'historyBeginYear': 2020,
+         'historyEndYear': 2024,
+         'industry': '农业',
+         'method': '基于EEMD的行业用电量预测',
+         'parameters': [..., ...]
+    }
+RESPONSE with
+	graphData: [
+        {
+            'xName': '横轴标签',
+            'yValue': '纵轴数字值'
+        }, ...
+    ],
+    tableOneData: [
+        {
+            'index': '评价指标',
+            'r2': '就是 R2',
+            'mape': '就是 MAPE',
+            'rmse': '就是 RMSE'
+        }
+    ],
+    tableTwoData: [
+        {
+            'year': '年份',
+            'predict': '预测值（MVW）'
+        }
+    ]
+```
+
+#### Industry Mix Model Validate
+
+```python
+POST '/predict/industry/mix/validate' with
+	methods: ['梯度提升', '模糊指数平滑', ...]
+RESPONSE with
+	ok: True # or False
+```
+
+#### Industry Mix Model Predict
+
+```python
+POST '/predict/industry/mix' with
+	postParams: {
+        beginYear: undefined,
+        endYear: undefined,
+        historyBeginYear: undefined,
+        historyEndYear: undefined,
         region: '',
         industry: '',
         selectedMethods: [],
@@ -452,5 +537,32 @@ GET '/factor/query' with
     None
 RESPONSE with
     ['Factor 1', 'Factor 2', ...]
+```
+
+#### Regional Methods Query
+
+```python
+GET '/method/region/query' with
+	None
+RESPONSE with
+	['逐步回归模型', ...]
+```
+
+#### Industrial Methods Query
+
+```python
+GET '/method/industry/query' with
+	None
+RESPONSE with
+	['基于ARIMA季节分解的行业电量预测', ...]
+```
+
+#### Industry Query
+
+```python
+GET '/industry/query' with
+	None
+RESPONSE with
+	['理', '工', '农', '医', ...]
 ```
 
