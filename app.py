@@ -2,7 +2,7 @@ import sqlalchemy
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import Resource, Api
-
+from pprint import pprint
 from Controller import uploadData
 from Controller.login import login
 from Controller.program import *
@@ -650,7 +650,7 @@ class GetMetadata(Resource):
 @register('db', 'metadata', 'create')
 class CreateMetadata(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -659,7 +659,7 @@ class CreateMetadata(Resource):
 @register('db', 'metadata', 'rename')
 class RenameMetadata(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -668,7 +668,7 @@ class RenameMetadata(Resource):
 @register('db', 'metadata', 'delete')
 class DeleteMetadata(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -677,7 +677,7 @@ class DeleteMetadata(Resource):
 @register('db', 'query')
 class PerformQuery(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200,
@@ -704,7 +704,7 @@ class PerformQuery(Resource):
 @register('db', 'create')
 class PerformCreate(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -713,7 +713,7 @@ class PerformCreate(Resource):
 @register('db', 'update')
 class PerformUpdate(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -722,7 +722,7 @@ class PerformUpdate(Resource):
 @register('db', 'delete')
 class PerformDelete(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -731,7 +731,7 @@ class PerformDelete(Resource):
 @register('db', 'except', 'query')
 class ExceptionQuery(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200,
@@ -770,7 +770,7 @@ class ExceptionQuery(Resource):
 @register('db', 'except', 'resolve')
 class ExceptionResolve(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -779,7 +779,7 @@ class ExceptionResolve(Resource):
 @register('db', 'except', 'accept')
 class ExceptionAccept(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200
@@ -799,7 +799,7 @@ class SchemaQuery(Resource):
 @register('schema', 'create')
 class SchemaCreate(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         new_name = request.json['newSchemaName'].strip()
         if new_name in _versions:
             return {
@@ -815,7 +815,7 @@ class SchemaCreate(Resource):
 @register('schema', 'rename')
 class SchemaRename(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         current_name = request.json['currentSchema'].strip()
         new_name = request.json['newSchemaName'].strip()
         if not current_name in _versions:
@@ -838,7 +838,7 @@ class SchemaRename(Resource):
 @register('schema', 'delete')
 class SchemaDelete(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         current_name = request.json['deleteSchema'].strip()
         if not current_name in _versions:
             return {
@@ -854,7 +854,7 @@ class SchemaDelete(Resource):
 @register('mining', 'request')
 class MiningRequest(Resource):
     def post(self):
-        print(request.json)
+        pprint(request.json)
         return {
             "msg": "success",
             "code": 200,
@@ -937,6 +937,87 @@ class MiningFactorQuery(Resource):
             "msg": "success",
             "code": 200,
             "data": _factors
+        }
+
+@register('predict', 'place', 'single')
+class PlaceSinglePredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'place', 'mix', 'validate')
+class PlaceMixModelValidate(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint
+        ok = (randint(0, 1) == 0)
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "ok": ok
+            }
+        }
+
+
+@register('predict', 'place', 'mix')
+class PlaceMixPredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
         }
 
 # Account Stuff

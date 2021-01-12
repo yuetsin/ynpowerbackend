@@ -327,6 +327,95 @@ RESPONSE with
     ]
 ```
 
+### Predict
+
+#### Place Single Model Predict
+
+```python
+POST '/predict/place/single' with
+	postParams: {
+        beginYear: undefined,
+        endYear: undefined,
+        region: '',
+        industry: '',
+        method: '',
+        factor1: {
+          name: '',
+          hasValue: true,
+          value: '',
+        },
+        factor2: {
+          name: '',
+          hasValue: true,
+          value: '',
+        },
+      },
+RESPONSE with
+	graphData: [
+        {
+            'xName': '横轴标签',
+            'yValue': '纵轴数字值'
+        }, ...
+    ],
+    tableOneData: [
+        {
+            'index': '评价指标',
+            'r2': '就是 R2',
+            'mape': '就是 MAPE',
+            'rmse': '就是 RMSE'
+        }
+    ],
+    tableTwoData: [
+        {
+            'year': '年份',
+            'predict': '预测值（MVW）'
+        }
+    ]
+```
+
+#### Place Mix Model Validate
+
+```python
+POST '/predict/place/mix/validate' with
+	methods: ['梯度提升', '模糊指数平滑', ...]
+RESPONSE with
+	ok: True # or False
+```
+
+#### Place Mix Model Predict
+
+```python
+POST '/predict/place/mix' with
+	postParams: {
+        beginYear: undefined,
+        endYear: undefined,
+        region: '',
+        industry: '',
+        selectedMethods: [],
+      },
+RESPONSE with
+	graphData: [
+        {
+            'xName': '横轴标签',
+            'yValue': '纵轴数字值'
+        }, ...
+    ],
+    tableOneData: [
+        {
+            'index': '评价指标',
+            'r2': '就是 R2',
+            'mape': '就是 MAPE',
+            'rmse': '就是 RMSE'
+        }
+    ],
+    tableTwoData: [
+        {
+            'year': '年份',
+            'predict': '预测值（MVW）'
+        }
+    ]
+```
+
 ### Shared
 
 #### Region Query
