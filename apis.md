@@ -669,6 +669,68 @@ RESPONSE with
     ]
 ```
 
+### Payload Traits
+
+#### Daily Payload Traits
+
+```python
+GET '/payload/traits/daily' with
+    beginDay: '2020/4/16'
+    endDay: '2020/8/16'
+RESPOSNE with
+	[
+        {
+            'day': '2020 年 4 月 14 日',
+            'dayMaxPayload': 42.4,
+            'dayAveragePayload': 40.0,
+            'dayPayloadRate': 0.5342,
+            'dayMinPayloadRate': 0.3023,
+            'dayPeekValleyDiff': 0.3010,
+            'dayPeekValleyDiffRate': 0.1044
+        }, ...
+    ]
+```
+
+#### Monthly Payload Traits
+
+```python
+GET '/payload/traits/monthly' with
+	beginMonth: '2020/4',
+    endMonth: '2020/9',
+RESPONSE with
+	[
+        {
+            'month': '2020 年 9 月',
+            'monthAveragePayload': 148.03,
+            'monthMaxPeekValleyDiff': 0.3010,
+            'monthAverageDailyPayloadRate': 0.4044,
+            'monthImbaRate': 0.4444,
+            'monthMinPayloadRate': 0.1034
+        }, ...
+    ]
+```
+
+#### Yearly Payload Traits
+
+```python
+GET '/payload/traits/year' with
+	beginYear: '2020',
+    endYear: '2024',
+RESPONSE with
+	[
+        {
+            'year': '2020 年',
+            'maxPayload': 489138401,
+            'averagePayloadRate': 49.10,
+            'seasonImbaRate': 46656,
+            'yearMaxPeekValleyDiff': 1000,
+            'yearMaxPeekValleyDiffRate': 0.424
+        }, ...
+    ]
+```
+
+
+
 ### Shared
 
 #### Region Query
