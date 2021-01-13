@@ -156,7 +156,7 @@ RESPONSE with
 ```python
 POST '/db/metadata/upload' with
 	FILE
-RESPSONSE with
+RESPONSE with
 	None
 ```
 
@@ -582,6 +582,93 @@ RESPONSE with
     ]
 ```
 
+#### Municipal Project Upload
+
+```python
+POST '/predict/project/upload' with
+	FILE
+RESPSONSE with
+	None
+```
+
+#### Province & Municipal Project Upload
+
+```python
+POST '/predict/provmuni' with
+	{
+        'provPlan': '预测专案一',
+        'muniPlans': [
+            {
+                'muniName': '昆明市',
+                'planName': '预测专案'
+            },
+            ...
+        ],
+    }
+RESPONSE with
+    tableThreeData: [
+        {
+            'year': '时间',
+            'region': '地区',
+            'predictValueBefore': '协调前预测值（MW）',
+            'predictErrorBefore': '协调前预测误差',
+            'predictValueAfter': '协调後预测值',
+            'predictErrorAfter': '协调後预测误差',
+        }
+    ],
+    tableFourData: [
+        {
+            'year': '年份',
+            'region': '地区',
+            'predictBefore': '协调前预测值（MVW）',
+            'predictAfter': '协调後预测值'
+        }
+    ]
+```
+
+#### Big Data Predict
+
+```python
+POST '/predict/bigdata' with
+    {
+        'beginYear': 2020,
+         'endYear': 2020,
+         'historyBeginYear': 2023,
+         'historyEndYear': 2023,
+         'method': '猜测法',
+         'patches': [
+             {
+                 'grain': '年',
+                 'metaData': ['司法', '首席大法官'],
+                 'value': '我爱你',
+                 'year': 2023
+             }, ...
+         ],
+         'region': '丽江市'
+    }
+RESPONSE with
+	graphData: [
+        {
+            'xName': '横轴标签',
+            'yValue': '纵轴数字值'
+        }, ...
+    ],
+    tableOneData: [
+        {
+            'index': '评价指标',
+            'r2': '就是 R2',
+            'mape': '就是 MAPE',
+            'rmse': '就是 RMSE'
+        }
+    ],
+    tableTwoData: [
+        {
+            'year': '年份',
+            'predict': '预测值（MVW）'
+        }
+    ]
+```
+
 ### Shared
 
 #### Region Query
@@ -636,5 +723,23 @@ GET '/industry/query' with
 	None
 RESPONSE with
 	['理', '工', '农', '医', ...]
+```
+
+#### Predict Projects Query
+
+```python
+GET '/predict/project/query' with
+	None
+RESPONSE with
+	['完美计划', '更完美计划', '非常完美计划', ...]
+```
+
+#### Big Data Methods Query
+
+```python
+GET '/method/bigdata/query' with
+	None
+RESPONSE with
+	['猜测法', '穷举法', ...]
 ```
 

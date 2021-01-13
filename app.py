@@ -1203,6 +1203,101 @@ class PayloadDensityPredict(Resource):
             "data": payload
         }
 
+_projects = ['完美计划', '更完美计划', '非常完美计划']
+
+@register('predict', 'project', 'query')
+class PredictProjectQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _projects
+        }
+
+@register('predict', 'project', 'upload')
+class PredictProjectUpload(Resource):
+    def post(self):
+        pprint(request.files)
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+@register('predict', 'provmuni')
+class ProvincialAndMunicipalPredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'tableThreeData': [
+                {
+                    'year': i + 2010,
+                    'region': '某个地方',
+                    'predictValueBefore': random() * randint(300, 500),
+                    'predictErrorBefore': random() * randint(30, 50),
+                    'predictValueAfter': random() * randint(300, 500),
+                    'predictErrorAfter': random() * randint(20, 80)
+                } for i in range(1, 18)
+            ],
+            'tableFourData': [
+                {
+                    'year': i + 2010,
+                    'region': '某个地方',
+                    'predictBefore': random() * randint(300, 500),
+                    'predictAfter': random() * randint(300, 500),
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'bigdata')
+class BigDataPredict(Resource):
+    def post(self):
+        pprint(request.json)
+        from random import randint, random
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+_bigdata_methods = ['猜测法', '穷举法', '归纳法', '放弃法']
+
+@register('method', 'bigdata', 'query')
+class BigDataMethodQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _bigdata_methods
+        }
 
 # Account Stuff
 # api.add_resource(Login, "/api/login")
