@@ -124,10 +124,10 @@ RESPONSE with
 
 ```python
 POST '/db/metadata/create' with
-	path: ['its', 'parent', 'node', 'path']
+    path: ['its', 'parent', 'node', 'path']
     name: 'newName'
 RESPONSE with
-	None
+    None
     # now it looks like 'its' -> 'parent' -> 'node' -> 'path' -> 'newName'
 ```
 
@@ -135,10 +135,10 @@ RESPONSE with
 
 ```python
 POST '/db/metadata/rename' with
-	path: ['the', 'very', 'node', 'path']
+    path: ['the', 'very', 'node', 'path']
     name: 'newName'
 RESPONSE with
-	None
+    None
     # now it looks like 'the' -> 'very' -> 'node' -> 'newName'
 ```
 
@@ -146,18 +146,18 @@ RESPONSE with
 
 ```python
 POST '/db/metadata/delete' with
-	path: ['the', 'unlucky', 'node', 'path']
+    path: ['the', 'unlucky', 'node', 'path']
 RESPONSE with
-	None
+    None
 ```
 
 #### Upload Metadata
 
 ```python
 POST '/db/metadata/upload' with
-	FILE
+    FILE
 RESPONSE with
-	None
+    None
 ```
 
 ### DataBaseCRUD
@@ -298,7 +298,7 @@ RESPONSE with
 
 ```python
 POST '/mining/request' with
-	tag: str
+    tag: str
     region: str
     factors: list[str]
     method: str							# Pearson / KMeans / PCA / ARL
@@ -342,7 +342,7 @@ RESPONSE with
 
 ```python
 POST '/predict/region/single' with
-	postParams: {
+    postParams: {
         beginYear: undefined,
         endYear: undefined,
         historyBeginYear: undefined,
@@ -351,18 +351,18 @@ POST '/predict/region/single' with
         industry: '',
         method: '',
         factor1: {
-          name: '',
-          hasValue: true,
-          value: '',
+            name: '',
+            hasValue: true,
+            value: '',
         },
         factor2: {
-          name: '',
-          hasValue: true,
-          value: '',
+            name: '',
+            hasValue: true,
+            value: '',
         },
       },
 RESPONSE with
-	graphData: [
+    graphData: [
         {
             'xName': '横轴标签',
             'yValue': '纵轴数字值'
@@ -388,16 +388,16 @@ RESPONSE with
 
 ```python
 POST '/predict/region/mix/validate' with
-	methods: ['梯度提升', '模糊指数平滑', ...]
+    methods: ['梯度提升', '模糊指数平滑', ...]
 RESPONSE with
-	ok: True # or False
+    ok: True # or False
 ```
 
 #### Region Mix Model Predict
 
 ```python
 POST '/predict/region/mix' with
-	postParams: {
+    postParams: {
         beginYear: undefined,
         endYear: undefined,
         historyBeginYear: undefined,
@@ -407,7 +407,7 @@ POST '/predict/region/mix' with
         selectedMethods: [],
       },
 RESPONSE with
-	graphData: [
+    graphData: [
         {
             'xName': '横轴标签',
             'yValue': '纵轴数字值'
@@ -433,17 +433,17 @@ RESPONSE with
 
 ```python
 POST '/predict/industry/single' with
-	{
+    {
         'beginYear': 2024,
-         'endYear': 2029,
-         'historyBeginYear': 2020,
-         'historyEndYear': 2024,
-         'industry': '农业',
-         'method': '基于EEMD的行业用电量预测',
-         'parameters': [..., ...]
+        'endYear': 2029,
+        'historyBeginYear': 2020,
+        'historyEndYear': 2024,
+        'industry': '农业',
+        'method': '基于EEMD的行业用电量预测',
+        'parameters': [..., ...]
     }
 RESPONSE with
-	graphData: [
+    graphData: [
         {
             'xName': '横轴标签',
             'yValue': '纵轴数字值'
@@ -469,16 +469,16 @@ RESPONSE with
 
 ```python
 POST '/predict/industry/mix/validate' with
-	methods: ['梯度提升', '模糊指数平滑', ...]
+    methods: ['梯度提升', '模糊指数平滑', ...]
 RESPONSE with
-	ok: True # or False
+    ok: True # or False
 ```
 
 #### Industry Mix Model Predict
 
 ```python
 POST '/predict/industry/mix' with
-	postParams: {
+    postParams: {
         beginYear: undefined,
         endYear: undefined,
         historyBeginYear: undefined,
@@ -488,7 +488,7 @@ POST '/predict/industry/mix' with
         selectedMethods: [],
       },
 RESPONSE with
-	graphData: [
+    graphData: [
         {
             'xName': '横轴标签',
             'yValue': '纵轴数字值'
@@ -514,7 +514,7 @@ RESPONSE with
 
 ```python
 POST '/predict/saturation' with
-	postParams: {
+    postParams: {
         beginYear: undefined,
         endYear: undefined,
         historyBeginYear: undefined,
@@ -524,7 +524,7 @@ POST '/predict/saturation' with
         selectedMethods: [],
       },
 RESPONSE with
-	graphData: [
+    graphData: [
         {
             'xName': '横轴标签',
             'yValue': '纵轴数字值'
@@ -550,7 +550,7 @@ RESPONSE with
 
 ```python
 POST '/predict/payload' with
-	postParams: {
+    postParams: {
         beginYear: undefined,
         endYear: undefined,
         historyBeginYear: undefined,
@@ -560,7 +560,7 @@ POST '/predict/payload' with
         selectedMethods: [],
       },
 RESPONSE with
-	graphData: [
+    graphData: [
         {
             'xName': '横轴标签',
             'yValue': '纵轴数字值'
@@ -586,16 +586,16 @@ RESPONSE with
 
 ```python
 POST '/predict/project/upload' with
-	FILE
+    FILE
 RESPSONSE with
-	None
+    None
 ```
 
 #### Province & Municipal Project Upload
 
 ```python
 POST '/predict/provmuni' with
-	{
+    {
         'provPlan': '预测专案一',
         'muniPlans': [
             {
@@ -637,17 +637,17 @@ POST '/predict/bigdata' with
          'historyEndYear': 2023,
          'method': '猜测法',
          'patches': [
-             {
-                 'grain': '年',
-                 'metaData': ['司法', '首席大法官'],
-                 'value': '我爱你',
-                 'year': 2023
-             }, ...
+            {
+                'grain': '年',
+                'metaData': ['司法', '首席大法官'],
+                'value': '我爱你',
+                'year': 2023
+            }, ...
          ],
          'region': '丽江市'
     }
 RESPONSE with
-	graphData: [
+    graphData: [
         {
             'xName': '横轴标签',
             'yValue': '纵轴数字值'
@@ -702,44 +702,44 @@ RESPONSE with
 
 ```python
 GET '/method/region/query' with
-	None
+    None
 RESPONSE with
-	['逐步回归模型', ...]
+    ['逐步回归模型', ...]
 ```
 
 #### Industrial Methods Query
 
 ```python
 GET '/method/industry/query' with
-	None
+    None
 RESPONSE with
-	['基于ARIMA季节分解的行业电量预测', ...]
+    ['基于ARIMA季节分解的行业电量预测', ...]
 ```
 
 #### Industry Query
 
 ```python
 GET '/industry/query' with
-	None
+    None
 RESPONSE with
-	['理', '工', '农', '医', ...]
+    ['理', '工', '农', '医', ...]
 ```
 
 #### Predict Projects Query
 
 ```python
 GET '/predict/project/query' with
-	None
+    None
 RESPONSE with
-	['完美计划', '更完美计划', '非常完美计划', ...]
+    ['完美计划', '更完美计划', '非常完美计划', ...]
 ```
 
 #### Big Data Methods Query
 
 ```python
 GET '/method/bigdata/query' with
-	None
+    None
 RESPONSE with
-	['猜测法', '穷举法', ...]
+    ['猜测法', '穷举法', ...]
 ```
 
