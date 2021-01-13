@@ -675,8 +675,8 @@ RESPONSE with
 
 ```python
 GET '/payload/traits/daily' with
-    beginDay: '2020/4/16'
-    endDay: '2020/8/16'
+    beginDay: '20200416'
+    endDay: '20200816'
 RESPOSNE with
 	[
         {
@@ -695,17 +695,18 @@ RESPOSNE with
 
 ```python
 GET '/payload/traits/monthly' with
-	beginMonth: '2020/4',
-    endMonth: '2020/9',
+	beginMonth: '202004',
+    endMonth: '202009',
 RESPONSE with
 	[
         {
             'month': '2020 年 9 月',
-            'monthAveragePayload': 148.03,
+            'monthAverageDailyPayload': 148.03,
             'monthMaxPeekValleyDiff': 0.3010,
             'monthAverageDailyPayloadRate': 0.4044,
             'monthImbaRate': 0.4444,
             'monthMinPayloadRate': 0.1034
+            'monthAveragePayloadRate': 0.1034
         }, ...
     ]
 ```
@@ -720,8 +721,8 @@ RESPONSE with
 	[
         {
             'year': '2020 年',
-            'maxPayload': 489138401,
-            'averagePayloadRate': 49.10,
+            'yearMaxPayload': 489138401,
+            'yearAverageDailyPayloadRate': 49.10,
             'seasonImbaRate': 46656,
             'yearMaxPeekValleyDiff': 1000,
             'yearMaxPeekValleyDiffRate': 0.424

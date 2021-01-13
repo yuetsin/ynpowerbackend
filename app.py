@@ -1299,6 +1299,71 @@ class BigDataMethodQuery(Resource):
             "data": _bigdata_methods
         }
 
+@register('payload', 'traits', 'daily')
+class DailyPayloadTraits(Resource):
+    def get(self):
+        print(request.args)
+        from random import randint, random
+        payload = [
+                {
+                    'day': '2020 年 %d 月 %d 日' % (i, i * 2),
+                    'dayMaxPayload': randint(0, 1000),
+                    'dayAveragePayload': random() * 500,
+                    'dayPayloadRate': random() * 500,
+                    'dayMinPayloadRate': random() * 500,
+                    'dayPeekValleyDiff': random() * 500,
+                    'dayPeekValleyDiffRate': random() * 500
+                } for i in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'traits', 'monthly')
+class MonthlyPayloadTraits(Resource):
+    def get(self):
+        print(request.args)
+        from random import randint, random
+        payload = [
+                {
+                    'month': '2020 年 %d 月' % i,
+                    'monthAverageDailyPayload': randint(0, 1000),
+                    'monthMaxPeekValleyDiff': random() * 500,
+                    'monthAverageDailyPayloadRate': random() * 500,
+                    'monthImbaRate': random() * 500,
+                    'monthMinPayloadRate': random() * 500,
+                    'monthAveragePayloadRate': random() * 500,
+                } for i in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'traits', 'yearly')
+class YearlyPayloadTraits(Resource):
+    def get(self):
+        print(request.args)
+        from random import randint, random
+        payload = [
+                {
+                    'year': '%d 年' % (2010 + i),
+                    'yearMaxPayload': randint(10000, 1000000),
+                    'yearAverageDailyPayloadRate': random() * 500,
+                    'seasonImbaRate': random() * 500,
+                    'yearMaxPeekValleyDiff': random() * 500,
+                    'yearMaxPeekValleyDiffRate': random() * 500,
+                } for i in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
 # Account Stuff
 # api.add_resource(Login, "/api/login")
 # api.add_resource(Logout, "/api/logout")
