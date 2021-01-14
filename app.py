@@ -2,7 +2,7 @@ import sqlalchemy
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import Resource, Api
-from pprint import pprint
+from pprint import pprint, pformat
 from Controller import uploadData
 from Controller.login import login
 from Controller.program import *
@@ -11,9 +11,33 @@ import dao
 import json
 import numpy as np
 
+import os
+_dir = './apis'
+if not os.path.exists(_dir):
+    os.makedirs(_dir)
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 api = Api(app)
+
+
+def try_print_args():
+    try:
+        pprint(request.args)
+    except RuntimeError:
+        pass
+
+def try_print_json():
+    try:
+        pprint(request.json)
+    except RuntimeError:
+        pass
+
+def try_print_files():
+    try:
+        pprint(request.files)
+    except RuntimeError:
+        pass
 
 class GetProgramName(Resource):
     def post(self):
@@ -31,9 +55,6 @@ class GetProgramLastInfo(Resource):
 
         }
         return re
-
-
-
 
 class UploadCSV(Resource):
     def post(self):
@@ -529,27 +550,52 @@ def register(*url):
         target_url = '/api/' + '/'.join(url)
         print('bind', cls, 'to', target_url)
         api.add_resource(cls, target_url)
+
+        method = ''
+        try:
+            response = cls().get()
+            method = 'GET'
+        except:
+            response = cls().post()
+            method = 'POST'
+
+        with open('./%s/%s.apib' % (_dir, cls.__name__), 'w') as f:
+            f.write("""FORMAT: 1A
+
++ Response 200 (application/json)
+
+# [%s]
+## %s [%s]
+
+%s
+""" % (target_url, cls.__name__, method, pformat(response)))
         return cls
     return url_param
 
 @register('login')
 class Login(Resource):
     def post(self):
-        username = request.json['username'].strip()
-        password = request.json['password']
-        # dummy judgement
-        if username == password:
+        try:
+            username = request.json['username'].strip()
+            password = request.json['password']
+            # dummy judgement
+            if username == password:
+                re = {
+                    "msg": "success",
+                    "code": 200
+                }
+                return re
+            else:
+                re = {
+                    "msg": "fail",
+                    "code": -1
+                }
+                return re
+        except RuntimeError:
             re = {
-                "msg": "success",
-                "code": 200
-            }
-            return re
-        else:
-            re = {
-                "msg": "fail",
-                "code": -1
-            }
-            return re
+                    "msg": "success",
+                    "code": 200
+                }
 
 @register('logout')
 class Logout(Resource):
@@ -650,7 +696,7 @@ class GetMetadata(Resource):
 @register('db', 'metadata', 'create')
 class CreateMetadata(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -659,7 +705,7 @@ class CreateMetadata(Resource):
 @register('db', 'metadata', 'rename')
 class RenameMetadata(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -668,7 +714,7 @@ class RenameMetadata(Resource):
 @register('db', 'metadata', 'delete')
 class DeleteMetadata(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -677,7 +723,7 @@ class DeleteMetadata(Resource):
 @register('db', 'metadata', 'upload')
 class UploadMetadata(Resource):
     def post(self):
-        pprint(request.files)
+        try_print_files()
         return {
             "msg": "success",
             "code": 200
@@ -686,7 +732,7 @@ class UploadMetadata(Resource):
 @register('db', 'query')
 class PerformQuery(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200,
@@ -713,7 +759,7 @@ class PerformQuery(Resource):
 @register('db', 'create')
 class PerformCreate(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -722,7 +768,7 @@ class PerformCreate(Resource):
 @register('db', 'update')
 class PerformUpdate(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -731,7 +777,7 @@ class PerformUpdate(Resource):
 @register('db', 'delete')
 class PerformDelete(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -740,7 +786,7 @@ class PerformDelete(Resource):
 @register('db', 'except', 'query')
 class ExceptionQuery(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200,
@@ -779,7 +825,7 @@ class ExceptionQuery(Resource):
 @register('db', 'except', 'resolve')
 class ExceptionResolve(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -788,7 +834,7 @@ class ExceptionResolve(Resource):
 @register('db', 'except', 'accept')
 class ExceptionAccept(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200
@@ -808,62 +854,81 @@ class SchemaQuery(Resource):
 @register('schema', 'create')
 class SchemaCreate(Resource):
     def post(self):
-        pprint(request.json)
-        new_name = request.json['newSchemaName'].strip()
-        if new_name in _versions:
+        try_print_json()
+        try:
+            new_name = request.json['newSchemaName'].strip()
+            if new_name in _versions:
+                return {
+                "msg": "key existed",
+                "code": -1
+            }
+            _versions.append(new_name)
             return {
-            "msg": "key existed",
-            "code": -1
-        }
-        _versions.append(new_name)
-        return {
-            "msg": "success",
-            "code": 200
-        }
+                "msg": "success",
+                "code": 200
+            }
+        except RuntimeError:
+            return {
+                "msg": "success",
+                "code": 200
+            } 
 
 @register('schema', 'rename')
 class SchemaRename(Resource):
     def post(self):
-        pprint(request.json)
-        current_name = request.json['currentSchema'].strip()
-        new_name = request.json['newSchemaName'].strip()
-        if not current_name in _versions:
+        try_print_json()
+        try:
+            current_name = request.json['currentSchema'].strip()
+            new_name = request.json['newSchemaName'].strip()
+            if not current_name in _versions:
+                return {
+                "msg": "no key found",
+                "code": -1
+            }
+            if new_name in _versions:
+                return {
+                "msg": "key existed",
+                "code": -1
+            }
+            _versions.remove(current_name)
+            _versions.append(new_name)
             return {
-            "msg": "no key found",
-            "code": -1
-        }
-        if new_name in _versions:
+                "msg": "success",
+                "code": 200,
+            }
+        except RuntimeError:
             return {
-            "msg": "key existed",
-            "code": -1
-        }
-        _versions.remove(current_name)
-        _versions.append(new_name)
-        return {
-            "msg": "success",
-            "code": 200,
-        }
+                "msg": "success",
+                "code": 200
+            }
+
 
 @register('schema', 'delete')
 class SchemaDelete(Resource):
     def post(self):
-        pprint(request.json)
-        current_name = request.json['deleteSchema'].strip()
-        if not current_name in _versions:
+        try_print_json()
+        try:
+            current_name = request.json['deleteSchema'].strip()
+            if not current_name in _versions:
+                return {
+                "msg": "no key found",
+                "code": -1
+            }
+            _versions.remove(current_name)
             return {
-            "msg": "no key found",
-            "code": -1
-        }
-        _versions.remove(current_name)
-        return {
-            "msg": "success",
-            "code": 200,
-        }
+                "msg": "success",
+                "code": 200,
+            }
+        except RuntimeError:
+            return {
+                "msg": "success",
+                "code": 200,
+            }
 
 @register('mining', 'request')
 class MiningRequest(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         return {
             "msg": "success",
             "code": 200,
@@ -873,7 +938,7 @@ class MiningRequest(Resource):
 @register('mining', 'factor', 'kmeans', 'suggest')
 class MiningKMeansSuggestCategoryCount(Resource):
     def get(self):
-        print(request.args)
+        try_print_args()
         return {
             "msg": "success",
             "code": 200,
@@ -978,7 +1043,7 @@ class MiningFactorQuery(Resource):
 @register('predict', 'region', 'single')
 class RegionSinglePredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'graphData': [
@@ -1011,7 +1076,7 @@ class RegionSinglePredict(Resource):
 @register('predict', 'region', 'mix', 'validate')
 class RegionMixModelValidate(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint
         ok = (randint(0, 1) == 0)
         return {
@@ -1026,7 +1091,7 @@ class RegionMixModelValidate(Resource):
 @register('predict', 'region', 'mix')
 class RegionMixPredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'graphData': [
@@ -1059,7 +1124,7 @@ class RegionMixPredict(Resource):
 @register('predict', 'industry', 'single')
 class IndustrySinglePredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'graphData': [
@@ -1092,7 +1157,7 @@ class IndustrySinglePredict(Resource):
 @register('predict', 'industry', 'mix', 'validate')
 class IndustryMixModelValidate(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint
         ok = (randint(0, 1) == 0)
         return {
@@ -1107,7 +1172,7 @@ class IndustryMixModelValidate(Resource):
 @register('predict', 'industry', 'mix')
 class IndustryMixPredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'graphData': [
@@ -1140,7 +1205,7 @@ class IndustryMixPredict(Resource):
 @register('predict', 'saturation')
 class SaturationCurvePredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'graphData': [
@@ -1173,7 +1238,7 @@ class SaturationCurvePredict(Resource):
 @register('predict', 'payload')
 class PayloadDensityPredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'graphData': [
@@ -1217,7 +1282,7 @@ class PredictProjectQuery(Resource):
 @register('predict', 'project', 'upload')
 class PredictProjectUpload(Resource):
     def post(self):
-        pprint(request.files)
+        try_print_files()
         return {
             "msg": "success",
             "code": 200
@@ -1227,7 +1292,7 @@ class PredictProjectUpload(Resource):
 @register('predict', 'provmuni')
 class ProvincialAndMunicipalPredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'tableThreeData': [
@@ -1258,7 +1323,7 @@ class ProvincialAndMunicipalPredict(Resource):
 @register('predict', 'bigdata')
 class BigDataPredict(Resource):
     def post(self):
-        pprint(request.json)
+        try_print_json()
         from random import randint, random
         payload = {
             'graphData': [
@@ -1302,7 +1367,7 @@ class BigDataMethodQuery(Resource):
 @register('payload', 'traits', 'daily')
 class DailyPayloadTraits(Resource):
     def get(self):
-        print(request.args)
+        try_print_args()
         from random import randint, random
         payload = [
                 {
@@ -1324,7 +1389,7 @@ class DailyPayloadTraits(Resource):
 @register('payload', 'traits', 'monthly')
 class MonthlyPayloadTraits(Resource):
     def get(self):
-        print(request.args)
+        try_print_args()
         from random import randint, random
         payload = [
                 {
@@ -1346,7 +1411,7 @@ class MonthlyPayloadTraits(Resource):
 @register('payload', 'traits', 'yearly')
 class YearlyPayloadTraits(Resource):
     def get(self):
-        print(request.args)
+        try_print_args()
         from random import randint, random
         payload = [
                 {
@@ -1367,7 +1432,7 @@ class YearlyPayloadTraits(Resource):
 @register('payload', 'predict', 'dbquery')
 class SokuPayloadPredict(Resource):
     def post(self):
-        print(request.json)
+        try_print_json()
         from random import randint
         payload = [
                 {
@@ -1385,7 +1450,7 @@ class SokuPayloadPredict(Resource):
 @register('payload', 'predict', 'clamping')
 class ClampingPayloadPredict(Resource):
     def post(self):
-        print(request.json)
+        try_print_json()
         from random import randint
         payload = [
                 {
@@ -1403,7 +1468,7 @@ class ClampingPayloadPredict(Resource):
 @register('payload', 'predict', 'interp')
 class InterpolatingPayloadPredict(Resource):
     def post(self):
-        print(request.json)
+        try_print_json()
         from random import randint
         payload = [
                 {
@@ -1421,7 +1486,7 @@ class InterpolatingPayloadPredict(Resource):
 @register('payload', 'predict', 'yearly')
 class YearlyContinuousPayloadPredict(Resource):
     def post(self):
-        print(request.json)
+        try_print_json()
         from random import randint
         payload = [
                 {
@@ -1435,38 +1500,91 @@ class YearlyContinuousPayloadPredict(Resource):
             "data": payload
         }
 
-# Account Stuff
-# api.add_resource(Login, "/api/login")
-# api.add_resource(Logout, "/api/logout")
-# api.add_resource(LoadRecent, '/api/recent')
+@register('params', 'mining')
+class DataMiningParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
 
-# Database Stuff
-# api.add_resource(GetMetadata, '/api/db/metadata')
-# api.add_resource(PerformQuery, '/api/db/query')
-# api.add_resource(PerformCreate, '/api/db/create')
-# api.add_resource(PerformUpdate, '/api/db/update')
-# api.add_resource(PerformDelete, '/api/db/delete')
+@register('params', 'predict', 'static', 'region')
+class StaticRegionalPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
 
-# Exception Correcting Stuff
-# api.add_resource(ExceptionQuery, '/api/db/except/query')
-# api.add_resource(ExceptionResolve, '/api/db/except/resolve')
-# api.add_resource(ExceptionAccept, '/api/db/except/accept')
+@register('params', 'predict', 'dynamic', 'industry')
+class DynamicIndustrialPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
 
-# Schema Stuff
-# api.add_resource(SchemaQuery, '/api/schema/query')
-# api.add_resource(SchemaCreate, '/api/schema/create')
-# api.add_resource(SchemaRename, '/api/schema/rename')
-# api.add_resource(SchemaDelete, '/api/schema/delete')
 
-# Data Mining Stuff
-# api.add_resource(MiningRequest, '/api/mining/request')
-# api.add_resource(MiningFactorQuery, '/api/mining/factor/query')
-# api.add_resource(MiningKMeansSuggestCategoryCount, '/api/mining/factor/kmeans/suggest')
-# api.add_resource(MiningResults, '/api/mining/results')
+@register('params', 'predict', 'mix')
+class MixPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
 
-# Shared Stuff
-# api.add_resource(RegionQuery, '/api/region/query')
-# api.add_resource(GrainQuery, '/api/grain/query')
+@register('params', 'predict', 'dynamic', 'region')
+class LongTermPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+@register('params', 'predict', 'biguser')
+class BigUserPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('params', 'predict', 'soku')
+class SokuPayloadPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+@register('params', 'predict', 'clamping')
+class ClampingPayloadPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+@register('params', 'predict', 'interp')
+class InterpolatingPayloadPrediction(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+@register('params', 'predict', 'yearcont')
+class YearlyContinuousPayloadPrediction(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
 """
 fore-end related http apis
 END

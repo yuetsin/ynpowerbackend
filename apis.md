@@ -811,6 +811,219 @@ RESPONSE with
     ]
 ```
 
+### Schema Parameter Loading
+
+#### Data Mining Page
+
+```python
+GET '/params/mining' with
+	None
+RESPONSE with
+    {
+        region: '',
+        factors: [],
+        method: '',
+        pearson: {
+            threshold: 0.5,
+        },
+        kMeans: {
+            categoryCount: 0,
+        },
+        PCA: {
+            absThreshold: 0.5,
+        },
+        ARL: {
+            minSupport: 0.5,
+            minConfidence: 0.5,
+        },
+        beginYear: null,
+        endYear: null,
+        tag: '',
+    },
+```
+
+#### Static Regional Prediction Page
+
+> 只用在「地区预测 + 单预测模型」页面。
+
+```python
+GET '/params/predict/static/region' with
+	None
+RESPONSE with
+    {
+        historyBeginYear: null,
+        historyEndYear: null,
+        beginYear: null,
+        endYear: null,
+        region: '',
+        industry: '',
+        method: '',
+        factor1: {
+            name: '',
+            hasValue: true,
+            value: 0.5,
+        },
+        factor2: {
+            name: '',
+            hasValue: true,
+            value: 0.5,
+        },
+    }
+```
+
+#### Dynamic Industrial Prediction Page
+
+> 只用在「行业预测 + 但预测模型」页面。
+
+```python
+GET '/params/predict/dynamic/industry' with
+	None
+RESPONSE with
+    {
+        industry: '',
+        method: '',
+        parameters: ['', ''],
+        beginYear: null,
+        endYear: null,
+        historyBeginYear: null,
+        historyEndYear: null,
+    }
+```
+
+#### Mix Prediction Page
+
+> 用在「地区预测 + 组合预测模型」页面和「行业预测 + 组合预测模型」两个页面中。
+>
+> 其中除了 `region` 和 `industry` 字段之外都是共享的。
+
+```python
+GET '/params/predict/mix' with
+	None
+RESPONSE with
+	{
+        historyBeginYear: null,
+        historyEndYear: null,
+        beginYear: null,
+        endYear: null,
+        region: '',
+        industry: '',
+        selectedMethods: [],
+      }
+```
+
+#### Long Term Prediction Page
+
+> 用在两个远期规划页面中。
+
+```python
+GET '/params/predict/dynamic/region' with
+	None
+RESPONSE with
+    {
+        region: '',
+        method: '',
+        parameters: ['', ''],
+        beginYear: null,
+        endYear: null,
+        historyBeginYear: null,
+        historyEndYear: null,
+    }
+```
+
+#### Big User Prediction Page
+
+> 只用在「大用户预测」一个页面里。
+
+```python
+GET '/params/predict/biguser' with
+	None
+RESPONSE with
+    {
+        historyBeginYear: null,
+        historyEndYear: null,
+        beginYear: null,
+        endYear: null,
+        method: '',
+        region: '',
+        patches: [
+            {
+                metaData: ['a', 'b', 'c'],
+                grain: '粒度（总是「年」）',
+                year: '年份',
+                value: '42',
+            }
+        ],
+    }
+```
+
+#### Soku Payload Prediction
+
+> 用在「负荷特性预测 / 搜库法」页面里。
+
+```python
+GET '/params/predict/soku' with
+	None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        season: null,
+        maxPayload: null,
+        dailyAmount: null,
+        gamma: null,
+        beta: null,
+    }
+```
+
+#### Clamping Payload Prediction
+
+> 用在「负荷特性预测 / 夹逼法」页面里。
+
+```python
+GET '/params/predict/clamping' with
+	None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        season: null,
+        maxPayload: null,
+        dailyAmount: null,
+    }
+```
+
+#### Interpolating Payload Prediction
+
+> 用在「负荷特性预测 / 插值法」页面里。
+
+```python
+GET '/params/predict/interp' with
+	None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        season: null,
+        maxPayload: null,
+        dailyAmount: null,
+    }
+```
+
+#### Yearly Continuous Payload Prediction
+
+> 用在「负荷特性预测 / 年度持续预测法」页面里。
+
+```python
+GET '/params/predict/yearcont' with
+	None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        maxPayload: null,
+    }
+```
+
 ### Shared
 
 #### Region Query

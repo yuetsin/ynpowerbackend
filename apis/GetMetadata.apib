@@ -1,0 +1,26 @@
+FORMAT: 1A
+
++ Response 200 (application/json)
+
+# [/api/db/metadata]
+## GetMetadata [GET]
+
+{'code': 200,
+ 'data': [{'children': [{'label': '唐納·川普', 'value': '总统'},
+                        {'label': '麦克·彭斯', 'value': '副总统'}],
+           'label': '白宫',
+           'value': '行政'},
+          {'children': [{'children': [{'label': '麦克·彭斯', 'value': '议长'},
+                                      {'label': '共和党', 'value': '多数党'}],
+                         'label': '参议院',
+                         'value': '上院'},
+                        {'children': [{'label': '南希·佩洛西', 'value': '议长'},
+                                      {'label': '民主党', 'value': '多数党'}],
+                         'label': '众议院',
+                         'value': '下院'}],
+           'label': '国会',
+           'value': '立法'},
+          {'children': [{'label': '約翰·格洛佛·羅勃茲', 'value': '首席大法官'}],
+           'label': '最高法院',
+           'value': '司法'}],
+ 'msg': 'success'}
