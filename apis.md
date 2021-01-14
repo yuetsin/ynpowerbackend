@@ -839,7 +839,7 @@ RESPONSE with
         beginYear: null,
         endYear: null,
         tag: '',
-    },
+    }
 ```
 
 #### Static Regional Prediction Page

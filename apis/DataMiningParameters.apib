@@ -5,4 +5,15 @@ FORMAT: 1A
 # [/api/params/mining]
 ## DataMiningParameters [GET]
 
-{'code': 200, 'msg': 'success'}
+{'code': 200,
+ 'data': {'ARL': {'minConfidence': 0.5, 'minSupport': 0.5},
+          'PCA': {'absThreshold': 0.5},
+          'beginYear': 0,
+          'endYear': 0,
+          'factors': [],
+          'kMeans': {'categoryCount': 0},
+          'method': '',
+          'pearson': {'threshold': 0.5},
+          'region': '',
+          'tag': ''},
+ 'msg': 'success'}

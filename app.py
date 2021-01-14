@@ -1505,7 +1505,28 @@ class DataMiningParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                "region": '',
+                "factors": [],
+                "method": '',
+                "pearson": {
+                    "threshold": 0.5,
+                },
+                "kMeans": {
+                    "categoryCount": 0,
+                },
+                "PCA": {
+                    "absThreshold": 0.5,
+                },
+                "ARL": {
+                    "minSupport": 0.5,
+                    "minConfidence": 0.5,
+                },
+                "beginYear": 0,
+                "endYear": 0,
+                "tag": ''
+            }
         }
 
 @register('params', 'predict', 'static', 'region')
@@ -1513,7 +1534,26 @@ class StaticRegionalPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                "historyBeginYear": 0,
+                "historyEndYear": 0,
+                'beginYear': 0,
+                'endYear': 0,
+                'region': '',
+                'industry': '',
+                'method': '',
+                'factor1': {
+                    'name': '',
+                    'hasValue': True,
+                    'value': 0.5
+                },
+                'factor2': {
+                    'name': '',
+                    'hasValue': True,
+                    'value': 0.5
+                }
+            }
         }
 
 @register('params', 'predict', 'dynamic', 'industry')
@@ -1521,16 +1561,33 @@ class DynamicIndustrialPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'industry': '',
+                'method': '',
+                'parameters': ['paramA', 'paramB', ...],
+                'beginYear': 0,
+                'endYear': 0,
+                'historyBeginYear': 0,
+                'historyEndYear': 0,
+            }
         }
-
 
 @register('params', 'predict', 'mix')
 class MixPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'historyBeginYear': 0,
+                'historyEndYear': 0,
+                'beginYear': 0,
+                'endYear': 0,
+                'region': '',
+                'industry': '',
+                'selectedMethods': ['methodA', 'methodB', ...],
+            }
         }
 
 @register('params', 'predict', 'dynamic', 'region')
@@ -1538,7 +1595,16 @@ class LongTermPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'region': '',
+                'method': '',
+                'parameters': ['1', '2', ...],
+                'beginYear': 0,
+                'endYear': 0,
+                'historyBeginYear': 0,
+                'historyEndYear': 0
+            }
         }
 
 
@@ -1547,7 +1613,23 @@ class BigUserPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'historyBeginYear': 0,
+                'historyEndYear': 0,
+                'beginYear': 0,
+                'endYear': 0,
+                'method': '',
+                'region': '',
+                'patches': [
+                    {
+                        'metaData': ['a', 'b', 'c'],
+                        'grain': '粒度（总是「年」）',
+                        'year': '年份',
+                        'value': '42',
+                    }, ...
+                ]
+            }
         }
 
 @register('params', 'predict', 'soku')
@@ -1555,7 +1637,16 @@ class SokuPayloadPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'beginYear': 0,
+                'endYear': 0,
+                'season': 0,
+                'maxPayload': 0,
+                'dailyAmount': 0,
+                'gamma': 0,
+                'beta': 0
+            }
         }
 
 
@@ -1564,7 +1655,14 @@ class ClampingPayloadPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'beginYear': 0,
+                'endYear': 0,
+                'season': 0,
+                'maxPayload': 0,
+                'dailyAmount': 0
+            }
         }
 
 
@@ -1573,7 +1671,14 @@ class InterpolatingPayloadPrediction(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'beginYear': 0,
+                'endYear': 0,
+                'season': 0,
+                'maxPayload': 0,
+                'dailyAmount': 0
+            }
         }
 
 
@@ -1582,7 +1687,12 @@ class YearlyContinuousPayloadPrediction(Resource):
     def get(self):
         return {
             "msg": "success",
-            "code": 200
+            "code": 200,
+            "data": {
+                'beginYear': 0,
+                'endYear': 0,
+                'maxPayload': 0
+            }
         }
 
 """
