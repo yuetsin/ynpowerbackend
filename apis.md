@@ -873,7 +873,7 @@ RESPONSE with
 
 #### Dynamic Industrial Prediction Page
 
-> 只用在「行业预测 + 但预测模型」页面。
+> 只用在「行业预测 + 单预测模型」页面。
 
 ```python
 GET '/params/predict/dynamic/industry' with
