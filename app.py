@@ -1667,7 +1667,7 @@ class ClampingPayloadPredictionParameters(Resource):
 
 
 @register('params', 'predict', 'interp')
-class InterpolatingPayloadPrediction(Resource):
+class InterpolatingPayloadPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
@@ -1683,7 +1683,7 @@ class InterpolatingPayloadPrediction(Resource):
 
 
 @register('params', 'predict', 'yearcont')
-class YearlyContinuousPayloadPrediction(Resource):
+class YearlyContinuousPayloadPredictionParameters(Resource):
     def get(self):
         return {
             "msg": "success",
