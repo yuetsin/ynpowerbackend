@@ -639,8 +639,8 @@ POST '/predict/bigdata' with
          'patches': [
             {
                 'grain': '年',
-                'metaData': ['司法', '首席大法官'],
-                'value': '我爱你',
+                'metaData': ['三', 'ii'],
+                'value': 'NV',
                 'year': 2023
             }, ...
          ],
@@ -675,10 +675,10 @@ RESPONSE with
 
 ```python
 GET '/payload/traits/daily' with
-    beginDay: '20200416'
-    endDay: '20200816'
+    beginDay: '20200416'    # yyyyMMdd
+    endDay: '20200816'      # yyyyMMdd
 RESPOSNE with
-	[
+    [
         {
             'day': '2020 年 4 月 14 日',
             'dayMaxPayload': 42.4,
@@ -695,10 +695,10 @@ RESPOSNE with
 
 ```python
 GET '/payload/traits/monthly' with
-	beginMonth: '202004',
-    endMonth: '202009',
+    beginMonth: '202004',   # yyyyMM
+    endMonth: '202009',     # yyyyMM
 RESPONSE with
-	[
+    [
         {
             'month': '2020 年 9 月',
             'monthAverageDailyPayload': 148.03,
@@ -707,6 +707,8 @@ RESPONSE with
             'monthImbaRate': 0.4444,
             'monthMinPayloadRate': 0.1034
             'monthAveragePayloadRate': 0.1034
+            # 这里文档截图不全，漏了几个数据项
+            # 后端开发时补全
         }, ...
     ]
 ```
@@ -715,10 +717,10 @@ RESPONSE with
 
 ```python
 GET '/payload/traits/year' with
-	beginYear: '2020',
-    endYear: '2024',
+    beginYear: '2020',  # yyyy
+    endYear: '2024',    # yyyy
 RESPONSE with
-	[
+    [
         {
             'year': '2020 年',
             'yearMaxPayload': 489138401,
@@ -726,6 +728,8 @@ RESPONSE with
             'seasonImbaRate': 46656,
             'yearMaxPeekValleyDiff': 1000,
             'yearMaxPeekValleyDiffRate': 0.424
+            # 这里文档截图不全，漏了几个数据项
+            # 后端开发时补全
         }, ...
     ]
 ```
