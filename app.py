@@ -1364,6 +1364,77 @@ class YearlyPayloadTraits(Resource):
             "data": payload
         }
 
+@register('payload', 'predict', 'dbquery')
+class SokuPayloadPredict(Resource):
+    def post(self):
+        print(request.json)
+        from random import randint
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'actualPayload': randint(10000, 1000000),
+                    'predictPayload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'predict', 'clamping')
+class ClampingPayloadPredict(Resource):
+    def post(self):
+        print(request.json)
+        from random import randint
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'actualPayload': randint(10000, 1000000),
+                    'predictPayload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'predict', 'interp')
+class InterpolatingPayloadPredict(Resource):
+    def post(self):
+        print(request.json)
+        from random import randint
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'actualPayload': randint(10000, 1000000),
+                    'predictPayload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'predict', 'yearly')
+class YearlyContinuousPayloadPredict(Resource):
+    def post(self):
+        print(request.json)
+        from random import randint
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'payload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
 # Account Stuff
 # api.add_resource(Login, "/api/login")
 # api.add_resource(Logout, "/api/logout")

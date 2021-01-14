@@ -734,7 +734,82 @@ RESPONSE with
     ]
 ```
 
+### Payload Predicts
 
+#### Database Query Method
+
+```python
+POST '/payload/predict/dbquery' with
+	startYear: 2019,
+    endYear: 2023,
+    season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
+    predictMaxPayload: 42,
+    predictDailyAmonut: 100,
+    gammaValue: 0.490,
+    betaValue: 0.121,
+RESPONSE with
+	[
+        {
+            'time': 12,
+            'actualPayload': 4244,
+            'predictPayload': 1000
+        }, ...
+    ]
+```
+
+#### Clamping Method
+
+```python
+POST '/payload/predict/clamping' with
+	startYear: 2019,
+    endYear: 2023,
+    season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
+    predictMaxPayload: 42,
+    predictDailyAmonut: 100
+RESPONSE with
+	[
+        {
+            'time': 12,
+            'actualPayload': 4244,
+            'predictPayload': 1000
+        }, ...
+    ]
+```
+
+#### Interpolation Method
+
+```python
+POST '/payload/predict/interp' with
+	startYear: 2019,
+    endYear: 2023,
+    season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
+    predictMaxPayload: 42,
+    predictDailyAmonut: 100
+RESPONSE with
+	[
+        {
+            'time': 12,
+            'actualPayload': 4244,
+            'predictPayload': 1000
+        }, ...
+    ]
+```
+
+#### Yearly Continuous Payload Curve Prediction
+
+```python
+POST '/payload/predict/yearly' with
+	startYear: 2019,
+	endYear: 2023,
+    predictMaxPayload: 42
+RESPONSE with
+	[
+        {
+            'time': '2023',
+            'payload': 30.23
+        }, ...
+    ]
+```
 
 ### Shared
 
