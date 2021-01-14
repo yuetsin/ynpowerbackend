@@ -18,9 +18,9 @@
 
 ```python
 BaseResponse:
-    "msg": str 		# 可读的信息
-    "code": int		# 返回代码。除了 200 均代表错误
-    "data": dict	# 可选，返回的数据
+    "msg": str         # 可读的信息
+    "code": int        # 返回代码。除了 200 均代表错误
+    "data": dict       # 可选，返回的数据。以下所有的 RESPONSE with 指的就是这一部分。
 ```
 
 ## Features
@@ -301,20 +301,20 @@ POST '/mining/request' with
     tag: str
     region: str
     factors: list[str]
-    method: str							# Pearson / KMeans / PCA / ARL
+    method: str                         # Pearson / KMeans / PCA / ARL
     pearson: {
-        threshold: float				# 皮尔逊系数阈值
+        threshold: float                # 皮尔逊系数阈值
     }
     kMeans: {
-        suggestCategoryCount: int		# 推荐最佳分类数
-        categoryCount: int				# 分类数
+        suggestCategoryCount: int       # 推荐最佳分类数
+        categoryCount: int              # 分类数
     }
     PCA: {
-        absThreshold: float				# 系数绝对值阈值
+        absThreshold: float             # 系数绝对值阈值
     }
     ARL: {
-        minSupport: float				# 最小支持度
-        minConfidence: float			# 最小置信度
+        minSupport: float               # 最小支持度
+        minConfidence: float            # 最小置信度
     }
     beginYear: int
     endYear: int
@@ -343,10 +343,10 @@ RESPONSE with
 ```python
 POST '/predict/region/single' with
     postParams: {
-        beginYear: undefined,
-        endYear: undefined,
-        historyBeginYear: undefined,
-        historyEndYear: undefined,
+        beginYear: null,
+        endYear: null,
+        historyBeginYear: null,
+        historyEndYear: null,
         region: '',
         industry: '',
         method: '',
@@ -398,10 +398,10 @@ RESPONSE with
 ```python
 POST '/predict/region/mix' with
     postParams: {
-        beginYear: undefined,
-        endYear: undefined,
-        historyBeginYear: undefined,
-        historyEndYear: undefined,
+        beginYear: null,
+        endYear: null,
+        historyBeginYear: null,
+        historyEndYear: null,
         region: '',
         industry: '',
         selectedMethods: [],
@@ -479,10 +479,10 @@ RESPONSE with
 ```python
 POST '/predict/industry/mix' with
     postParams: {
-        beginYear: undefined,
-        endYear: undefined,
-        historyBeginYear: undefined,
-        historyEndYear: undefined,
+        beginYear: null,
+        endYear: null,
+        historyBeginYear: null,
+        historyEndYear: null,
         region: '',
         industry: '',
         selectedMethods: [],
@@ -515,10 +515,10 @@ RESPONSE with
 ```python
 POST '/predict/saturation' with
     postParams: {
-        beginYear: undefined,
-        endYear: undefined,
-        historyBeginYear: undefined,
-        historyEndYear: undefined,
+        beginYear: null,
+        endYear: null,
+        historyBeginYear: null,
+        historyEndYear: null,
         region: '',
         industry: '',
         selectedMethods: [],
@@ -551,10 +551,10 @@ RESPONSE with
 ```python
 POST '/predict/payload' with
     postParams: {
-        beginYear: undefined,
-        endYear: undefined,
-        historyBeginYear: undefined,
-        historyEndYear: undefined,
+        beginYear: null,
+        endYear: null,
+        historyBeginYear: null,
+        historyEndYear: null,
         region: '',
         industry: '',
         selectedMethods: [],
@@ -708,7 +708,7 @@ RESPONSE with
             'monthMinPayloadRate': 0.1034
             'monthAveragePayloadRate': 0.1034
             # 这里文档截图不全，漏了几个数据项
-            # 后端开发时补全
+            # 待补全
         }, ...
     ]
 ```
@@ -729,7 +729,7 @@ RESPONSE with
             'yearMaxPeekValleyDiff': 1000,
             'yearMaxPeekValleyDiffRate': 0.424
             # 这里文档截图不全，漏了几个数据项
-            # 后端开发时补全
+            # 待补全
         }, ...
     ]
 ```
@@ -740,7 +740,7 @@ RESPONSE with
 
 ```python
 POST '/payload/predict/dbquery' with
-	startYear: 2019,
+    startYear: 2019,
     endYear: 2023,
     season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
     predictMaxPayload: 42,
@@ -748,7 +748,7 @@ POST '/payload/predict/dbquery' with
     gammaValue: 0.490,
     betaValue: 0.121,
 RESPONSE with
-	[
+    [
         {
             'time': 12,
             'actualPayload': 4244,
@@ -761,13 +761,13 @@ RESPONSE with
 
 ```python
 POST '/payload/predict/clamping' with
-	startYear: 2019,
+    startYear: 2019,
     endYear: 2023,
     season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
     predictMaxPayload: 42,
     predictDailyAmonut: 100
 RESPONSE with
-	[
+    [
         {
             'time': 12,
             'actualPayload': 4244,
@@ -780,13 +780,13 @@ RESPONSE with
 
 ```python
 POST '/payload/predict/interp' with
-	startYear: 2019,
+    startYear: 2019,
     endYear: 2023,
     season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
     predictMaxPayload: 42,
     predictDailyAmonut: 100
 RESPONSE with
-	[
+    [
         {
             'time': 12,
             'actualPayload': 4244,
@@ -799,11 +799,11 @@ RESPONSE with
 
 ```python
 POST '/payload/predict/yearly' with
-	startYear: 2019,
-	endYear: 2023,
+    startYear: 2019,
+    endYear: 2023,
     predictMaxPayload: 42
 RESPONSE with
-	[
+    [
         {
             'time': '2023',
             'payload': 30.23
@@ -817,7 +817,7 @@ RESPONSE with
 
 ```python
 GET '/params/mining' with
-	None
+    None
 RESPONSE with
     {
         region: '',
@@ -848,7 +848,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/static/region' with
-	None
+    None
 RESPONSE with
     {
         historyBeginYear: null,
@@ -877,7 +877,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/dynamic/industry' with
-	None
+    None
 RESPONSE with
     {
         industry: '',
@@ -898,9 +898,9 @@ RESPONSE with
 
 ```python
 GET '/params/predict/mix' with
-	None
+    None
 RESPONSE with
-	{
+    {
         historyBeginYear: null,
         historyEndYear: null,
         beginYear: null,
@@ -917,7 +917,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/dynamic/region' with
-	None
+    None
 RESPONSE with
     {
         region: '',
@@ -936,7 +936,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/biguser' with
-	None
+    None
 RESPONSE with
     {
         historyBeginYear: null,
@@ -962,7 +962,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/soku' with
-	None
+    None
 RESPONSE with
     {
         beginYear: null,
@@ -981,7 +981,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/clamping' with
-	None
+    None
 RESPONSE with
     {
         beginYear: null,
@@ -998,7 +998,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/interp' with
-	None
+    None
 RESPONSE with
     {
         beginYear: null,
@@ -1015,7 +1015,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/yearcont' with
-	None
+    None
 RESPONSE with
     {
         beginYear: null,
