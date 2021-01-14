@@ -592,7 +592,7 @@ class Login(Resource):
                 }
                 return re
         except RuntimeError:
-            re = {
+            return {
                     "msg": "success",
                     "code": 200
                 }
