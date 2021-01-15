@@ -545,6 +545,7 @@ fore-end related http apis
 dummy version, not functional yet
 """
 
+
 def register(*url):
     def url_param(cls):
         target_url = '/api/' + '/'.join(url)
@@ -1507,25 +1508,25 @@ class DataMiningParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                "region": '',
-                "factors": [],
-                "method": '',
+                "region": '地域',
+                "factors": ['factor 1', 'factor 2', 'factor 3'],
+                "method": '方法',
                 "pearson": {
-                    "threshold": 0.5,
+                    "threshold": 0.77777
                 },
                 "kMeans": {
-                    "categoryCount": 0,
+                    "categoryCount": 2
                 },
                 "PCA": {
-                    "absThreshold": 0.5,
+                    "absThreshold": 0.77777
                 },
                 "ARL": {
-                    "minSupport": 0.5,
-                    "minConfidence": 0.5,
+                    "minSupport": 0.11111,
+                    "minConfidence": 0.11111
                 },
-                "beginYear": 0,
-                "endYear": 0,
-                "tag": ''
+                "beginYear": 2024,
+                "endYear": 2029,
+                "tag": '标签'
             }
         }
 
@@ -1536,22 +1537,22 @@ class StaticRegionalPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                "historyBeginYear": 0,
-                "historyEndYear": 0,
-                'beginYear': 0,
-                'endYear': 0,
-                'region': '',
-                'industry': '',
-                'method': '',
+                "historyBeginYear": 1999,
+                "historyEndYear": 2009,
+                'beginYear': 2023,
+                'endYear': 2033,
+                'region': '地域',
+                'industry': '行业',
+                'method': '方法',
                 'factor1': {
-                    'name': '',
+                    'name': 'MINGZI',
                     'hasValue': True,
-                    'value': 0.5
+                    'value': 0.1
                 },
                 'factor2': {
-                    'name': '',
+                    'name': 'MINGZI2',
                     'hasValue': True,
-                    'value': 0.5
+                    'value': 0.9
                 }
             }
         }
@@ -1563,13 +1564,13 @@ class DynamicIndustrialPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'industry': '',
-                'method': '',
-                'parameters': ['paramA', 'paramB', ...],
-                'beginYear': 0,
-                'endYear': 0,
-                'historyBeginYear': 0,
-                'historyEndYear': 0,
+                'industry': '行业',
+                'method': '方法',
+                'parameters': ['paramA', 'paramB', '...'],
+                'beginYear': 1995,
+                'endYear': 2006,
+                'historyBeginYear': 2012,
+                'historyEndYear': 2055
             }
         }
 
@@ -1580,13 +1581,13 @@ class MixPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'historyBeginYear': 0,
-                'historyEndYear': 0,
-                'beginYear': 0,
-                'endYear': 0,
-                'region': '',
-                'industry': '',
-                'selectedMethods': ['methodA', 'methodB', ...],
+                'historyBeginYear': 2012,
+                'historyEndYear': 2066,
+                'beginYear': 2012,
+                'endYear': 2022,
+                'region': '地域',
+                'industry': '工业',
+                'selectedMethods': ['methodA', 'methodB', '...']
             }
         }
 
@@ -1597,13 +1598,13 @@ class LongTermPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'region': '',
-                'method': '',
-                'parameters': ['1', '2', ...],
-                'beginYear': 0,
-                'endYear': 0,
-                'historyBeginYear': 0,
-                'historyEndYear': 0
+                'region': '地域',
+                'method': '行业',
+                'parameters': ['1', '2', '...'],
+                'beginYear': 1993,
+                'endYear': 2013,
+                'historyBeginYear': 2012,
+                'historyEndYear': 2022
             }
         }
 
@@ -1615,19 +1616,19 @@ class BigUserPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'historyBeginYear': 0,
-                'historyEndYear': 0,
-                'beginYear': 0,
-                'endYear': 0,
-                'method': '',
-                'region': '',
+                'historyBeginYear': 1966,
+                'historyEndYear': 1997,
+                'beginYear': 1994,
+                'endYear': 2004,
+                'method': '测试方法',
+                'region': '测试地域',
                 'patches': [
                     {
                         'metaData': ['a', 'b', 'c'],
                         'grain': '粒度（总是「年」）',
                         'year': '年份',
                         'value': '42',
-                    }, ...
+                    }, '...'
                 ]
             }
         }
@@ -1639,13 +1640,13 @@ class SokuPayloadPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'beginYear': 0,
-                'endYear': 0,
-                'season': 0,
-                'maxPayload': 0,
-                'dailyAmount': 0,
-                'gamma': 0,
-                'beta': 0
+                'beginYear': 1955,
+                'endYear': 2055,
+                'season': 3,
+                'maxPayload': 2033,
+                'dailyAmount': 1000,
+                'gamma': 0.555,
+                'beta': 0.777
             }
         }
 
@@ -1657,11 +1658,11 @@ class ClampingPayloadPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'beginYear': 0,
-                'endYear': 0,
-                'season': 0,
-                'maxPayload': 0,
-                'dailyAmount': 0
+                'beginYear': 2021,
+                'endYear': 2022,
+                'season': 3,
+                'maxPayload': 2013,
+                'dailyAmount': 155
             }
         }
 
@@ -1673,11 +1674,11 @@ class InterpolatingPayloadPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'beginYear': 0,
-                'endYear': 0,
-                'season': 0,
-                'maxPayload': 0,
-                'dailyAmount': 0
+                'beginYear': 2012,
+                'endYear': 2022,
+                'season': 3,
+                'maxPayload': 14444,
+                'dailyAmount': 28888
             }
         }
 
@@ -1689,9 +1690,9 @@ class YearlyContinuousPayloadPredictionParameters(Resource):
             "msg": "success",
             "code": 200,
             "data": {
-                'beginYear': 0,
-                'endYear': 0,
-                'maxPayload': 0
+                'beginYear': 2023,
+                'endYear': 2033,
+                'maxPayload': 98768
             }
         }
 
