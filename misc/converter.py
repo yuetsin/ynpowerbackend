@@ -3,7 +3,7 @@
 import re
 
 def _to_snake(camel: str) -> str:
-    return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', camel).lower()
 
 
 components = []
