@@ -1024,6 +1024,45 @@ RESPONSE with
     }
 ```
 
+### History Predictions
+
+#### History Prediction Query
+
+```python
+GET '/predict/history/query' with
+    None
+RESPONSE with
+    [
+        {
+            'id': '5f66adb0-57ab-11eb-bf5c-acde48001122',   # UUID
+            'type': '电力预测 / 负载预测 / etc.',              # 预测类型
+            'time': '2020 年 4 月 20 日 14:07:33',           # 预测时间
+            'amount': 42                                    # 数据量
+        }, ...
+    ]
+```
+
+#### History Prediction Detail
+
+```python
+GET '/predict/history/detail' with
+	id: '5f66adb0-57ab-11eb-bf5c-acde48001122'
+RESPONSE with
+	{
+        'type': '电力预测 / 负载预测 / etc.',              # 预测类型
+        'time': '2020 年 4 月 20 日 14:07:33',           # 预测时间
+        'dimension': 1 # or 2                           # 数据维度（y 轴有几个变量？）
+        'amount': 42,                                   # 数据量
+        'data': [
+            {
+                'x': 42,
+                'y': 84,
+                'y2nd': 88                              # [Optional], 如果 dimension 是 2
+            }, ...
+        ]
+    }
+```
+
 ### Shared
 
 #### Region Query

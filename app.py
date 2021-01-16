@@ -545,23 +545,40 @@ fore-end related http apis
 dummy version, not functional yet
 """
 
+GENERATE_APIB = True
+
+if GENERATE_APIB:
+    def randint(a: int, b: int) -> int:
+        return (a + b) // 2
+    
+    def random() -> float:
+        return 0.718281828
+
+    def get_uuid() -> str:
+        from uuid import uuid3, NAMESPACE_URL
+        return uuid3(NAMESPACE_URL, 'default')
+
+else:
+    from random import randint, random
+    from uuid import uuid4 as get_uuid
 
 def register(*url):
     def url_param(cls):
         target_url = '/api/' + '/'.join(url)
         print('bind', cls, 'to', target_url)
         api.add_resource(cls, target_url)
+        
+        if GENERATE_APIB:
+            method = ''
+            try:
+                response = cls().get()
+                method = 'GET'
+            except:
+                response = cls().post()
+                method = 'POST'
 
-        method = ''
-        try:
-            response = cls().get()
-            method = 'GET'
-        except:
-            response = cls().post()
-            method = 'POST'
-
-        with open('./%s/%s.apib' % (_dir, cls.__name__), 'w') as f:
-            f.write("""FORMAT: 1A
+            with open('./%s/%s.apib' % (_dir, cls.__name__), 'w') as f:
+                f.write("""FORMAT: 1A
 
 + Response 200 (application/json)
 
@@ -1045,7 +1062,7 @@ class MiningFactorQuery(Resource):
 class RegionSinglePredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'graphData': [
                 {
@@ -1078,7 +1095,7 @@ class RegionSinglePredict(Resource):
 class RegionMixModelValidate(Resource):
     def post(self):
         try_print_json()
-        from random import randint
+        
         ok = (randint(0, 1) == 0)
         return {
             "msg": "success",
@@ -1093,7 +1110,7 @@ class RegionMixModelValidate(Resource):
 class RegionMixPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'graphData': [
                 {
@@ -1126,7 +1143,7 @@ class RegionMixPredict(Resource):
 class IndustrySinglePredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'graphData': [
                 {
@@ -1159,7 +1176,7 @@ class IndustrySinglePredict(Resource):
 class IndustryMixModelValidate(Resource):
     def post(self):
         try_print_json()
-        from random import randint
+        
         ok = (randint(0, 1) == 0)
         return {
             "msg": "success",
@@ -1174,7 +1191,7 @@ class IndustryMixModelValidate(Resource):
 class IndustryMixPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'graphData': [
                 {
@@ -1207,7 +1224,7 @@ class IndustryMixPredict(Resource):
 class SaturationCurvePredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'graphData': [
                 {
@@ -1240,7 +1257,7 @@ class SaturationCurvePredict(Resource):
 class PayloadDensityPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'graphData': [
                 {
@@ -1294,7 +1311,7 @@ class PredictProjectUpload(Resource):
 class ProvincialAndMunicipalPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'tableThreeData': [
                 {
@@ -1325,7 +1342,7 @@ class ProvincialAndMunicipalPredict(Resource):
 class BigDataPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint, random
+        
         payload = {
             'graphData': [
                 {
@@ -1369,7 +1386,7 @@ class BigDataMethodQuery(Resource):
 class DailyPayloadTraits(Resource):
     def get(self):
         try_print_args()
-        from random import randint, random
+        
         payload = [
                 {
                     'day': '2020 年 %d 月 %d 日' % (i, i * 2),
@@ -1391,7 +1408,7 @@ class DailyPayloadTraits(Resource):
 class MonthlyPayloadTraits(Resource):
     def get(self):
         try_print_args()
-        from random import randint, random
+        
         payload = [
                 {
                     'month': '2020 年 %d 月' % i,
@@ -1413,7 +1430,7 @@ class MonthlyPayloadTraits(Resource):
 class YearlyPayloadTraits(Resource):
     def get(self):
         try_print_args()
-        from random import randint, random
+        
         payload = [
                 {
                     'year': '%d 年' % (2010 + i),
@@ -1434,7 +1451,7 @@ class YearlyPayloadTraits(Resource):
 class SokuPayloadPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint
+        
         payload = [
                 {
                     'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
@@ -1452,7 +1469,7 @@ class SokuPayloadPredict(Resource):
 class ClampingPayloadPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint
+        
         payload = [
                 {
                     'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
@@ -1470,7 +1487,7 @@ class ClampingPayloadPredict(Resource):
 class InterpolatingPayloadPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint
+        
         payload = [
                 {
                     'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
@@ -1488,7 +1505,7 @@ class InterpolatingPayloadPredict(Resource):
 class YearlyContinuousPayloadPredict(Resource):
     def post(self):
         try_print_json()
-        from random import randint
+        
         payload = [
                 {
                     'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
@@ -1693,6 +1710,44 @@ class YearlyContinuousPayloadPredictionParameters(Resource):
                 'beginYear': 2023,
                 'endYear': 2033,
                 'maxPayload': 98768
+            }
+        }
+
+@register('predict', 'history', 'query')
+class HistoryPredictionQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    'id': get_uuid(),
+                    'type': '电力预测',
+                    'time': '2020 年 %d 月 %d 日 %02d:%02d:%02d' % (i, i, i, i, i),
+                    'amount': 10
+                } for i in range(1, 13)
+            ]
+        }
+
+@register('predict', 'history', 'detail')
+class HistoryPredictionDetail(Resource):
+    def get(self):
+        try_print_args()
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'type': '电力预测',
+                'time': '2020 年 4 月 20 日 14:07:33',
+                'dimension': 2,
+                'amount': 42,
+                'data': [
+                    {
+                        'x': 42,
+                        'y': 84,
+                        'y2nd': 88
+                    } for _ in range(20)
+                ]
             }
         }
 
