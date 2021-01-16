@@ -583,6 +583,7 @@ def register(*url):
 + Response 200 (application/json)
 
 # [%s]
+
 ## %s [%s]
 
 %s
