@@ -826,6 +826,9 @@ class ExceptionAccept(Resource):
 
 _versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
 
+_categories = ['MINING', 'STATIC_REGIONAL', 'DYNAMIC_INDUSTRIAL', 'MIX', 'LONGTERM', 'BIGUSER', 'SOKU', 'CLAMP', 'INTERP', 'YEARCONT']
+_categories_count = len(_categories)
+
 @register('tags', 'query')
 class TagsQuery(Resource):
     def get(self):
@@ -835,7 +838,7 @@ class TagsQuery(Resource):
             "data": [
                 {
                     'id': tag,
-                    'tagType': 'MIX'
+                    'tagType': _categories[randint(0, _categories_count - 1)]
                 } for tag in sorted(_versions)
             ]
         }
