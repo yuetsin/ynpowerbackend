@@ -56,41 +56,78 @@ RESPONSE with
     ]
 ```
 
-### Schema Stuff
+### Tags Stuff
 
-#### Schema Query
+#### Tags Query
 
 ```python
-GET '/schema/query' with
-    schemaType: str
+GET '/tags/query' with
+    tagType: str
 RESPONSE with
 	[
         {
             'id': 'v1.0',
-            'schemaType': 'MIX'
+            'tagType': 'MIX'
     	},
         {
             'id': 'v1.1',
-            'schemaType': 'LONGTERM'
+            'tagType': 'LONGTERM'
     	}, ...
     ]
 ```
 
-#### Schema Rename
+#### Tag Detail
 
 ```python
-POST '/schema/rename' with
-    currentSchema: 'v3.3a'
-    newSchemaName: 'v3.3b'
+GET '/tags/detail' with
+	tag: str
+RESPONSE with
+	{
+        tagType: 'AAA',
+        params: {
+            v1: ...,
+            v2: ...
+        },
+        graphData: [
+            {
+                'xName': '横轴标签',
+                'yValue': '纵轴数字值'
+            }, ...
+        ],
+        tableOneData: [
+            {
+                'index': '评价指标',
+                'r2': '就是 R2',
+                'mape': '就是 MAPE',
+                'rmse': '就是 RMSE'
+            }
+        ],
+        tableTwoData: [
+            {
+                'year': '年份',
+                'predict': '预测值（MVW）'
+            }
+        ]
+    }
+```
+
+>   注意，只有「电力预测」部分的 `tag` 才能读出 Data。
+
+#### Tag Rename
+
+```python
+POST '/tags/rename' with
+    tag: 'v3.3a'
+    newTag: 'v3.3b'
 RESPONSE with
     None
 ```
 
-#### Schema Delete
+#### Tag Delete
 
 ```python
-POST '/schema/delete' with
-    deleteSchema: 'v1.0'
+POST '/tags/delete' with
+    tag: 'v1.0'
 RESPONSE with
     None
 ```
@@ -813,7 +850,7 @@ RESPONSE with
     ]
 ```
 
-### Schema Parameter Loading
+### Tags Parameter Loading
 
 #### Data Mining Page
 
@@ -1070,7 +1107,7 @@ RESPONSE with
 
 约定：「关联因素挖掘」和「电力电量预测」页面（除「省市总分协调预测」外）中所有的页面都拥有 Tag 功能。
 
-一个 Tag 储存着一次请求的参数和结果。如果为空则代表不要保存 Schema。
+一个 Tag 储存着一次请求的参数和结果。如果为空则代表不要保存 Tag。
 
 只有「电力电量预测」页面才能进入「预测结果对比和展示」。
 
@@ -1083,5 +1120,5 @@ RESPONSE with
 *   `LONGTERM`：用在两个远期规划页面中。
 *   `ALL`：所有的 Tags。
 
-所有`tagType`、`schemaType` 字段都在这里面枚举。
+所有`tagType` 字段都在这里面枚举。
 
