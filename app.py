@@ -1427,7 +1427,7 @@ class MonthlyPayloadTraits(Resource):
                     'monthAverageDailyPayloadRate': random() * 500,
                     'monthImbaRate': random() * 500,
                     'monthMinPayloadRate': random() * 500,
-                    'monthAveragePayloadRate': random() * 500,
+                    'monthMaxPeekValleyDiffRate': random() * 500
                 } for i in range(1, 13)
             ]
         return {
@@ -1449,6 +1449,7 @@ class YearlyPayloadTraits(Resource):
                     'seasonImbaRate': random() * 500,
                     'yearMaxPeekValleyDiff': random() * 500,
                     'yearMaxPeekValleyDiffRate': random() * 500,
+                    'yearMaxPayloadUsageHours': 20
                 } for i in range(1, 13)
             ]
         return {

@@ -752,8 +752,6 @@ RESPONSE with
             'monthImbaRate': 0.4444,
             'monthMinPayloadRate': 0.1034
             'monthMaxPeekValleyDiffRate': 0.1034
-            # 这里文档截图不全，漏了几个数据项
-            # 待补全
         }, ...
     ]
 ```
@@ -773,9 +771,7 @@ RESPONSE with
             'seasonImbaRate': 46656,
             'yearMaxPeekValleyDiff': 1000,
             'yearMaxPeekValleyDiffRate': 0.424,
-            'yearMaxPayloadUsageHours': 1000, 	# 年最大利用小时数
-            # 这里文档截图不全，漏了几个数据项
-            # 待补全
+            'yearMaxPayloadUsageHours': 1000,
         }, ...
     ]
 ```
