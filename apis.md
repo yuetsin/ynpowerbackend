@@ -2,15 +2,9 @@
 
 ## BaseURL
 
-在未设定当前版本的情况下（默认情况下），请求的基地址是 `/api`。
+请求的基地址总是 `/api`。
 
 > 例如 `http://localhost:5000/api/login`。
-
-在设定了版本号（例如，`v3`）时，将其嵌入到 `/api` 之后、功能路径之前。
-
-> 例如 `http://localhost:5000/api/v3/logout`。
-
-> 所有的 HTTP 请求（包括那些和版本控制不相关的）都依照此形式传输。
 
 ## BaseResponse
 
@@ -68,18 +62,18 @@ RESPONSE with
 
 ```python
 GET '/schema/query' with
-    None
+    schemaType: str
 RESPONSE with
-    ['v1.0', 'v1.1', 'v2.0', 'v2.2a']
-```
-
-#### Schema Create
-
-```python
-POST '/schema/create' with
-    newSchemaName: str
-RESPONSE with
-    None
+	[
+        {
+            'id': 'v1.0',
+            'schemaType': 'MIX'
+    	},
+        {
+            'id': 'v1.1',
+            'schemaType': 'LONGTERM'
+    	}, ...
+    ]
 ```
 
 #### Schema Rename
@@ -360,6 +354,7 @@ POST '/predict/region/single' with
             hasValue: true,
             value: '',
         },
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -405,6 +400,7 @@ POST '/predict/region/mix' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -440,7 +436,8 @@ POST '/predict/industry/single' with
         'historyEndYear': 2024,
         'industry': '农业',
         'method': '基于EEMD的行业用电量预测',
-        'parameters': [..., ...]
+        'parameters': [..., ...],
+        'tag': 'v2.1'
     }
 RESPONSE with
     graphData: [
@@ -486,6 +483,7 @@ POST '/predict/industry/mix' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -522,6 +520,7 @@ POST '/predict/saturation' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -558,6 +557,7 @@ POST '/predict/payload' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -644,7 +644,8 @@ POST '/predict/bigdata' with
                 'year': 2023
             }, ...
          ],
-         'region': '丽江市'
+         'region': '丽江市',
+         'tag': 'v2.1'
     }
 RESPONSE with
     graphData: [
@@ -706,7 +707,7 @@ RESPONSE with
             'monthAverageDailyPayloadRate': 0.4044,
             'monthImbaRate': 0.4444,
             'monthMinPayloadRate': 0.1034
-            'monthAveragePayloadRate': 0.1034
+            'monthMaxPeekValleyDiffRate': 0.1034
             # 这里文档截图不全，漏了几个数据项
             # 待补全
         }, ...
@@ -727,7 +728,8 @@ RESPONSE with
             'yearAverageDailyPayloadRate': 49.10,
             'seasonImbaRate': 46656,
             'yearMaxPeekValleyDiff': 1000,
-            'yearMaxPeekValleyDiffRate': 0.424
+            'yearMaxPeekValleyDiffRate': 0.424,
+            'yearMaxPayloadUsageHours': 1000, 	# 年最大利用小时数
             # 这里文档截图不全，漏了几个数据项
             # 待补全
         }, ...
@@ -817,7 +819,7 @@ RESPONSE with
 
 ```python
 GET '/params/mining' with
-    None
+    tag: str
 RESPONSE with
     {
         region: '',
@@ -848,7 +850,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/static/region' with
-    None
+    tag: str
 RESPONSE with
     {
         historyBeginYear: null,
@@ -877,7 +879,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/dynamic/industry' with
-    None
+    tag: str
 RESPONSE with
     {
         industry: '',
@@ -898,7 +900,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/mix' with
-    None
+    tag: str
 RESPONSE with
     {
         historyBeginYear: null,
@@ -917,7 +919,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/dynamic/region' with
-    None
+    tag: str
 RESPONSE with
     {
         region: '',
@@ -936,7 +938,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/biguser' with
-    None
+    tag: str
 RESPONSE with
     {
         historyBeginYear: null,
@@ -956,74 +958,6 @@ RESPONSE with
     }
 ```
 
-#### Soku Payload Prediction
-
-> 用在「负荷特性预测 / 搜库法」页面里。
-
-```python
-GET '/params/predict/soku' with
-    None
-RESPONSE with
-    {
-        beginYear: null,
-        endYear: null,
-        season: null,
-        maxPayload: null,
-        dailyAmount: null,
-        gamma: null,
-        beta: null,
-    }
-```
-
-#### Clamping Payload Prediction
-
-> 用在「负荷特性预测 / 夹逼法」页面里。
-
-```python
-GET '/params/predict/clamping' with
-    None
-RESPONSE with
-    {
-        beginYear: null,
-        endYear: null,
-        season: null,
-        maxPayload: null,
-        dailyAmount: null,
-    }
-```
-
-#### Interpolating Payload Prediction
-
-> 用在「负荷特性预测 / 插值法」页面里。
-
-```python
-GET '/params/predict/interp' with
-    None
-RESPONSE with
-    {
-        beginYear: null,
-        endYear: null,
-        season: null,
-        maxPayload: null,
-        dailyAmount: null,
-    }
-```
-
-#### Yearly Continuous Payload Prediction
-
-> 用在「负荷特性预测 / 年度持续预测法」页面里。
-
-```python
-GET '/params/predict/yearcont' with
-    None
-RESPONSE with
-    {
-        beginYear: null,
-        endYear: null,
-        maxPayload: null,
-    }
-```
-
 ### History Predictions
 
 #### History Prediction Query
@@ -1032,21 +966,14 @@ RESPONSE with
 GET '/predict/history/query' with
     None
 RESPONSE with
-    [
-        {
-            'id': '5f66adb0-57ab-11eb-bf5c-acde48001122',   # UUID
-            'type': '电力预测 / 负载预测 / etc.',              # 预测类型
-            'time': '2020 年 4 月 20 日 14:07:33',           # 预测时间
-            'amount': 42                                    # 数据量
-        }, ...
-    ]
+    ['v1.1', 'v1.2']
 ```
 
 #### History Prediction Detail
 
 ```python
 GET '/predict/history/detail' with
-	id: '5f66adb0-57ab-11eb-bf5c-acde48001122'
+	tag: 'v3.1'
 RESPONSE with
 	{
         'type': '电力预测 / 负载预测 / etc.',              # 预测类型
@@ -1136,4 +1063,25 @@ GET '/method/bigdata/query' with
 RESPONSE with
     ['猜测法', '穷举法', ...]
 ```
+
+## Misc
+
+### Tag Protocols
+
+约定：「关联因素挖掘」和「电力电量预测」页面（除「省市总分协调预测」外）中所有的页面都拥有 Tag 功能。
+
+一个 Tag 储存着一次请求的参数和结果。如果为空则代表不要保存 Schema。
+
+只有「电力电量预测」页面才能进入「预测结果对比和展示」。
+
+由于不同页面的参数格式略有不同，所以 Tag 也分为不同的种类。规定如下：
+
+*   `MINING`，用在数据挖掘页面。
+*   `STATIC_REGIONAL`：用在「地区预测 + 单预测模型」页面。
+*   `DYNAMIC_INDUSTRIAL`：用在「行业预测 + 单预测模型」页面。
+*   `MIX`：用在「地区预测 + 组合预测模型」页面和「行业预测 + 组合预测模型」两个页面中。其中除了 `region` 和 `industry` 字段之外都是共享的。
+*   `LONGTERM`：用在两个远期规划页面中。
+*   `ALL`：所有的 Tags。
+
+所有`tagType`、`schemaType` 字段都在这里面枚举。
 

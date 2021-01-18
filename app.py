@@ -11,10 +11,10 @@ import dao
 import json
 import numpy as np
 
-import os
-_dir = './apis'
-if not os.path.exists(_dir):
-    os.makedirs(_dir)
+# import os
+# _dir = './apis'
+# if not os.path.exists(_dir):
+#     os.makedirs(_dir)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -545,49 +545,14 @@ fore-end related http apis
 dummy version, not functional yet
 """
 
-GENERATE_APIB = True
-
-if GENERATE_APIB:
-    def randint(a: int, b: int) -> int:
-        return (a + b) // 2
-    
-    def random() -> float:
-        return 0.718281828
-
-    def get_uuid() -> str:
-        from uuid import uuid3, NAMESPACE_URL
-        return uuid3(NAMESPACE_URL, 'default')
-
-else:
-    from random import randint, random
-    from uuid import uuid4 as get_uuid
+from random import randint, random
+from uuid import uuid4 as get_uuid
 
 def register(*url):
     def url_param(cls):
         target_url = '/api/' + '/'.join(url)
         print('bind', cls, 'to', target_url)
         api.add_resource(cls, target_url)
-        
-        if GENERATE_APIB:
-            method = ''
-            try:
-                response = cls().get()
-                method = 'GET'
-            except:
-                response = cls().post()
-                method = 'POST'
-
-            with open('./%s/%s.apib' % (_dir, cls.__name__), 'w') as f:
-                f.write("""FORMAT: 1A
-
-+ Response 200 (application/json)
-
-# [%s]
-
-## %s [%s]
-
-%s
-""" % (target_url, cls.__name__, method, pformat(response)))
         return cls
     return url_param
 
