@@ -826,44 +826,85 @@ class ExceptionAccept(Resource):
 
 _versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
 
-@register('schema', 'query')
-class SchemaQuery(Resource):
+@register('tags', 'query')
+class TagsQuery(Resource):
     def get(self):
         return {
             "msg": "success",
             "code": 200,
-            "data": sorted(_versions)
+            "data": [
+                {
+                    'id': tag,
+                    'tagType': 'MIX'
+                } for tag in sorted(_versions)
+            ]
         }
 
-@register('schema', 'create')
-class SchemaCreate(Resource):
-    def post(self):
-        try_print_json()
-        try:
-            new_name = request.json['newSchemaName'].strip()
-            if new_name in _versions:
-                return {
-                "msg": "key existed",
-                "code": -1
+@register('tags', 'detail')
+class TagsDetail(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'tagType': 'MIX',
+                'params': {
+                    'param1': ...,
+                    'param2': ...
+                },
+                'graphData': [
+                    {
+                        'xName': '横轴标签',
+                        'yValue': '纵轴数字值'
+                    }, ...
+                ],
+                'tableOneData': [
+                    {
+                        'index': '评价指标',
+                        'r2': '就是 R2',
+                        'mape': '就是 MAPE',
+                        'rmse': '就是 RMSE'
+                    }, ...
+                ],
+                'tableTwoData': [
+                    {
+                        'year': '年份',
+                        'predict': '预测值（MVW）'
+                    }, ...
+                ]
             }
-            _versions.append(new_name)
-            return {
-                "msg": "success",
-                "code": 200
-            }
-        except RuntimeError:
-            return {
-                "msg": "success",
-                "code": 200
-            } 
+        }
 
-@register('schema', 'rename')
-class SchemaRename(Resource):
+
+# @register('tags', 'create')
+# class TagsCreate(Resource):
+#     def post(self):
+#         try_print_json()
+#         try:
+#             new_name = request.json['newSchemaName'].strip()
+#             if new_name in _versions:
+#                 return {
+#                 "msg": "key existed",
+#                 "code": -1
+#             }
+#             _versions.append(new_name)
+#             return {
+#                 "msg": "success",
+#                 "code": 200
+#             }
+#         except RuntimeError:
+#             return {
+#                 "msg": "success",
+#                 "code": 200
+#             } 
+
+@register('tags', 'rename')
+class TagsRename(Resource):
     def post(self):
         try_print_json()
         try:
-            current_name = request.json['currentSchema'].strip()
-            new_name = request.json['newSchemaName'].strip()
+            current_name = request.json['tag'].strip()
+            new_name = request.json['newTag'].strip()
             if not current_name in _versions:
                 return {
                 "msg": "no key found",
@@ -887,12 +928,12 @@ class SchemaRename(Resource):
             }
 
 
-@register('schema', 'delete')
-class SchemaDelete(Resource):
+@register('tags', 'delete')
+class TagsDelete(Resource):
     def post(self):
         try_print_json()
         try:
-            current_name = request.json['deleteSchema'].strip()
+            current_name = request.json['tag'].strip()
             if not current_name in _versions:
                 return {
                 "msg": "no key found",
