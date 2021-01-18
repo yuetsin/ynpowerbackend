@@ -62,7 +62,7 @@ RESPONSE with
 
 ```python
 GET '/tags/query' with
-    tagType: str
+    tagType: str		# [Optional] 默认 ALL
 RESPONSE with
 	[
         {
