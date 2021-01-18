@@ -998,7 +998,7 @@ class MiningResults(Resource):
         } 
 
 
-_regions = ['云南省', '丽江市', '红河州', '内比都']
+_regions = ['仰光', '丽江市', '红河州', '内比都']
 
 @register('region', 'query')
 class RegionQuery(Resource):
@@ -1296,22 +1296,25 @@ class PayloadDensityPredict(Resource):
             "data": payload
         }
 
+_files = ['红河州.csv', '迪庆州.json', '仰光.txt', '...']
+
 @register('predict', 'munidata', 'upload')
 class MunicipalDataUpload(Resource):
     def post(self):
         try_print_files()
+        _files.append(request.files.get('file').filename)
         return {
             "msg": "success",
             "code": 200
         }
 
-@register('predict', 'munidata', 'filess')
+@register('predict', 'munidata', 'files')
 class MunicipalDataQuery(Resource):
     def get(self):
         return {
             "msg": "success",
             "code": 200,
-            "data": ['红河州.csv', '迪庆州.json', '仰光.txt', ...]
+            "data": _files
         }
 
 @register('predict', 'provmuni')
