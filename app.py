@@ -1528,6 +1528,7 @@ class YearlyContinuousPayloadPredict(Resource):
 @register('params', 'mining')
 class DataMiningParameters(Resource):
     def get(self):
+        print(request.args)
         return {
             "msg": "success",
             "code": 200,
@@ -1550,7 +1551,7 @@ class DataMiningParameters(Resource):
                 },
                 "beginYear": 2024,
                 "endYear": 2029,
-                "tag": '标签'
+                "tag": request.args['tag']
             }
         }
 
@@ -1577,7 +1578,8 @@ class StaticRegionalPredictionParameters(Resource):
                     'name': 'MINGZI2',
                     'hasValue': True,
                     'value': 0.9
-                }
+                },
+                'tag': request.args['tag']
             }
         }
 
@@ -1594,7 +1596,8 @@ class DynamicIndustrialPredictionParameters(Resource):
                 'beginYear': 1995,
                 'endYear': 2006,
                 'historyBeginYear': 2012,
-                'historyEndYear': 2055
+                'historyEndYear': 2055,
+                'tag': request.args['tag']
             }
         }
 
@@ -1611,7 +1614,8 @@ class MixPredictionParameters(Resource):
                 'endYear': 2022,
                 'region': '地域',
                 'industry': '工业',
-                'selectedMethods': ['methodA', 'methodB', '...']
+                'selectedMethods': ['methodA', 'methodB', '...'],
+                'tag': request.args['tag']
             }
         }
 
@@ -1628,7 +1632,8 @@ class LongTermPredictionParameters(Resource):
                 'beginYear': 1993,
                 'endYear': 2013,
                 'historyBeginYear': 2012,
-                'historyEndYear': 2022
+                'historyEndYear': 2022,
+                'tag': request.args['tag']
             }
         }
 
@@ -1636,6 +1641,7 @@ class LongTermPredictionParameters(Resource):
 @register('params', 'predict', 'biguser')
 class BigUserPredictionParameters(Resource):
     def get(self):
+        print(request.args)
         return {
             "msg": "success",
             "code": 200,
@@ -1653,7 +1659,8 @@ class BigUserPredictionParameters(Resource):
                         'year': '年份',
                         'value': '42',
                     }, '...'
-                ]
+                ],
+                'tag': request.args['tag']
             }
         }
 
@@ -1670,7 +1677,8 @@ class SokuPayloadPredictionParameters(Resource):
                 'maxPayload': 2033,
                 'dailyAmount': 1000,
                 'gamma': 0.555,
-                'beta': 0.777
+                'beta': 0.777,
+                'tag': request.args['tag']
             }
         }
 
@@ -1686,7 +1694,8 @@ class ClampingPayloadPredictionParameters(Resource):
                 'endYear': 2022,
                 'season': 3,
                 'maxPayload': 2013,
-                'dailyAmount': 155
+                'dailyAmount': 155,
+                'tag': request.args['tag']
             }
         }
 
@@ -1702,7 +1711,8 @@ class InterpolatingPayloadPredictionParameters(Resource):
                 'endYear': 2022,
                 'season': 3,
                 'maxPayload': 14444,
-                'dailyAmount': 28888
+                'dailyAmount': 28888,
+                'tag': request.args['tag']
             }
         }
 
@@ -1716,7 +1726,8 @@ class YearlyContinuousPayloadPredictionParameters(Resource):
             "data": {
                 'beginYear': 2023,
                 'endYear': 2033,
-                'maxPayload': 98768
+                'maxPayload': 98768,
+                'tag': request.args['tag']
             }
         }
 

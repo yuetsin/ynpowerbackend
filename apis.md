@@ -995,11 +995,78 @@ RESPONSE with
     }
 ```
 
+#### Soku Payload Prediction
+
+> 用在「负荷特性预测 / 搜库法」页面里。
+
+```python
+GET '/params/predict/soku' with
+    None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        season: null,
+        maxPayload: null,
+        dailyAmount: null,
+        gamma: null,
+        beta: null,
+    }
+```
+
+#### Clamping Payload Prediction
+
+> 用在「负荷特性预测 / 夹逼法」页面里。
+
+```python
+GET '/params/predict/clamping' with
+    None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        season: null,
+        maxPayload: null,
+        dailyAmount: null,
+    }
+```
+
+#### Interpolating Payload Prediction
+
+> 用在「负荷特性预测 / 插值法」页面里。
+
+```python
+GET '/params/predict/interp' with
+    None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        season: null,
+        maxPayload: null,
+        dailyAmount: null,
+    }
+```
+
+#### Yearly Continuous Payload Prediction
+
+> 用在「负荷特性预测 / 年度持续预测法」页面里。
+
+```python
+GET '/params/predict/yearcont' with
+    None
+RESPONSE with
+    {
+        beginYear: null,
+        endYear: null,
+        maxPayload: null,
+    }
+
 ### History Predictions
 
 #### History Prediction Query
 
-```python
+​```python
 GET '/predict/history/query' with
     None
 RESPONSE with
@@ -1109,15 +1176,28 @@ RESPONSE with
 
 一个 Tag 储存着一次请求的参数和结果。如果为空则代表不要保存 Tag。
 
+如果给出的 Tag 已经存在，那么覆盖。
+
 只有「电力电量预测」页面才能进入「预测结果对比和展示」。
 
 由于不同页面的参数格式略有不同，所以 Tag 也分为不同的种类。规定如下：
 
-*   `MINING`，用在数据挖掘页面。
-*   `STATIC_REGIONAL`：用在「地区预测 + 单预测模型」页面。
-*   `DYNAMIC_INDUSTRIAL`：用在「行业预测 + 单预测模型」页面。
-*   `MIX`：用在「地区预测 + 组合预测模型」页面和「行业预测 + 组合预测模型」两个页面中。其中除了 `region` 和 `industry` 字段之外都是共享的。
-*   `LONGTERM`：用在两个远期规划页面中。
+*   `MINING`，数据挖掘方案。
+*   `STATIC_REGIONAL`：地区单模型预测方案。
+*   `DYNAMIC_INDUSTRIAL`：行业单预测模型方案。
+*   `MIX`：组合预测方案。
+*   `LONGTERM`：远期规划方案。
+*   `BIGUSER`：大用户预测方案。
+*   `SOKU`：用搜库法的负荷特性预测方案。
+*   `CLAMP`：用夹逼法的负荷特性预测方案。
+*   `INTERP`：用分型插值法的负荷特性预测方案。
+*   `YEARCONT`：用年持续负荷预测法的负荷特性预测方案。
+
+---
+
+还有一些用于请求的特殊 Tag。
+
+*   `COMPARE`：「电力电量预测」页面的 Tag。用于「预测结果对比展示」部分。
 *   `ALL`：所有的 Tags。
 
 所有`tagType` 字段都在这里面枚举。
