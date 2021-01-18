@@ -619,13 +619,22 @@ RESPONSE with
     ]
 ```
 
-#### Municipal Project Upload
+#### Municipal Data Upload
 
 ```python
-POST '/predict/project/upload' with
+POST '/predict/munidata/upload' with
     FILE
-RESPSONSE with
+RESPONSE with
     None
+```
+
+#### Municipal Data Upload Files
+
+```python
+GET '/predict/munidata/files' with
+	None
+RESPONSE with
+	['红河州.csv', '迪庆州.json', ...]
 ```
 
 #### Province & Municipal Project Upload
@@ -633,7 +642,7 @@ RESPSONSE with
 ```python
 POST '/predict/provmuni' with
     {
-        'provPlan': '预测专案一',
+        'provPlan': '预测专案一', # 如果设置为 `__byUpload__` 则从上传文件中读取
         'muniPlans': [
             {
                 'muniName': '昆明市',
@@ -1150,15 +1159,6 @@ RESPONSE with
     ['理', '工', '农', '医', ...]
 ```
 
-#### Predict Projects Query
-
-```python
-GET '/predict/project/query' with
-    None
-RESPONSE with
-    ['完美计划', '更完美计划', '非常完美计划', ...]
-```
-
 #### Big Data Methods Query
 
 ```python
@@ -1196,6 +1196,8 @@ RESPONSE with
 ---
 
 还有一些用于请求的特殊 Tag。
+
+*   `PROVINCE`：可以用于「省市总分页面」中作为「省级」预测选项的方案。
 
 *   `COMPARE`：「电力电量预测」页面的 Tag。用于「预测结果对比展示」部分。
 *   `ALL`：所有的 Tags。

@@ -1296,19 +1296,8 @@ class PayloadDensityPredict(Resource):
             "data": payload
         }
 
-_projects = ['完美计划', '更完美计划', '非常完美计划']
-
-@register('predict', 'project', 'query')
-class PredictProjectQuery(Resource):
-    def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": _projects
-        }
-
-@register('predict', 'project', 'upload')
-class PredictProjectUpload(Resource):
+@register('predict', 'munidata', 'upload')
+class MunicipalDataUpload(Resource):
     def post(self):
         try_print_files()
         return {
@@ -1316,6 +1305,14 @@ class PredictProjectUpload(Resource):
             "code": 200
         }
 
+@register('predict', 'munidata', 'filess')
+class MunicipalDataQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": ['红河州.csv', '迪庆州.json', '仰光.txt', ...]
+        }
 
 @register('predict', 'provmuni')
 class ProvincialAndMunicipalPredict(Resource):
