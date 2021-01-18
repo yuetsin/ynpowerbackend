@@ -1,0 +1,20 @@
+FORMAT: 1A
+
++ Response 200 (application/json)
+
+# [/api/params/mining]
+
+## DataMiningParameters [GET]
+
+{'code': 200,
+ 'data': {'ARL': {'minConfidence': 0.11111, 'minSupport': 0.11111},
+          'PCA': {'absThreshold': 0.77777},
+          'beginYear': 2024,
+          'endYear': 2029,
+          'factors': ['factor 1', 'factor 2', 'factor 3'],
+          'kMeans': {'categoryCount': 2},
+          'method': '方法',
+          'pearson': {'threshold': 0.77777},
+          'region': '地域',
+          'tag': '标签'},
+ 'msg': 'success'}

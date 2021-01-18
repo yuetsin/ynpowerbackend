@@ -1,34 +1,43 @@
 import sqlalchemy
 from flask import Flask, request
+from flask_cors import CORS
 from flask_restful import Resource, Api
-
+from pprint import pprint, pformat
 from Controller import uploadData
 from Controller.login import login
 from Controller.program import *
 from algorithms import *
 import dao
+import json
 import numpy as np
 
+import os
+_dir = './apis'
+if not os.path.exists(_dir):
+    os.makedirs(_dir)
+
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 api = Api(app)
 
-class Login(Resource):
-    def post(self):
-        username = request.json['username'].strip()
-        password = request.json['password']
-        b = login(username, password)
-        if b:
-            re = {
-                "msg": "success",
-                "code": 200
-            }
-            return re
-        else:
-            re = {
-                "msg": "fail",
-                "code": -1
-            }
-            return re
+
+def try_print_args():
+    try:
+        pprint(request.args)
+    except RuntimeError:
+        pass
+
+def try_print_json():
+    try:
+        pprint(request.json)
+    except RuntimeError:
+        pass
+
+def try_print_files():
+    try:
+        pprint(request.files)
+    except RuntimeError:
+        pass
 
 class GetProgramName(Resource):
     def post(self):
@@ -46,9 +55,6 @@ class GetProgramLastInfo(Resource):
 
         }
         return re
-
-
-
 
 class UploadCSV(Resource):
     def post(self):
@@ -533,6 +539,1223 @@ class TestAlgorithm(Resource):
     def post(self):
         test()
 
+"""
+BEGIN
+fore-end related http apis
+dummy version, not functional yet
+"""
+
+GENERATE_APIB = True
+
+if GENERATE_APIB:
+    def randint(a: int, b: int) -> int:
+        return (a + b) // 2
+    
+    def random() -> float:
+        return 0.718281828
+
+    def get_uuid() -> str:
+        from uuid import uuid3, NAMESPACE_URL
+        return uuid3(NAMESPACE_URL, 'default')
+
+else:
+    from random import randint, random
+    from uuid import uuid4 as get_uuid
+
+def register(*url):
+    def url_param(cls):
+        target_url = '/api/' + '/'.join(url)
+        print('bind', cls, 'to', target_url)
+        api.add_resource(cls, target_url)
+        
+        if GENERATE_APIB:
+            method = ''
+            try:
+                response = cls().get()
+                method = 'GET'
+            except:
+                response = cls().post()
+                method = 'POST'
+
+            with open('./%s/%s.apib' % (_dir, cls.__name__), 'w') as f:
+                f.write("""FORMAT: 1A
+
++ Response 200 (application/json)
+
+# [%s]
+
+## %s [%s]
+
+%s
+""" % (target_url, cls.__name__, method, pformat(response)))
+        return cls
+    return url_param
+
+@register('login')
+class Login(Resource):
+    def post(self):
+        try:
+            username = request.json['username'].strip()
+            password = request.json['password']
+            # dummy judgement
+            if username == password:
+                re = {
+                    "msg": "success",
+                    "code": 200
+                }
+                return re
+            else:
+                re = {
+                    "msg": "fail",
+                    "code": -1
+                }
+                return re
+        except RuntimeError:
+            return {
+                    "msg": "success",
+                    "code": 200
+                }
+
+@register('logout')
+class Logout(Resource):
+    def post(self):
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('recent')
+class LoadRecent(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    'name': '预测软件页面初步设计方案',
+                    'url': 'https://th.bing.com/th/id/OIP.iLmhNJwXEioFCxt2cisBGgHaES?w=274&h=180&c=7&o=5&dpr=2&pid=1.7'
+                },
+                {
+                    'name': '问题回复',
+                    'url': 'https://th.bing.com/th/id/OIP.LE7rdh-q39ceZfXtus1ifAHaE7?w=270&h=180&c=7&o=5&dpr=2&pid=1.7'
+                }
+            ]
+        } 
+
+# 简化起见，value 就是 label，label 就是 value，不作区分。
+_metadata = [
+                {
+                    "value": "行政",
+                    "label": "白宫",
+                    "children": [
+                        {
+                            "value": "总统",
+                            "label": "唐納·川普",
+                        },
+                        {
+                            "value": "副总统",
+                            "label": "麦克·彭斯",
+                        }
+                    ]
+                },
+                {
+                    "value": "立法",
+                    "label": "国会",
+                    "children": [
+                        {
+                            "value": "上院",
+                            "label": "参议院",
+                            "children": [
+                                {
+                                    "value": "议长",
+                                    "label": "麦克·彭斯"
+                                },
+                                {
+                                    "value": "多数党",
+                                    "label": "共和党"
+                                }
+                            ]
+                        },  {
+                            "value": "下院",
+                            "label": "众议院",
+                            "children": [
+                                {
+                                    "value": "议长",
+                                    "label": "南希·佩洛西"
+                                },
+                                {
+                                    "value": "多数党",
+                                    "label": "民主党"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "value": "司法",
+                    "label": "最高法院",
+                    "children": [
+                        {
+                            "value": "首席大法官",
+                            "label": "約翰·格洛佛·羅勃茲",
+                        }
+                    ]
+                }
+            ]
+
+@register('db', 'metadata')
+class GetMetadata(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _metadata
+        }
+
+@register('db', 'metadata', 'create')
+class CreateMetadata(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'metadata', 'rename')
+class RenameMetadata(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'metadata', 'delete')
+class DeleteMetadata(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'metadata', 'upload')
+class UploadMetadata(Resource):
+    def post(self):
+        try_print_files()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'query')
+class PerformQuery(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    "key": "2021-1-8",
+                    "value": "陈瑞球"
+                },
+                {
+                    "key": "2021-1-7",
+                    "value": "杨咏曼"
+                },
+                {
+                    "key": "2021-1-5",
+                    "value": "蔡翠菊"
+                },
+                {
+                    "key": "2021-1-3",
+                    "value": "包玉刚"
+                }
+            ]
+        }
+
+@register('db', 'create')
+class PerformCreate(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'update')
+class PerformUpdate(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'delete')
+class PerformDelete(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'except', 'query')
+class ExceptionQuery(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    "key": "2021-1-8",
+                    "category": ['三', '1', 'iv'],
+                    "grain": "天",
+                    "value": 10,
+                    "suggest": 42
+                },
+                {
+                    "key": "2021-1-7",
+                    "category": ['三', '1', 'i'],
+                    "grain": "年",
+                    "value": "杨咏曼",
+                    "suggest": "蔡翠菊"
+                },
+                {
+                    "key": "2021-1-5",
+                    "category": ['三', '2', 'iii'],
+                    "grain": "秒",
+                    "value": 3.141592653589,
+                    "suggest": 2.718281828
+                },
+                {
+                    "key": "2021-1-3",
+                    "category": ['四', '2', 'ii'],
+                    "grain": "年",
+                    "value": True,
+                    "suggest": False
+                }
+            ]
+        }
+
+@register('db', 'except', 'resolve')
+class ExceptionResolve(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+@register('db', 'except', 'accept')
+class ExceptionAccept(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+_versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
+
+@register('schema', 'query')
+class SchemaQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": sorted(_versions)
+        }
+
+@register('schema', 'create')
+class SchemaCreate(Resource):
+    def post(self):
+        try_print_json()
+        try:
+            new_name = request.json['newSchemaName'].strip()
+            if new_name in _versions:
+                return {
+                "msg": "key existed",
+                "code": -1
+            }
+            _versions.append(new_name)
+            return {
+                "msg": "success",
+                "code": 200
+            }
+        except RuntimeError:
+            return {
+                "msg": "success",
+                "code": 200
+            } 
+
+@register('schema', 'rename')
+class SchemaRename(Resource):
+    def post(self):
+        try_print_json()
+        try:
+            current_name = request.json['currentSchema'].strip()
+            new_name = request.json['newSchemaName'].strip()
+            if not current_name in _versions:
+                return {
+                "msg": "no key found",
+                "code": -1
+            }
+            if new_name in _versions:
+                return {
+                "msg": "key existed",
+                "code": -1
+            }
+            _versions.remove(current_name)
+            _versions.append(new_name)
+            return {
+                "msg": "success",
+                "code": 200,
+            }
+        except RuntimeError:
+            return {
+                "msg": "success",
+                "code": 200
+            }
+
+
+@register('schema', 'delete')
+class SchemaDelete(Resource):
+    def post(self):
+        try_print_json()
+        try:
+            current_name = request.json['deleteSchema'].strip()
+            if not current_name in _versions:
+                return {
+                "msg": "no key found",
+                "code": -1
+            }
+            _versions.remove(current_name)
+            return {
+                "msg": "success",
+                "code": 200,
+            }
+        except RuntimeError:
+            return {
+                "msg": "success",
+                "code": 200,
+            }
+
+@register('mining', 'request')
+class MiningRequest(Resource):
+    def post(self):
+        try_print_json()
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": ['阳光', '空气', '水']
+        }
+
+@register('mining', 'factor', 'kmeans', 'suggest')
+class MiningKMeansSuggestCategoryCount(Resource):
+    def get(self):
+        try_print_args()
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "count": 2
+            }
+        }
+
+@register('mining', 'results')
+class MiningResults(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    'plan': '某个挖掘计划',
+                    'results': ['阳光', '空气', '水']
+                },
+                {
+                    'plan': '另一个挖掘计划',
+                    'results': ['光风', '霁月']
+                },
+                {
+                    'plan': '最后一个挖掘计划',
+                    'results': ['阴雨', '晦冥']
+                },
+            ]
+        } 
+
+
+_regions = ['云南省', '丽江市', '红河州', '内比都']
+
+@register('region', 'query')
+class RegionQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _regions
+        }
+
+
+_industries = ['工业', '农业', '医疗业', '餐饮业']
+
+@register('industry', 'query')
+class IndustryQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _industries
+        }
+
+_industrial_methods = ['基于ARIMA季节分解的行业电量预测', '基于EEMD的行业用电量预测', '基于主成分因子的行业用电量预测', '基于随机森林的行业用电量预测', '基于神经网络的行业用电量预测']
+
+@register('method', 'industry', 'query')
+class IndustrialMethodQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _industrial_methods
+        }
+
+_regional_methods = ['逐步回归模型', '灰色滑动平均模型', '分数阶灰色模型',
+        '改进的滚动机理灰色预测', '高斯混合回归模型', '模糊线性回归模型',
+        '模糊指数平滑模型', '梯度提升模型', '支持向量机模型', '循环神经网络模型',
+        '长短期神经网络模型', '扩展索洛模型', '分位数回归模型', '分行业典型日负荷曲线叠加法',
+        '负荷最大利用小时数模型', '季节趋势模型', '考虑温度和节假日分布影响的电量预测模型',
+        '一元线性函数', '一元二次函数', '幂函数', '生长函数', '指数函数', '对数函数', '二元一次函数']
+
+@register('method', 'region', 'query')
+class RegionalMethodQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _regional_methods
+        }
+
+@register('grain', 'query')
+class GrainQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": ['年', '月', '日', '时', '分', '秒']
+        }
+
+_factors = ['GDP', 'GNP', 'GPPPP', 'GNPPP']
+
+@register('factor', 'query')
+class MiningFactorQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _factors
+        }
+
+@register('predict', 'region', 'single')
+class RegionSinglePredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'region', 'mix', 'validate')
+class RegionMixModelValidate(Resource):
+    def post(self):
+        try_print_json()
+        
+        ok = (randint(0, 1) == 0)
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "ok": ok
+            }
+        }
+
+
+@register('predict', 'region', 'mix')
+class RegionMixPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'industry', 'single')
+class IndustrySinglePredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'industry', 'mix', 'validate')
+class IndustryMixModelValidate(Resource):
+    def post(self):
+        try_print_json()
+        
+        ok = (randint(0, 1) == 0)
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "ok": ok
+            }
+        }
+
+
+@register('predict', 'industry', 'mix')
+class IndustryMixPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'saturation')
+class SaturationCurvePredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'payload')
+class PayloadDensityPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+_projects = ['完美计划', '更完美计划', '非常完美计划']
+
+@register('predict', 'project', 'query')
+class PredictProjectQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _projects
+        }
+
+@register('predict', 'project', 'upload')
+class PredictProjectUpload(Resource):
+    def post(self):
+        try_print_files()
+        return {
+            "msg": "success",
+            "code": 200
+        }
+
+
+@register('predict', 'provmuni')
+class ProvincialAndMunicipalPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'tableThreeData': [
+                {
+                    'year': i + 2010,
+                    'region': '某个地方',
+                    'predictValueBefore': random() * randint(300, 500),
+                    'predictErrorBefore': random() * randint(30, 50),
+                    'predictValueAfter': random() * randint(300, 500),
+                    'predictErrorAfter': random() * randint(20, 80)
+                } for i in range(1, 18)
+            ],
+            'tableFourData': [
+                {
+                    'year': i + 2010,
+                    'region': '某个地方',
+                    'predictBefore': random() * randint(300, 500),
+                    'predictAfter': random() * randint(300, 500),
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'bigdata')
+class BigDataPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+_bigdata_methods = ['猜测法', '穷举法', '归纳法', '放弃法']
+
+@register('method', 'bigdata', 'query')
+class BigDataMethodQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _bigdata_methods
+        }
+
+@register('payload', 'traits', 'daily')
+class DailyPayloadTraits(Resource):
+    def get(self):
+        try_print_args()
+        
+        payload = [
+                {
+                    'day': '2020 年 %d 月 %d 日' % (i, i * 2),
+                    'dayMaxPayload': randint(0, 1000),
+                    'dayAveragePayload': random() * 500,
+                    'dayPayloadRate': random() * 500,
+                    'dayMinPayloadRate': random() * 500,
+                    'dayPeekValleyDiff': random() * 500,
+                    'dayPeekValleyDiffRate': random() * 500
+                } for i in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'traits', 'monthly')
+class MonthlyPayloadTraits(Resource):
+    def get(self):
+        try_print_args()
+        
+        payload = [
+                {
+                    'month': '2020 年 %d 月' % i,
+                    'monthAverageDailyPayload': randint(0, 1000),
+                    'monthMaxPeekValleyDiff': random() * 500,
+                    'monthAverageDailyPayloadRate': random() * 500,
+                    'monthImbaRate': random() * 500,
+                    'monthMinPayloadRate': random() * 500,
+                    'monthAveragePayloadRate': random() * 500,
+                } for i in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'traits', 'yearly')
+class YearlyPayloadTraits(Resource):
+    def get(self):
+        try_print_args()
+        
+        payload = [
+                {
+                    'year': '%d 年' % (2010 + i),
+                    'yearMaxPayload': randint(10000, 1000000),
+                    'yearAverageDailyPayloadRate': random() * 500,
+                    'seasonImbaRate': random() * 500,
+                    'yearMaxPeekValleyDiff': random() * 500,
+                    'yearMaxPeekValleyDiffRate': random() * 500,
+                } for i in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'predict', 'dbquery')
+class SokuPayloadPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'actualPayload': randint(10000, 1000000),
+                    'predictPayload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'predict', 'clamping')
+class ClampingPayloadPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'actualPayload': randint(10000, 1000000),
+                    'predictPayload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'predict', 'interp')
+class InterpolatingPayloadPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'actualPayload': randint(10000, 1000000),
+                    'predictPayload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('payload', 'predict', 'yearly')
+class YearlyContinuousPayloadPredict(Resource):
+    def post(self):
+        try_print_json()
+        
+        payload = [
+                {
+                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+                    'payload': randint(10000, 1000000)
+                } for _ in range(1, 13)
+            ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('params', 'mining')
+class DataMiningParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "region": '地域',
+                "factors": ['factor 1', 'factor 2', 'factor 3'],
+                "method": '方法',
+                "pearson": {
+                    "threshold": 0.77777
+                },
+                "kMeans": {
+                    "categoryCount": 2
+                },
+                "PCA": {
+                    "absThreshold": 0.77777
+                },
+                "ARL": {
+                    "minSupport": 0.11111,
+                    "minConfidence": 0.11111
+                },
+                "beginYear": 2024,
+                "endYear": 2029,
+                "tag": '标签'
+            }
+        }
+
+@register('params', 'predict', 'static', 'region')
+class StaticRegionalPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                "historyBeginYear": 1999,
+                "historyEndYear": 2009,
+                'beginYear': 2023,
+                'endYear': 2033,
+                'region': '地域',
+                'industry': '行业',
+                'method': '方法',
+                'factor1': {
+                    'name': 'MINGZI',
+                    'hasValue': True,
+                    'value': 0.1
+                },
+                'factor2': {
+                    'name': 'MINGZI2',
+                    'hasValue': True,
+                    'value': 0.9
+                }
+            }
+        }
+
+@register('params', 'predict', 'dynamic', 'industry')
+class DynamicIndustrialPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'industry': '行业',
+                'method': '方法',
+                'parameters': ['paramA', 'paramB', '...'],
+                'beginYear': 1995,
+                'endYear': 2006,
+                'historyBeginYear': 2012,
+                'historyEndYear': 2055
+            }
+        }
+
+@register('params', 'predict', 'mix')
+class MixPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'historyBeginYear': 2012,
+                'historyEndYear': 2066,
+                'beginYear': 2012,
+                'endYear': 2022,
+                'region': '地域',
+                'industry': '工业',
+                'selectedMethods': ['methodA', 'methodB', '...']
+            }
+        }
+
+@register('params', 'predict', 'dynamic', 'region')
+class LongTermPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'region': '地域',
+                'method': '行业',
+                'parameters': ['1', '2', '...'],
+                'beginYear': 1993,
+                'endYear': 2013,
+                'historyBeginYear': 2012,
+                'historyEndYear': 2022
+            }
+        }
+
+
+@register('params', 'predict', 'biguser')
+class BigUserPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'historyBeginYear': 1966,
+                'historyEndYear': 1997,
+                'beginYear': 1994,
+                'endYear': 2004,
+                'method': '测试方法',
+                'region': '测试地域',
+                'patches': [
+                    {
+                        'metaData': ['a', 'b', 'c'],
+                        'grain': '粒度（总是「年」）',
+                        'year': '年份',
+                        'value': '42',
+                    }, '...'
+                ]
+            }
+        }
+
+@register('params', 'predict', 'soku')
+class SokuPayloadPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'beginYear': 1955,
+                'endYear': 2055,
+                'season': 3,
+                'maxPayload': 2033,
+                'dailyAmount': 1000,
+                'gamma': 0.555,
+                'beta': 0.777
+            }
+        }
+
+
+@register('params', 'predict', 'clamping')
+class ClampingPayloadPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'beginYear': 2021,
+                'endYear': 2022,
+                'season': 3,
+                'maxPayload': 2013,
+                'dailyAmount': 155
+            }
+        }
+
+
+@register('params', 'predict', 'interp')
+class InterpolatingPayloadPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'beginYear': 2012,
+                'endYear': 2022,
+                'season': 3,
+                'maxPayload': 14444,
+                'dailyAmount': 28888
+            }
+        }
+
+
+@register('params', 'predict', 'yearcont')
+class YearlyContinuousPayloadPredictionParameters(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'beginYear': 2023,
+                'endYear': 2033,
+                'maxPayload': 98768
+            }
+        }
+
+@register('predict', 'history', 'query')
+class HistoryPredictionQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": [
+                {
+                    'id': get_uuid(),
+                    'type': '电力预测',
+                    'time': '2020 年 %d 月 %d 日 %02d:%02d:%02d' % (i, i, i, i, i),
+                    'amount': 10
+                } for i in range(1, 13)
+            ]
+        }
+
+@register('predict', 'history', 'detail')
+class HistoryPredictionDetail(Resource):
+    def get(self):
+        try_print_args()
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'type': '电力预测',
+                'time': '2020 年 4 月 20 日 14:07:33',
+                'dimension': 2,
+                'amount': 42,
+                'data': [
+                    {
+                        'x': 42,
+                        'y': 84,
+                        'y2nd': 88
+                    } for _ in range(20)
+                ]
+            }
+        }
+
+"""
+fore-end related http apis
+END
+"""
 
 api.add_resource(UploadCSV, "/api/upload")
 api.add_resource(GetDataJson, '/getDataJson')
@@ -577,7 +1800,6 @@ api.add_resource(Binarylinear, "/api/Binarylinear")
 api.add_resource(Kmeans, "/api/Kmeans")
 api.add_resource(PCA, "/api/PCA")
 api.add_resource(AssociationRule, "/api/AssociationRule")
-api.add_resource(Login, "/api/login")
 api.add_resource(GetProgramName, "/api/getProgramName")
 api.add_resource(GetProgramLastInfo, "/api/getProgramLastInfo")
 

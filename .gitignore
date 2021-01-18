@@ -2,3 +2,7 @@
 /venv/*
 ./venv/*
 /resource/*
+.DS_Store
+*.pyc
+.DS_Store
+/__pycache__/*
