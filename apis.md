@@ -2,15 +2,9 @@
 
 ## BaseURL
 
-在未设定当前版本的情况下（默认情况下），请求的基地址是 `/api`。
+请求的基地址总是 `/api`。
 
 > 例如 `http://localhost:5000/api/login`。
-
-在设定了版本号（例如，`v3`）时，将其嵌入到 `/api` 之后、功能路径之前。
-
-> 例如 `http://localhost:5000/api/v3/logout`。
-
-> 所有的 HTTP 请求（包括那些和版本控制不相关的）都依照此形式传输。
 
 ## BaseResponse
 
@@ -62,41 +56,78 @@ RESPONSE with
     ]
 ```
 
-### Schema Stuff
+### Tags Stuff
 
-#### Schema Query
+#### Tags Query
 
 ```python
-GET '/schema/query' with
-    None
+GET '/tags/query' with
+    tagType: str		# [Optional] 默认 ALL
 RESPONSE with
-    ['v1.0', 'v1.1', 'v2.0', 'v2.2a']
+	[
+        {
+            'id': 'v1.0',
+            'tagType': 'MIX'
+    	},
+        {
+            'id': 'v1.1',
+            'tagType': 'LONGTERM'
+    	}, ...
+    ]
 ```
 
-#### Schema Create
+#### Tag Detail
 
 ```python
-POST '/schema/create' with
-    newSchemaName: str
+GET '/tags/detail' with
+	tag: str
+RESPONSE with
+	{
+        tagType: 'AAA',
+        params: {
+            v1: ...,
+            v2: ...
+        },
+        graphData: [
+            {
+                'xName': '横轴标签',
+                'yValue': '纵轴数字值'
+            }, ...
+        ],
+        tableOneData: [
+            {
+                'index': '评价指标',
+                'r2': '就是 R2',
+                'mape': '就是 MAPE',
+                'rmse': '就是 RMSE'
+            }
+        ],
+        tableTwoData: [
+            {
+                'year': '年份',
+                'predict': '预测值（MVW）'
+            }
+        ]
+    }
+```
+
+>   注意，只有「电力预测」部分的 `tag` 才能读出 Data。
+
+#### Tag Rename
+
+```python
+POST '/tags/rename' with
+    tag: 'v3.3a'
+    newTag: 'v3.3b'
 RESPONSE with
     None
 ```
 
-#### Schema Rename
+#### Tag Delete
 
 ```python
-POST '/schema/rename' with
-    currentSchema: 'v3.3a'
-    newSchemaName: 'v3.3b'
-RESPONSE with
-    None
-```
-
-#### Schema Delete
-
-```python
-POST '/schema/delete' with
-    deleteSchema: 'v1.0'
+POST '/tags/delete' with
+    tag: 'v1.0'
 RESPONSE with
     None
 ```
@@ -360,6 +391,7 @@ POST '/predict/region/single' with
             hasValue: true,
             value: '',
         },
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -405,6 +437,7 @@ POST '/predict/region/mix' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -440,7 +473,8 @@ POST '/predict/industry/single' with
         'historyEndYear': 2024,
         'industry': '农业',
         'method': '基于EEMD的行业用电量预测',
-        'parameters': [..., ...]
+        'parameters': [..., ...],
+        'tag': 'v2.1'
     }
 RESPONSE with
     graphData: [
@@ -486,6 +520,7 @@ POST '/predict/industry/mix' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -522,6 +557,7 @@ POST '/predict/saturation' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -558,6 +594,7 @@ POST '/predict/payload' with
         region: '',
         industry: '',
         selectedMethods: [],
+        tag: 'v2.1'
       },
 RESPONSE with
     graphData: [
@@ -582,13 +619,22 @@ RESPONSE with
     ]
 ```
 
-#### Municipal Project Upload
+#### Municipal Data Upload
 
 ```python
-POST '/predict/project/upload' with
+POST '/predict/munidata/upload' with
     FILE
-RESPSONSE with
+RESPONSE with
     None
+```
+
+#### Municipal Data Upload Files
+
+```python
+GET '/predict/munidata/files' with
+	None
+RESPONSE with
+	['红河州.csv', '迪庆州.json', ...]
 ```
 
 #### Province & Municipal Project Upload
@@ -596,14 +642,15 @@ RESPSONSE with
 ```python
 POST '/predict/provmuni' with
     {
-        'provPlan': '预测专案一',
-        'muniPlans': [
-            {
-                'muniName': '昆明市',
-                'planName': '预测专案'
-            },
+        'historyBeginYear': 2019,
+        'historyEndYear': 2020,
+        'predictYear': 2023,
+        'provPlan': '预测专案一', # 如果设置为 `__byUpload__` 则从上传文件中读取
+        'provFile': '省.csv',	# 如果 provPlan 是 __byUpload__，那么从这里读
+        'muniData': {
+            '昆明市': '昆明.csv',
             ...
-        ],
+        },
     }
 RESPONSE with
     tableThreeData: [
@@ -644,7 +691,8 @@ POST '/predict/bigdata' with
                 'year': 2023
             }, ...
          ],
-         'region': '丽江市'
+         'region': '丽江市',
+         'tag': 'v2.1'
     }
 RESPONSE with
     graphData: [
@@ -706,9 +754,7 @@ RESPONSE with
             'monthAverageDailyPayloadRate': 0.4044,
             'monthImbaRate': 0.4444,
             'monthMinPayloadRate': 0.1034
-            'monthAveragePayloadRate': 0.1034
-            # 这里文档截图不全，漏了几个数据项
-            # 待补全
+            'monthMaxPeekValleyDiffRate': 0.1034
         }, ...
     ]
 ```
@@ -727,9 +773,8 @@ RESPONSE with
             'yearAverageDailyPayloadRate': 49.10,
             'seasonImbaRate': 46656,
             'yearMaxPeekValleyDiff': 1000,
-            'yearMaxPeekValleyDiffRate': 0.424
-            # 这里文档截图不全，漏了几个数据项
-            # 待补全
+            'yearMaxPeekValleyDiffRate': 0.424,
+            'yearMaxPayloadUsageHours': 1000,
         }, ...
     ]
 ```
@@ -811,13 +856,13 @@ RESPONSE with
     ]
 ```
 
-### Schema Parameter Loading
+### Tags Parameter Loading
 
 #### Data Mining Page
 
 ```python
 GET '/params/mining' with
-    None
+    tag: str
 RESPONSE with
     {
         region: '',
@@ -848,7 +893,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/static/region' with
-    None
+    tag: str
 RESPONSE with
     {
         historyBeginYear: null,
@@ -877,7 +922,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/dynamic/industry' with
-    None
+    tag: str
 RESPONSE with
     {
         industry: '',
@@ -898,7 +943,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/mix' with
-    None
+    tag: str
 RESPONSE with
     {
         historyBeginYear: null,
@@ -917,7 +962,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/dynamic/region' with
-    None
+    tag: str
 RESPONSE with
     {
         region: '',
@@ -936,7 +981,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/biguser' with
-    None
+    tag: str
 RESPONSE with
     {
         historyBeginYear: null,
@@ -1024,43 +1069,106 @@ RESPONSE with
     }
 ```
 
-### History Predictions
+### Predict Results
 
-#### History Prediction Query
+>   这里的 Results 只包括「电力电量预测」部分（省市总分协调预测除外）。
+>
+>   他们的预测结果都遵从同样的格式——一张 x - y 图表，两张数据表。
 
-```python
-GET '/predict/history/query' with
-    None
-RESPONSE with
-    [
-        {
-            'id': '5f66adb0-57ab-11eb-bf5c-acde48001122',   # UUID
-            'type': '电力预测 / 负载预测 / etc.',              # 预测类型
-            'time': '2020 年 4 月 20 日 14:07:33',           # 预测时间
-            'amount': 42                                    # 数据量
-        }, ...
-    ]
-```
-
-#### History Prediction Detail
+#### Query All Predictions
 
 ```python
-GET '/predict/history/detail' with
-	id: '5f66adb0-57ab-11eb-bf5c-acde48001122'
+GET '/predict/results/query' with
+	None
 RESPONSE with
 	{
-        'type': '电力预测 / 负载预测 / etc.',              # 预测类型
-        'time': '2020 年 4 月 20 日 14:07:33',           # 预测时间
-        'dimension': 1 # or 2                           # 数据维度（y 轴有几个变量？）
-        'amount': 42,                                   # 数据量
-        'data': [
+        'id': 'v1.0',
+        'tagType': 'MIX'
+    },
+    {
+        'id': 'v1.1',
+        'tagType': 'LONGTERM'
+    }, ...
+```
+
+#### Get Prediction Details
+
+```python
+GET '/predict/results/detail' with
+	tag: 'v1.2'
+RESPONSE with
+	{
+        parameters: [
             {
-                'x': 42,
-                'y': 84,
-                'y2nd': 88                              # [Optional], 如果 dimension 是 2
+                'key': '方案名称',
+                'value': 'v1.2'
+            },
+            {
+                'key': '预测类型',
+                'value': '远期预测'
+            },
+            {
+                'key': '预测年份',
+                'value': '2015 到 2020'
+            },
+            {
+                'key': '预测方法',
+                'value': '猜测法'
+            },
+            {
+                'key': '预测时间',
+                'value': '2021 年 1 月 21 日 11:04:33'
+            }
+        ],
+        graphData: [
+            {
+                'xName': '横轴标签',
+                'yValue': '纵轴数字值'
+            }, ...
+        ],
+        tableOneData: [
+            {
+                'index': '评价指标',
+                'r2': '就是 R2',
+                'mape': '就是 MAPE',
+                'rmse': '就是 RMSE'
+            }
+        ],
+        tableTwoData: [
+            {
+                'year': '年份',
+                'predict': '预测值（MVW）'
+            }
+        ]
+    }
+```
+
+#### Prediction Comparison
+
+```python
+POST '/predict/results/compare' with
+	{
+        'tags': ['v1.1', 'v1.2', 'v1.4']
+        'trait': '对比特征'
+        # R2, or MAPE, or RMSE, or predictMVW
+    }
+RESPONSE with
+	{
+        xName: '年份',
+        xData: ['2010 年', '2011 年', '2012 年', '2013 年', ...],
+        yName: 'RMSE 值',
+        yData: [
+            {
+                'tag': 'v1.1',
+                'data': [1, 4, 2, 45, 8, 1]
+            },
+            {
+                'tag': 'v1.2',
+                'data': [3, 4, 1, 5, 1, 0]
             }, ...
         ]
     }
+	
 ```
 
 ### Shared
@@ -1119,15 +1227,6 @@ RESPONSE with
     ['理', '工', '农', '医', ...]
 ```
 
-#### Predict Projects Query
-
-```python
-GET '/predict/project/query' with
-    None
-RESPONSE with
-    ['完美计划', '更完美计划', '非常完美计划', ...]
-```
-
 #### Big Data Methods Query
 
 ```python
@@ -1136,4 +1235,40 @@ GET '/method/bigdata/query' with
 RESPONSE with
     ['猜测法', '穷举法', ...]
 ```
+
+## Misc
+
+### Tag Protocols
+
+约定：「关联因素挖掘」和「电力电量预测」页面（除「省市总分协调预测」外）中所有的页面都拥有 Tag 功能。
+
+一个 Tag 储存着一次请求的参数和结果。如果为空则代表不要保存 Tag。
+
+如果给出的 Tag 已经存在，那么覆盖。
+
+只有「电力电量预测」页面才能进入「预测结果对比和展示」。
+
+由于不同页面的参数格式略有不同，所以 Tag 也分为不同的种类。规定如下：
+
+*   `MINING`，数据挖掘方案。
+*   `STATIC_REGIONAL`：地区单模型预测方案。
+*   `DYNAMIC_INDUSTRIAL`：行业单预测模型方案。
+*   `MIX`：组合预测方案。
+*   `LONGTERM`：远期规划方案。
+*   `BIGUSER`：大用户预测方案。
+*   `SOKU`：用搜库法的负荷特性预测方案。
+*   `CLAMP`：用夹逼法的负荷特性预测方案。
+*   `INTERP`：用分型插值法的负荷特性预测方案。
+*   `YEARCONT`：用年持续负荷预测法的负荷特性预测方案。
+
+---
+
+还有一些用于请求的特殊 Tag。
+
+*   `PROVINCE`：可以用于「省市总分页面」中作为「省级」预测选项的方案。
+
+*   `COMPARE`：「电力电量预测」页面的 Tag。用于「预测结果对比展示」部分。
+*   `ALL`：所有的 Tags。
+
+所有`tagType` 字段都在这里面枚举。
 

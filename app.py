@@ -11,10 +11,10 @@ import dao
 import json
 import numpy as np
 
-import os
-_dir = './apis'
-if not os.path.exists(_dir):
-    os.makedirs(_dir)
+# import os
+# _dir = './apis'
+# if not os.path.exists(_dir):
+#     os.makedirs(_dir)
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -545,49 +545,14 @@ fore-end related http apis
 dummy version, not functional yet
 """
 
-GENERATE_APIB = True
-
-if GENERATE_APIB:
-    def randint(a: int, b: int) -> int:
-        return (a + b) // 2
-    
-    def random() -> float:
-        return 0.718281828
-
-    def get_uuid() -> str:
-        from uuid import uuid3, NAMESPACE_URL
-        return uuid3(NAMESPACE_URL, 'default')
-
-else:
-    from random import randint, random
-    from uuid import uuid4 as get_uuid
+from random import randint, random
+from uuid import uuid4 as get_uuid
 
 def register(*url):
     def url_param(cls):
         target_url = '/api/' + '/'.join(url)
         print('bind', cls, 'to', target_url)
         api.add_resource(cls, target_url)
-        
-        if GENERATE_APIB:
-            method = ''
-            try:
-                response = cls().get()
-                method = 'GET'
-            except:
-                response = cls().post()
-                method = 'POST'
-
-            with open('./%s/%s.apib' % (_dir, cls.__name__), 'w') as f:
-                f.write("""FORMAT: 1A
-
-+ Response 200 (application/json)
-
-# [%s]
-
-## %s [%s]
-
-%s
-""" % (target_url, cls.__name__, method, pformat(response)))
         return cls
     return url_param
 
@@ -861,44 +826,88 @@ class ExceptionAccept(Resource):
 
 _versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
 
-@register('schema', 'query')
-class SchemaQuery(Resource):
+_categories = ['MINING', 'STATIC_REGIONAL', 'DYNAMIC_INDUSTRIAL', 'MIX', 'LONGTERM', 'BIGUSER', 'SOKU', 'CLAMP', 'INTERP', 'YEARCONT']
+_categories_count = len(_categories)
+
+@register('tags', 'query')
+class TagsQuery(Resource):
     def get(self):
         return {
             "msg": "success",
             "code": 200,
-            "data": sorted(_versions)
+            "data": [
+                {
+                    'id': tag,
+                    'tagType': _categories[randint(0, _categories_count - 1)]
+                } for tag in sorted(_versions)
+            ]
         }
 
-@register('schema', 'create')
-class SchemaCreate(Resource):
-    def post(self):
-        try_print_json()
-        try:
-            new_name = request.json['newSchemaName'].strip()
-            if new_name in _versions:
-                return {
-                "msg": "key existed",
-                "code": -1
+@register('tags', 'detail')
+class TagsDetail(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'tagType': 'MIX',
+                'params': {
+                    'param1': ...,
+                    'param2': ...
+                },
+                'graphData': [
+                    {
+                        'xName': '横轴标签',
+                        'yValue': '纵轴数字值'
+                    }, ...
+                ],
+                'tableOneData': [
+                    {
+                        'index': '评价指标',
+                        'r2': '就是 R2',
+                        'mape': '就是 MAPE',
+                        'rmse': '就是 RMSE'
+                    }, ...
+                ],
+                'tableTwoData': [
+                    {
+                        'year': '年份',
+                        'predict': '预测值（MVW）'
+                    }, ...
+                ]
             }
-            _versions.append(new_name)
-            return {
-                "msg": "success",
-                "code": 200
-            }
-        except RuntimeError:
-            return {
-                "msg": "success",
-                "code": 200
-            } 
+        }
 
-@register('schema', 'rename')
-class SchemaRename(Resource):
+
+# @register('tags', 'create')
+# class TagsCreate(Resource):
+#     def post(self):
+#         try_print_json()
+#         try:
+#             new_name = request.json['newSchemaName'].strip()
+#             if new_name in _versions:
+#                 return {
+#                 "msg": "key existed",
+#                 "code": -1
+#             }
+#             _versions.append(new_name)
+#             return {
+#                 "msg": "success",
+#                 "code": 200
+#             }
+#         except RuntimeError:
+#             return {
+#                 "msg": "success",
+#                 "code": 200
+#             } 
+
+@register('tags', 'rename')
+class TagsRename(Resource):
     def post(self):
         try_print_json()
         try:
-            current_name = request.json['currentSchema'].strip()
-            new_name = request.json['newSchemaName'].strip()
+            current_name = request.json['tag'].strip()
+            new_name = request.json['newTag'].strip()
             if not current_name in _versions:
                 return {
                 "msg": "no key found",
@@ -922,12 +931,12 @@ class SchemaRename(Resource):
             }
 
 
-@register('schema', 'delete')
-class SchemaDelete(Resource):
+@register('tags', 'delete')
+class TagsDelete(Resource):
     def post(self):
         try_print_json()
         try:
-            current_name = request.json['deleteSchema'].strip()
+            current_name = request.json['tag'].strip()
             if not current_name in _versions:
                 return {
                 "msg": "no key found",
@@ -989,7 +998,7 @@ class MiningResults(Resource):
         } 
 
 
-_regions = ['云南省', '丽江市', '红河州', '内比都']
+_regions = ['仰光', '丽江市', '红河州', '内比都']
 
 @register('region', 'query')
 class RegionQuery(Resource):
@@ -1287,26 +1296,26 @@ class PayloadDensityPredict(Resource):
             "data": payload
         }
 
-_projects = ['完美计划', '更完美计划', '非常完美计划']
+_files = ['红河州.csv', '迪庆州.json', '仰光.txt', '...']
 
-@register('predict', 'project', 'query')
-class PredictProjectQuery(Resource):
-    def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": _projects
-        }
-
-@register('predict', 'project', 'upload')
-class PredictProjectUpload(Resource):
+@register('predict', 'munidata', 'upload')
+class MunicipalDataUpload(Resource):
     def post(self):
         try_print_files()
+        _files.append(request.files.get('file').filename)
         return {
             "msg": "success",
             "code": 200
         }
 
+@register('predict', 'munidata', 'files')
+class MunicipalDataQuery(Resource):
+    def get(self):
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": _files
+        }
 
 @register('predict', 'provmuni')
 class ProvincialAndMunicipalPredict(Resource):
@@ -1327,7 +1336,7 @@ class ProvincialAndMunicipalPredict(Resource):
             'tableFourData': [
                 {
                     'year': i + 2010,
-                    'region': '某个地方',
+                    'region': '地方 %d' % i,
                     'predictBefore': random() * randint(300, 500),
                     'predictAfter': random() * randint(300, 500),
                 } for i in range(17)
@@ -1418,7 +1427,7 @@ class MonthlyPayloadTraits(Resource):
                     'monthAverageDailyPayloadRate': random() * 500,
                     'monthImbaRate': random() * 500,
                     'monthMinPayloadRate': random() * 500,
-                    'monthAveragePayloadRate': random() * 500,
+                    'monthMaxPeekValleyDiffRate': random() * 500
                 } for i in range(1, 13)
             ]
         return {
@@ -1440,6 +1449,7 @@ class YearlyPayloadTraits(Resource):
                     'seasonImbaRate': random() * 500,
                     'yearMaxPeekValleyDiff': random() * 500,
                     'yearMaxPeekValleyDiffRate': random() * 500,
+                    'yearMaxPayloadUsageHours': 20
                 } for i in range(1, 13)
             ]
         return {
@@ -1522,6 +1532,7 @@ class YearlyContinuousPayloadPredict(Resource):
 @register('params', 'mining')
 class DataMiningParameters(Resource):
     def get(self):
+        print(request.args)
         return {
             "msg": "success",
             "code": 200,
@@ -1544,7 +1555,7 @@ class DataMiningParameters(Resource):
                 },
                 "beginYear": 2024,
                 "endYear": 2029,
-                "tag": '标签'
+                "tag": request.args['tag']
             }
         }
 
@@ -1571,7 +1582,8 @@ class StaticRegionalPredictionParameters(Resource):
                     'name': 'MINGZI2',
                     'hasValue': True,
                     'value': 0.9
-                }
+                },
+                'tag': request.args['tag']
             }
         }
 
@@ -1588,7 +1600,8 @@ class DynamicIndustrialPredictionParameters(Resource):
                 'beginYear': 1995,
                 'endYear': 2006,
                 'historyBeginYear': 2012,
-                'historyEndYear': 2055
+                'historyEndYear': 2055,
+                'tag': request.args['tag']
             }
         }
 
@@ -1605,7 +1618,8 @@ class MixPredictionParameters(Resource):
                 'endYear': 2022,
                 'region': '地域',
                 'industry': '工业',
-                'selectedMethods': ['methodA', 'methodB', '...']
+                'selectedMethods': ['methodA', 'methodB', '...'],
+                'tag': request.args['tag']
             }
         }
 
@@ -1622,7 +1636,8 @@ class LongTermPredictionParameters(Resource):
                 'beginYear': 1993,
                 'endYear': 2013,
                 'historyBeginYear': 2012,
-                'historyEndYear': 2022
+                'historyEndYear': 2022,
+                'tag': request.args['tag']
             }
         }
 
@@ -1630,6 +1645,7 @@ class LongTermPredictionParameters(Resource):
 @register('params', 'predict', 'biguser')
 class BigUserPredictionParameters(Resource):
     def get(self):
+        print(request.args)
         return {
             "msg": "success",
             "code": 200,
@@ -1647,7 +1663,8 @@ class BigUserPredictionParameters(Resource):
                         'year': '年份',
                         'value': '42',
                     }, '...'
-                ]
+                ],
+                'tag': request.args['tag']
             }
         }
 
@@ -1664,7 +1681,8 @@ class SokuPayloadPredictionParameters(Resource):
                 'maxPayload': 2033,
                 'dailyAmount': 1000,
                 'gamma': 0.555,
-                'beta': 0.777
+                'beta': 0.777,
+                'tag': request.args['tag']
             }
         }
 
@@ -1680,7 +1698,8 @@ class ClampingPayloadPredictionParameters(Resource):
                 'endYear': 2022,
                 'season': 3,
                 'maxPayload': 2013,
-                'dailyAmount': 155
+                'dailyAmount': 155,
+                'tag': request.args['tag']
             }
         }
 
@@ -1696,7 +1715,8 @@ class InterpolatingPayloadPredictionParameters(Resource):
                 'endYear': 2022,
                 'season': 3,
                 'maxPayload': 14444,
-                'dailyAmount': 28888
+                'dailyAmount': 28888,
+                'tag': request.args['tag']
             }
         }
 
@@ -1710,45 +1730,98 @@ class YearlyContinuousPayloadPredictionParameters(Resource):
             "data": {
                 'beginYear': 2023,
                 'endYear': 2033,
-                'maxPayload': 98768
+                'maxPayload': 98768,
+                'tag': request.args['tag']
             }
         }
 
-@register('predict', 'history', 'query')
-class HistoryPredictionQuery(Resource):
+@register('predict', 'results', 'query')
+class PredictionResultsQuery(Resource):
     def get(self):
         return {
             "msg": "success",
             "code": 200,
             "data": [
                 {
-                    'id': get_uuid(),
-                    'type': '电力预测',
-                    'time': '2020 年 %d 月 %d 日 %02d:%02d:%02d' % (i, i, i, i, i),
-                    'amount': 10
-                } for i in range(1, 13)
+                    'id': tag,
+                    'tagType': _categories[randint(0, _categories_count - 1)]
+                } for tag in sorted(_versions)
             ]
         }
 
-@register('predict', 'history', 'detail')
-class HistoryPredictionDetail(Resource):
+@register('predict', 'results', 'detail')
+class PredictionResultDetail(Resource):
     def get(self):
         try_print_args()
+        payload = {
+            'parameters': [
+                {
+                    'key': '方案名称',
+                    'value': request.args['tag']
+                },
+                {
+                    'key': '预测类型',
+                    'value': '远期预测'
+                },
+                {
+                    'key': '预测年份',
+                    'value': '2015 到 2020'
+                },
+                {
+                    'key': '预测方法',
+                    'value': '猜测法'
+                },
+                {
+                    'key': '预测时间',
+                    'value': '2021 年 1 月 21 日 11:04:33'
+                }
+            ],
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
+@register('predict', 'results', 'compare')
+class PredictionResultComparison(Resource):
+    def post(self):
+        try_print_json()
+        tags = request.json['tags']
+        payload = [
+            {
+                'tag': tag,
+                'data': [random() for _ in range(40)]
+            } for tag in tags
+        ]
         return {
             "msg": "success",
             "code": 200,
             "data": {
-                'type': '电力预测',
-                'time': '2020 年 4 月 20 日 14:07:33',
-                'dimension': 2,
-                'amount': 42,
-                'data': [
-                    {
-                        'x': 42,
-                        'y': 84,
-                        'y2nd': 88
-                    } for _ in range(20)
-                ]
+                'xName': '年份',
+                'xData': ['%i 年' % (i + 2000) for i in range(40)],
+                'yName': 'RMSE 值',
+                'yData': payload
             }
         }
 
