@@ -1336,7 +1336,7 @@ class ProvincialAndMunicipalPredict(Resource):
             'tableFourData': [
                 {
                     'year': i + 2010,
-                    'region': '某个地方',
+                    'region': '地方 %d' % i,
                     'predictBefore': random() * randint(300, 500),
                     'predictAfter': random() * randint(300, 500),
                 } for i in range(17)

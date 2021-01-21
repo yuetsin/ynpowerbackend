@@ -642,6 +642,9 @@ RESPONSE with
 ```python
 POST '/predict/provmuni' with
     {
+        'historyBeginYear': 2019,
+        'historyEndYear': 2020,
+        'predictYear': 2023,
         'provPlan': '预测专案一', # 如果设置为 `__byUpload__` 则从上传文件中读取
         'provFile': '省.csv',	# 如果 provPlan 是 __byUpload__，那么从这里读
         'muniData': {
