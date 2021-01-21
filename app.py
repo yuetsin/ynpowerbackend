@@ -1754,6 +1754,28 @@ class PredictionResultDetail(Resource):
     def get(self):
         try_print_args()
         payload = {
+            'parameters': [
+                {
+                    'key': '方案名称',
+                    'value': request.args['tag']
+                },
+                {
+                    'key': '预测类型',
+                    'value': '远期预测'
+                },
+                {
+                    'key': '预测年份',
+                    'value': '2015 到 2020'
+                },
+                {
+                    'key': '预测方法',
+                    'value': '猜测法'
+                },
+                {
+                    'key': '预测时间',
+                    'value': '2021 年 1 月 21 日 11:04:33'
+                }
+            ],
             'graphData': [
                 {
                     'xName': str(i), 
@@ -1779,6 +1801,28 @@ class PredictionResultDetail(Resource):
             "msg": "success",
             "code": 200,
             "data": payload
+        }
+
+@register('predict', 'results', 'compare')
+class PredictionResultComparison(Resource):
+    def post(self):
+        try_print_json()
+        tags = request.json['tags']
+        payload = [
+            {
+                'tag': tag,
+                'data': [random() for _ in range(40)]
+            } for tag in tags
+        ]
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": {
+                'xName': '年份',
+                'xData': ['%i 年' % (i + 2000) for i in range(40)],
+                'yName': 'RMSE 值',
+                'yData': payload
+            }
         }
 
 """

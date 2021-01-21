@@ -1098,8 +1098,28 @@ GET '/predict/results/detail' with
 	tag: 'v1.2'
 RESPONSE with
 	{
-        tag: 'v1.2',
-        tagType: 'LONGTERM',
+        parameters: [
+            {
+                'key': '方案名称',
+                'value': 'v1.2'
+            },
+            {
+                'key': '预测类型',
+                'value': '远期预测'
+            },
+            {
+                'key': '预测年份',
+                'value': '2015 到 2020'
+            },
+            {
+                'key': '预测方法',
+                'value': '猜测法'
+            },
+            {
+                'key': '预测时间',
+                'value': '2021 年 1 月 21 日 11:04:33'
+            }
+        ],
         graphData: [
             {
                 'xName': '横轴标签',
@@ -1121,6 +1141,34 @@ RESPONSE with
             }
         ]
     }
+```
+
+#### Prediction Comparison
+
+```python
+POST '/predict/results/compare' with
+	{
+        'tags': ['v1.1', 'v1.2', 'v1.4']
+        'trait': '对比特征'
+        # R2, or MAPE, or RMSE, or predictMVW
+    }
+RESPONSE with
+	{
+        xName: '年份',
+        xData: ['2010 年', '2011 年', '2012 年', '2013 年', ...],
+        yName: 'RMSE 值',
+        yData: [
+            {
+                'tag': 'v1.1',
+                'data': [1, 4, 2, 45, 8, 1]
+            },
+            {
+                'tag': 'v1.2',
+                'data': [3, 4, 1, 5, 1, 0]
+            }, ...
+        ]
+    }
+	
 ```
 
 ### Shared
