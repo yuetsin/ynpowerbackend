@@ -1735,42 +1735,50 @@ class YearlyContinuousPayloadPredictionParameters(Resource):
             }
         }
 
-@register('predict', 'history', 'query')
-class HistoryPredictionQuery(Resource):
+@register('predict', 'results', 'query')
+class PredictionResultsQuery(Resource):
     def get(self):
         return {
             "msg": "success",
             "code": 200,
             "data": [
                 {
-                    'id': get_uuid(),
-                    'type': '电力预测',
-                    'time': '2020 年 %d 月 %d 日 %02d:%02d:%02d' % (i, i, i, i, i),
-                    'amount': 10
-                } for i in range(1, 13)
+                    'id': tag,
+                    'tagType': _categories[randint(0, _categories_count - 1)]
+                } for tag in sorted(_versions)
             ]
         }
 
-@register('predict', 'history', 'detail')
-class HistoryPredictionDetail(Resource):
+@register('predict', 'results', 'detail')
+class PredictionResultDetail(Resource):
     def get(self):
         try_print_args()
+        payload = {
+            'graphData': [
+                {
+                    'xName': str(i), 
+                    'yValue': randint(0, 1000)
+                } for i in range(1, 18)
+            ],
+            'tableOneData': [
+                {
+                    'index': '评价指标 %d' % i,
+                    'r2': random(),
+                    'mape': random(),
+                    'rmse': random()
+                } for i in range(1, 18)
+            ],
+            'tableTwoData': [
+                {
+                    'year': i + 2010,
+                    'predict': random() * randint(300, 500)
+                } for i in range(17)
+            ]
+        }
         return {
             "msg": "success",
             "code": 200,
-            "data": {
-                'type': '电力预测',
-                'time': '2020 年 4 月 20 日 14:07:33',
-                'dimension': 2,
-                'amount': 42,
-                'data': [
-                    {
-                        'x': 42,
-                        'y': 84,
-                        'y2nd': 88
-                    } for _ in range(20)
-                ]
-            }
+            "data": payload
         }
 
 """

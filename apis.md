@@ -1067,35 +1067,58 @@ RESPONSE with
         endYear: null,
         maxPayload: null,
     }
-
-### History Predictions
-
-#### History Prediction Query
-
-​```python
-GET '/predict/history/query' with
-    None
-RESPONSE with
-    ['v1.1', 'v1.2']
 ```
 
-#### History Prediction Detail
+### Predict Results
+
+>   这里的 Results 只包括「电力电量预测」部分（省市总分协调预测除外）。
+>
+>   他们的预测结果都遵从同样的格式——一张 x - y 图表，两张数据表。
+
+#### Query All Predictions
 
 ```python
-GET '/predict/history/detail' with
-	tag: 'v3.1'
+GET '/predict/results/query' with
+	None
 RESPONSE with
 	{
-        'type': '电力预测 / 负载预测 / etc.',              # 预测类型
-        'time': '2020 年 4 月 20 日 14:07:33',           # 预测时间
-        'dimension': 1 # or 2                           # 数据维度（y 轴有几个变量？）
-        'amount': 42,                                   # 数据量
-        'data': [
+        'id': 'v1.0',
+        'tagType': 'MIX'
+    },
+    {
+        'id': 'v1.1',
+        'tagType': 'LONGTERM'
+    }, ...
+```
+
+#### Get Prediction Details
+
+```python
+GET '/predict/results/detail' with
+	tag: 'v1.2'
+RESPONSE with
+	{
+        tag: 'v1.2',
+        tagType: 'LONGTERM',
+        graphData: [
             {
-                'x': 42,
-                'y': 84,
-                'y2nd': 88                              # [Optional], 如果 dimension 是 2
+                'xName': '横轴标签',
+                'yValue': '纵轴数字值'
             }, ...
+        ],
+        tableOneData: [
+            {
+                'index': '评价指标',
+                'r2': '就是 R2',
+                'mape': '就是 MAPE',
+                'rmse': '就是 RMSE'
+            }
+        ],
+        tableTwoData: [
+            {
+                'year': '年份',
+                'predict': '预测值（MVW）'
+            }
         ]
     }
 ```
