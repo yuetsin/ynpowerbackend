@@ -1825,6 +1825,82 @@ class PredictionResultComparison(Resource):
             }
         }
 
+@register('payload', 'charts', 'daily')
+class PayloadChartsDaily(Resource):
+    def get(self):
+        try_print_args()
+        return {
+            'metaData': {
+                'dayMaxPayload': 42.4,
+                'dayAveragePayload': 40.0,
+                'dayPayloadRate': 0.5342,
+                'dayMinPayloadRate': 0.3023,
+                'dayPeekValleyDiff': 0.3010,
+                'dayPeekValleyDiffRate': 0.1044
+            },
+            'xName': '小时',
+            'xData': list(range(0, 24, 2)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '原始负荷',
+                    'data': [random() for _ in range(12)]
+                },
+                {
+                    'tag': '预测负荷',
+                    'data': [random() for _ in range(12)]
+                }
+            ]
+        }
+
+@register('payload', 'charts', 'daily', 'typical')
+class PayloadChartsDailyTypical(Resource):
+    def get(self):
+        try_print_args()
+        return {
+            'xName': '小时',
+            'xData': list(range(0, 24, 2)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '典型负荷',
+                    'data': [random() for _ in range(12)]
+                }
+            ]
+        }
+
+@register('payload', 'charts', 'monthly')
+class PayloadChartsMonthly(Resource):
+    def get(self):
+        try_print_args()
+        return {
+            'xName': '月份',
+            'xData': list(range(1, 13)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '负荷',
+                    'data': [random() for _ in range(12)]
+                }
+            ]
+        }
+
+@register('payload', 'charts', 'yearly')
+class PayloadChartsYearly(Resource):
+    def get(self):
+        try_print_args()
+        return {
+            'xName': '年份',
+            'xData': list(range(2000, 2012)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '负荷',
+                    'data': [random() for _ in range(12)]
+                }
+            ]
+        }
+
 """
 fore-end related http apis
 END

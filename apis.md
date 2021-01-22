@@ -779,6 +779,101 @@ RESPONSE with
     ]
 ```
 
+### Payload Charts
+
+#### Daily Charts
+
+```python
+GET '/payload/charts/daily' with
+	day: '2020/10/1'	# 和 /payload/traits/daily 里拿到的格式一样
+RESPONSE with
+	{
+        metaData: {
+            'dayMaxPayload': 42.4,
+            'dayAveragePayload': 40.0,
+            'dayPayloadRate': 0.5342,
+            'dayMinPayloadRate': 0.3023,
+            'dayPeekValleyDiff': 0.3010,
+            'dayPeekValleyDiffRate': 0.1044
+        },
+        xName: '小时',
+        xData: ['0', '2', '4', '6', ...],
+        yName: '单位：MW',
+        yData: [
+            {
+                'tag': '原始负荷',
+                'data': [1, 4, 2, 45, 8, 1]
+            },
+            {
+                'tag': '预测负荷',
+                'data': [3, 4, 1, 5, 1, 0]
+            }
+        ]
+    }
+```
+
+#### Typical Daily Charts
+
+```python
+GET '/payload/charts/daily/typical' with
+	year: 2020,
+    period: '时期' # 丰水期、汛前枯期、汛后枯期
+    category: '类型' # 最大负荷、最小负荷、中位负荷
+RESPONSE with
+	{
+        xName: '小时',
+        xData: ['0', '2', '4', '6', ...],
+        yName: '单位：MW',
+        yData: [
+            {
+                'tag': '典型负荷',
+                'data': [1, 4, 2, 45, 8, 1]
+            }
+        ]
+    }
+```
+
+#### Monthly Payload Charts
+
+```python
+GET '/payload/charts/monthly' with
+	year: 2021,
+    category: '类型' # 年负荷曲线、年连续负荷曲线、月平均日负荷曲线、月平均日负荷率曲线、月最大峰谷差曲线、月最大峰谷差率曲线、月不均衡系数曲线
+RESPONSE with
+	{
+        xName: '月份',
+        xData: ['1', '2', '3', '4', ...],
+        yName: '单位：MW',
+        yData: [
+            {
+                'tag': '负荷',
+                'data': [1, 4, 2, 45, 8, 1]
+            }
+        ]
+    }
+```
+
+#### Yearly Payload Charts
+
+```python
+GET '/payload/charts/yearly' with
+	beginYear: 2021,
+    endYear: 2024,
+    category: '类型' # 历年最大负荷曲线、历年平均日负荷率曲线、历年最大峰谷差曲线、历年最大峰谷差率曲线、历年季不平衡系数曲线
+RESPONSE with
+	{
+        xName: '年份',
+        xData: ['1972', '1973', '1974', '1975', ...],
+        yName: '单位：MW',
+        yData: [
+            {
+                'tag': '负荷',
+                'data': [1, 4, 2, 45, 8, 1]
+            }
+        ]
+    }
+```
+
 ### Payload Predicts
 
 #### Database Query Method
@@ -1168,7 +1263,6 @@ RESPONSE with
             }, ...
         ]
     }
-	
 ```
 
 ### Shared
