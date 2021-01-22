@@ -261,6 +261,8 @@ RESPONSE with
 POST '/db/except/query' with
     category: list[str]
     beginYear: int
+    grain: str
+    region: str
     endYear: int
 RESPONSE with
     [
@@ -330,6 +332,7 @@ RESPONSE with
 ```python
 POST '/mining/request' with
     tag: str
+    tagType: 'MINING'
     region: str
     factors: list[str]
     method: str                         # Pearson / KMeans / PCA / ARL
@@ -391,7 +394,8 @@ POST '/predict/region/single' with
             hasValue: true,
             value: '',
         },
-        tag: 'v2.1'
+        tag: 'v2.1',
+        tagType: 'STATIC_REGIONAL'
       },
 RESPONSE with
     graphData: [
@@ -437,7 +441,8 @@ POST '/predict/region/mix' with
         region: '',
         industry: '',
         selectedMethods: [],
-        tag: 'v2.1'
+        tag: 'v2.1',
+        tagType: 'MIX'
       },
 RESPONSE with
     graphData: [
@@ -474,7 +479,8 @@ POST '/predict/industry/single' with
         'industry': '农业',
         'method': '基于EEMD的行业用电量预测',
         'parameters': [..., ...],
-        'tag': 'v2.1'
+        'tag': 'v2.1',
+        'tagType': 'DYNAMIC_INDUSTRIAL'
     }
 RESPONSE with
     graphData: [
@@ -520,7 +526,8 @@ POST '/predict/industry/mix' with
         region: '',
         industry: '',
         selectedMethods: [],
-        tag: 'v2.1'
+        tag: 'v2.1',
+        tagType: 'MIX'
       },
 RESPONSE with
     graphData: [
@@ -557,7 +564,8 @@ POST '/predict/saturation' with
         region: '',
         industry: '',
         selectedMethods: [],
-        tag: 'v2.1'
+        tag: 'v2.1',
+        tagType: 'LONGTERM'
       },
 RESPONSE with
     graphData: [
@@ -594,7 +602,8 @@ POST '/predict/payload' with
         region: '',
         industry: '',
         selectedMethods: [],
-        tag: 'v2.1'
+        tag: 'v2.1',
+        tagType: 'LONGTERM'
       },
 RESPONSE with
     graphData: [
@@ -692,7 +701,8 @@ POST '/predict/bigdata' with
             }, ...
          ],
          'region': '丽江市',
-         'tag': 'v2.1'
+         'tag': 'v2.1',
+        'tagType': 'BIGUSER'
     }
 RESPONSE with
     graphData: [
@@ -902,6 +912,8 @@ POST '/payload/predict/dbquery' with
     predictDailyAmonut: 100,
     gammaValue: 0.490,
     betaValue: 0.121,
+    tag: str,
+    tagType: 'SOKU'
 RESPONSE with
     [
         {
@@ -921,6 +933,8 @@ POST '/payload/predict/clamping' with
     season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
     predictMaxPayload: 42,
     predictDailyAmonut: 100
+	tag: str,
+    tagType: 'CLAMP'
 RESPONSE with
     [
         {
@@ -940,6 +954,8 @@ POST '/payload/predict/interp' with
     season: 1 # 2 or 3 or 4, Spring, Summer, Autumn, Winter
     predictMaxPayload: 42,
     predictDailyAmonut: 100
+    tag: str,
+    tagType: 'INTERP'
 RESPONSE with
     [
         {
@@ -957,6 +973,8 @@ POST '/payload/predict/yearly' with
     startYear: 2019,
     endYear: 2023,
     predictMaxPayload: 42
+    tag: str,
+    tagType: 'YEARCONT'
 RESPONSE with
     [
         {
