@@ -9,7 +9,7 @@ from Controller.program import *
 from algorithms import *
 import dao
 import json
-import numpy as np
+
 
 # import os
 # _dir = './apis'
@@ -39,22 +39,7 @@ def try_print_files():
     except RuntimeError:
         pass
 
-class GetProgramName(Resource):
-    def post(self):
-        name = getProgramNameController()
-        re = {
-            "name": name
-        }
-        return re
 
-
-class GetProgramLastInfo(Resource):
-    def post(self):
-        con = getProgramLastInfo()
-        re = {
-
-        }
-        return re
 
 class UploadCSV(Resource):
     def post(self):
@@ -64,28 +49,37 @@ class UploadCSV(Resource):
         area = l[0]
         grain = l[1]
         kind = l[2]
-        datatype = {'Year': 'S', 'year': 'S'}
+        datatype = {'Year': 'S', 'year': 'S','datetime':'S', 'DT':'S'}
         #dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d')
         #data = pd.read_csv(file, encoding='utf-8',  parse_dates=['year'], date_parser=pd.to_datetime)
         data = pd.read_csv(file, encoding='utf-8', dtype=datatype)
-        header = [i for i in data.columns]
-        x, y = data.shape
-        allData = []
-        for i in range(x):
-            t = data.iloc[i][0]
-            for j in range(1, y):
-                temp = [t, header[j], data.iloc[i][j], grain, area, kind]
-                allData.append(temp)
+        # data = pd.read_csv(file, encoding='utf-8')
 
-        allData = pd.DataFrame(allData)
-        allData.columns = ['datatime', 'dataname', 'datavalue', 'grain', 'area', 'kind']
-        print(allData)
-        uploadData(allData)
+        # print(data)
+        uploadData(data, area, grain, kind)
         re = {
             "message": 'success'
         }
         return re
 
+class insertAlgorithmResult(Resource):
+    def post(self):
+        content = request.json['result']
+        tag = request.json['tag']
+        print(content)
+        re = insertAlgorithmReusltController(content, tag)
+        re = {
+            "message": 'success'
+        }
+        return re
+class getAlgorithmResult(Resource):
+    def post(self):
+        tags = request.json['tags'].strip()
+        results = getAlgorithmReusltController(tags)
+        re = {
+            "results": results
+        }
+        return json.dumps(re)
 
 class GetDataJson(Resource):
     def post(self):
@@ -1983,8 +1977,8 @@ api.add_resource(Binarylinear, "/api/Binarylinear")
 api.add_resource(Kmeans, "/api/Kmeans")
 api.add_resource(PCA, "/api/PCA")
 api.add_resource(AssociationRule, "/api/AssociationRule")
-api.add_resource(GetProgramName, "/api/getProgramName")
-api.add_resource(GetProgramLastInfo, "/api/getProgramLastInfo")
+api.add_resource(insertAlgorithmResult, "/api/insert/result")
+api.add_resource(getAlgorithmResult, "/api/get/result")
 
 if __name__ == '__main__':
     app.run()

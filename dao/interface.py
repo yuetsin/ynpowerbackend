@@ -2,7 +2,9 @@ import sqlalchemy
 import sqlalchemy as db
 import json
 import pandas as pd
+import numpy as np
 import psycopg2
+from utils.tools import formateTimeString
 
 
 class Database():
@@ -40,23 +42,30 @@ def insertData(data):
     pd.io.sql.to_sql(data, 'electric_data', engine, index=False, if_exists='replace')
     return
 
-def addPowerData(data):
+def addPowerData(data, area, grain, kind):
     #conn = psycopg2.connect(dbname="electric", user="postgres", password="ynpower", host="127.0.0.1", port="5432")
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108", port="32345")
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club", port="32345")
     cur = conn.cursor()
-    for index, row in data.iterrows():
-        sql = "SELECT * FROM electric_data where datatime = '{}' and dataname = '{}' and grain = '{}' and area = '{}' and kind = '{}'".format(row['datatime'], row['dataname'], row['grain'], row['area'], row['kind'])
-        #print(sql)
-        cur.execute(sql)
-        rows = cur.fetchall()
-        conn.commit()
-        if len(rows) > 0:
-
-            cur.execute("UPDATE electric_data SET datavalue={} WHERE datatime = '{}' and dataname = '{}' and grain = '{}' and area = '{}' and kind = '{}'".format(row['datavalue'],  row['datatime'], row['dataname'], row['grain'], row['area'], row['kind']))
-            conn.commit()
-        else:
-            cur.execute("INSERT INTO electric_data VALUES('{}', '{}', {}, '{}', '{}','{}')".format(row['datatime'], row['dataname'], row['datavalue'], row['grain'], row['area'], row['kind']))
-            conn.commit()
+    values = []
+    insertjoin = " "
+    x, y = data.shape
+    # print(data.columns)
+    header = [i for i in data.columns]
+    for i in range(x):
+        datatime = data.iloc[i][0]
+        datatime = formateTimeString(datatime, grain)
+        for j in range(1, y):
+            if np.isnan(data.iloc[i][j]):
+                continue
+            # print(data.iloc[i][j], header[j])
+            values.append("INSERT INTO electric_data VALUES('{}', '{}', {}, '{}', '{}', '{}') on conflict on constraint unique_all_cons do update set datavalue={};".format(
+                    datatime, header[j],data.iloc[i][j], grain, area, kind, data.iloc[i][j]))
+    # for index, row in data.iterrows():
+    #     print(row, area, grain, kind)
+    insert = insertjoin.join(values)
+    # print(insert)
+    cur.execute(insert)
+    conn.commit()
     conn.close()
 
 def getData(location, dataName, startTime, endTime):
@@ -65,13 +74,15 @@ def getData(location, dataName, startTime, endTime):
     area = l[0]
     kind = l[2]
     d = Database()
+    startTime = formateTimeString(startTime, grain)
+    endTime = formateTimeString(endTime, grain)
     sql = "select * from electric_data where dataname='%s' and grain = '%s' and area = '%s' and datatime >= '%s' and datatime <= '%s'  and kind = '%s'" % (
         dataName, grain, area, startTime, endTime, kind)
     print(sql)
     resultDict = d.connection.execute(sql).fetchall()
     newDict = {}
     for r in resultDict:
-        print(r)
+        # print(r)
         newDict[r[0]] = r[2]
     resultJsonStr = json.dumps(newDict)
     return resultJsonStr
@@ -88,3 +99,54 @@ def getUserByPsAndName(username, password):
         return True
     else:
         return False
+
+
+
+def insertAlgorithmResult(result, tag):
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                            port="32345")
+    cur = conn.cursor()
+    result = json.dumps(result)
+    sql = "INSERT INTO program (tag, content) VALUES('{}', '{}') on conflict on constraint unique_tag do update set content='{}';".format(tag, result, result)
+    # print(sql)
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
+    return
+
+def getAlgorithmResultByTag(tags):
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                            port="32345")
+    cur = conn.cursor()
+    tagslist = tags.split(',')
+    tag = ""
+    for i in range(len(tagslist)):
+        tag += "'" + tagslist[i] + "'"
+        if i != len(tagslist) - 1:
+            tag += ","
+    sql = "select tag, content from program where tag in ({})".format(tag)
+    # print(sql)
+    cur.execute(sql)
+    rows = cur.fetchall()
+    conn.commit()
+    conn.close()
+    return rows
+
+
+
+
+
+if __name__ == '__main__':
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
+                            port="32345")
+    cur = conn.cursor()
+    grain = "year"
+    area = "yunnan"
+    kind = "test"
+    data = [('2018', 'GDPperpop', 37136.0, 'year', 'yunnan', 'test'), ('2018', 'GDP', 17881.12, 'year', 'yunnan', 'test'), ('2018', 'population', 4829.5, 'year', 'yunnan', 'test'), ('2020', 'populations', 4829.5, 'year', 'yunnan', 'test')]
+    sql = "SELECT * FROM electric_data where grain = '{}' and area = '{}' and kind = '{}'".format(
+        grain, area, kind)
+    cur.execute(sql)
+    rows = cur.fetchall()
+
+    print(rows)

@@ -1,10 +1,9 @@
-from dao.program import *
+from dao.interface import *
 
-def getProgramNameController():
-    re = getProgramName()
+def insertAlgorithmReusltController(content, tag):
+    re = insertAlgorithmResult(content, tag)
     return re
 
-def getProgramLastInfo():
-
-    re = getLastInfo()
+def getAlgorithmReusltController(tags):
+    re = getAlgorithmResultByTag(tags)
     return re

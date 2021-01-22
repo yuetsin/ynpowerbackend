@@ -115,7 +115,7 @@ def GM(StartYear,EndYear,PreStartYear,PreEndYear,timestep=15,pretype="consumptio
                 trainyear.append(final.index[count])
                 break
 
-    result={"trainfromyear":trainyear[0],"traintoyear":trainyear[-1],"trainresult":trainpre,"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre,"MAPE":mape,"RMSE":rmse}
+    result={"trainfromyear":trainyear[0],"traintoyear":trainyear[-1],"trainresult":trainpre,"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist(),"MAPE":mape,"RMSE":rmse}
     #保存
     return result
 if __name__ == '__main__':
