@@ -1829,15 +1829,29 @@ class PredictionResultComparison(Resource):
 class PayloadChartsDaily(Resource):
     def get(self):
         try_print_args()
-        return {
-            'metaData': {
-                'dayMaxPayload': 42.4,
-                'dayAveragePayload': 40.0,
-                'dayPayloadRate': 0.5342,
-                'dayMinPayloadRate': 0.3023,
-                'dayPeekValleyDiff': 0.3010,
-                'dayPeekValleyDiffRate': 0.1044
-            },
+        payload = {
+            'metaData': [
+                {
+                    'key': '日最大负载',
+                    'value': 42.4
+                },
+                {
+                    'key': '日平均负载',
+                    'value': 11.6
+                },
+                {
+                    'key': '日负载率',
+                    'value': '50.5%'
+                },
+                {
+                    'key': '日峰谷差',
+                    'value': 3000
+                },
+                {
+                    'key': '日峰谷差率',
+                    'value': '50%'
+                }
+            ],
             'xName': '小时',
             'xData': list(range(0, 24, 2)),
             'yName': '单位：MW',
@@ -1852,12 +1866,17 @@ class PayloadChartsDaily(Resource):
                 }
             ]
         }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
 
 @register('payload', 'charts', 'daily', 'typical')
 class PayloadChartsDailyTypical(Resource):
     def get(self):
         try_print_args()
-        return {
+        payload = {
             'xName': '小时',
             'xData': list(range(0, 24, 2)),
             'yName': '单位：MW',
@@ -1868,12 +1887,17 @@ class PayloadChartsDailyTypical(Resource):
                 }
             ]
         }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
 
 @register('payload', 'charts', 'monthly')
 class PayloadChartsMonthly(Resource):
     def get(self):
         try_print_args()
-        return {
+        payload = {
             'xName': '月份',
             'xData': list(range(1, 13)),
             'yName': '单位：MW',
@@ -1884,12 +1908,17 @@ class PayloadChartsMonthly(Resource):
                 }
             ]
         }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
 
 @register('payload', 'charts', 'yearly')
 class PayloadChartsYearly(Resource):
     def get(self):
         try_print_args()
-        return {
+        payload = {
             'xName': '年份',
             'xData': list(range(2000, 2012)),
             'yName': '单位：MW',
@@ -1899,6 +1928,11 @@ class PayloadChartsYearly(Resource):
                     'data': [random() for _ in range(12)]
                 }
             ]
+        }
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": payload
         }
 
 """

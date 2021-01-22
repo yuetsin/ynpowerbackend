@@ -789,14 +789,28 @@ GET '/payload/charts/daily' with
                               # 「yyyy 年 MM 月 dd 日」
 RESPONSE with
 	{
-        metaData: {
-            'dayMaxPayload': 42.4,
-            'dayAveragePayload': 40.0,
-            'dayPayloadRate': 0.5342,
-            'dayMinPayloadRate': 0.3023,
-            'dayPeekValleyDiff': 0.3010,
-            'dayPeekValleyDiffRate': 0.1044
-        },
+        metaData: [
+            {
+                'key': '日最大负载',
+                'value': 42.4
+            },
+            {
+                'key': '日平均负载',
+                'value': 11.6
+            },
+            {
+                'key': '日负载率',
+                'value': '50.5%'
+            },
+            {
+                'key': '日峰谷差',
+                'value': 3000
+            },
+            {
+                'key': '日峰谷差率',
+                'value': '50%'
+            }
+        ],
         xName: '小时',
         xData: ['0', '2', '4', '6', ...],
         yName: '单位：MW',
