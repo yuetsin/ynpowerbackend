@@ -785,7 +785,8 @@ RESPONSE with
 
 ```python
 GET '/payload/charts/daily' with
-	day: '2020/10/1'	# 和 /payload/traits/daily 里拿到的格式一样
+	day: '2020 年 10 月 1 日'	# 和 /payload/traits/daily 里拿到的格式一样
+                              # 「yyyy 年 MM 月 dd 日」
 RESPONSE with
 	{
         metaData: {
