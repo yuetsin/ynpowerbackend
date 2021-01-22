@@ -1980,5 +1980,7 @@ api.add_resource(AssociationRule, "/api/AssociationRule")
 api.add_resource(insertAlgorithmResult, "/api/insert/result")
 api.add_resource(getAlgorithmResult, "/api/get/result")
 
+
+
 if __name__ == '__main__':
     app.run()
