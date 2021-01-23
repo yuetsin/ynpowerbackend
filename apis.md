@@ -193,6 +193,15 @@ RESPONSE with
 
 ### DataBaseCRUD
 
+#### Upload Data
+
+```python
+POST '/db/upload' with
+	FILE
+RESPONSE with
+	None
+```
+
 #### Perform Query
 
 ```python
@@ -376,7 +385,7 @@ RESPONSE with
 
 ```python
 POST '/predict/region/single' with
-    postParams: {
+    {
         beginYear: null,
         endYear: null,
         historyBeginYear: null,
@@ -733,12 +742,12 @@ RESPONSE with
 
 ```python
 GET '/payload/traits/daily' with
-    beginDay: '20200416'    # yyyyMMdd
-    endDay: '20200816'      # yyyyMMdd
+    beginDay: 'yyyy/MM/dd'    # yyyy/MM/dd
+    endDay: 'yyyy/MM/dd'      # yyyy/MM/dd
 RESPOSNE with
     [
         {
-            'day': '2020 年 4 月 14 日',
+            'day': '2020/4/14',
             'dayMaxPayload': 42.4,
             'dayAveragePayload': 40.0,
             'dayPayloadRate': 0.5342,
@@ -753,12 +762,12 @@ RESPOSNE with
 
 ```python
 GET '/payload/traits/monthly' with
-    beginMonth: '202004',   # yyyyMM
-    endMonth: '202009',     # yyyyMM
+    beginMonth: '2020/04',   # yyyy/MM
+    endMonth: '2020/09',     # yyyy/MM
 RESPONSE with
     [
         {
-            'month': '2020 年 9 月',
+            'month': '2020/9',
             'monthAverageDailyPayload': 148.03,
             'monthMaxPeekValleyDiff': 0.3010,
             'monthAverageDailyPayloadRate': 0.4044,
@@ -778,7 +787,7 @@ GET '/payload/traits/year' with
 RESPONSE with
     [
         {
-            'year': '2020 年',
+            'year': '2020',
             'yearMaxPayload': 489138401,
             'yearAverageDailyPayloadRate': 49.10,
             'seasonImbaRate': 46656,
@@ -795,8 +804,8 @@ RESPONSE with
 
 ```python
 GET '/payload/charts/daily' with
-	day: '2020 年 10 月 1 日'	# 和 /payload/traits/daily 里拿到的格式一样
-                              # 「yyyy 年 MM 月 dd 日」
+	day: '2020/10/1'	# 和 /payload/traits/daily 里拿到的格式一样
+                              # 「yyyy/MM/dd」
 RESPONSE with
 	{
         metaData: [
@@ -1135,7 +1144,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/soku' with
-    None
+    tag: str
 RESPONSE with
     {
         beginYear: null,
@@ -1154,7 +1163,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/clamping' with
-    None
+    tag: str
 RESPONSE with
     {
         beginYear: null,
@@ -1171,7 +1180,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/interp' with
-    None
+    tag: str
 RESPONSE with
     {
         beginYear: null,
@@ -1188,7 +1197,7 @@ RESPONSE with
 
 ```python
 GET '/params/predict/yearcont' with
-    None
+    tag: str
 RESPONSE with
     {
         beginYear: null,
