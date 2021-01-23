@@ -270,9 +270,9 @@ RESPONSE with
 POST '/db/except/query' with
     category: list[str]
     beginYear: int
+    endYear: int
     grain: str
     region: str
-    endYear: int
 RESPONSE with
     [
         {
@@ -293,6 +293,7 @@ POST '/db/except/resolve' with
     originData: dict {
         category: list[str]
         grain: str
+        region: str
         key: str
         value: str
         suggest: str
@@ -300,6 +301,7 @@ POST '/db/except/resolve' with
     modifiedData: dict {
         category: list[str]
         grain: str
+        region: str
         key: str
         value: str
         suggest: str
@@ -315,6 +317,7 @@ POST '/db/except/accept' with
     acceptData: dict {
         category: list[str]
         grain: str
+        region: str
         key: str
         value: str
         suggest: str
