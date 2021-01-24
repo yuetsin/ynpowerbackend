@@ -575,7 +575,7 @@ POST '/predict/saturation' with
         historyEndYear: null,
         region: '',
         industry: '',
-        selectedMethods: [],
+        method: '',
         tag: 'v2.1',
         tagType: 'LONGTERM'
       },
@@ -613,7 +613,7 @@ POST '/predict/payload' with
         historyEndYear: null,
         region: '',
         industry: '',
-        selectedMethods: [],
+        method: '',
         tag: 'v2.1',
         tagType: 'LONGTERM'
       },
