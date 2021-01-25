@@ -2,7 +2,8 @@ import requests
 import json
 from datetime import datetime
 
-host = "http://dclab.club:18000/"
+# host = "http://dclab.club:18000/"
+host = "http://localhost:5000/"
 
 def getData(location, dataName, startTime, endTime):
     l = location.split("_")
@@ -73,20 +74,23 @@ def formateTimeString(t, grain):
     return timestr
 
 if __name__ == '__main__':
-    # r = getData("yunnan_year_社会经济类", "GDP1", "2008", "2016")
+    # r = getData("yunnan_year_社会经济类-test", "GDP1", "2008", "2016")
     # re = json.loads(r)
     # print(re)
     # r = getAlgorithmResult("tv1,tv2")
     # re = json.loads(r)
     # print(re)
     # from algorithms.GM import GM
+    # from  utils.tools import getAlgorithm
     # StartYear = "1990"
     # EndYear = "2019"
     # PreStartYear = "2020"
     # PreEndYear = "2029"
     # timestep = 15
     # pretype = "consumption"
-    # result = GM(StartYear, EndYear, PreStartYear, PreEndYear, timestep, pretype="consumption")
+    # f = getAlgorithm("GM")
+    # result1 = f(StartYear, EndYear, PreStartYear, PreEndYear, timestep, pretype="consumption")
+    # result2 = GM(StartYear, EndYear, PreStartYear, PreEndYear, timestep, pretype="consumption")
     # content = {}
     # content['arg'] = {
     #     "StartYear" : "1990",
@@ -97,7 +101,8 @@ if __name__ == '__main__':
     #     "pretype" : "consumption"
     # }
     # content['result'] = result
-    # print(result)
+    # print(result1)
+    # print(result2)
     # r = insertAlgorithmResult("tv3", result)
     # print(r)
     # r = getAlgorithmResult("tv3")
@@ -106,5 +111,6 @@ if __name__ == '__main__':
     # content = json.loads(re['results'][0][1])
     # print(type(content))
     # print(content['trainfromyear'])
-    result = getData("yunnan_day_电力电量类", "N00_00", "2013/1/1", "2013/1/3")
+    result = getData("yunnan_day_电力电量类-测试1", "N19_15", "2013/1/1", "2013/1/3")
     print(result)
+

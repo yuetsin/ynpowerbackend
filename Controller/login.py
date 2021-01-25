@@ -1,5 +1,5 @@
 from dao import *
 def login(username, password):
-    b = getUserByPsAndName(username, password)
+    b = checkPerson(username, password)
     return b
 

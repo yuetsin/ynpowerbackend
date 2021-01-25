@@ -4,12 +4,13 @@ from flask_cors import CORS
 from flask_restful import Resource, Api
 from pprint import pprint, pformat
 from Controller import uploadData
-from Controller.login import login
+from Controller.login import *
 from Controller.program import *
 from algorithms import *
 import dao
+import csv
 import json
-
+from Controller.operate import *
 
 # import os
 # _dir = './apis'
@@ -49,13 +50,10 @@ class UploadCSV(Resource):
         area = l[0]
         grain = l[1]
         kind = l[2]
-        datatype = {'Year': 'S', 'year': 'S','datetime':'S', 'DT':'S'}
-        #dateparse = lambda x: pd.datetime.strptime(x, '%Y-%m-%d')
-        #data = pd.read_csv(file, encoding='utf-8',  parse_dates=['year'], date_parser=pd.to_datetime)
-        data = pd.read_csv(file, encoding='utf-8', dtype=datatype)
-        # data = pd.read_csv(file, encoding='utf-8')
 
-        # print(data)
+        datatype = {'Year': 'S', 'year': 'S','datetime':'S', 'DT':'S'}
+        data = pd.read_csv(file, encoding='utf-8', dtype=datatype)
+
         uploadData(data, area, grain, kind)
         re = {
             "message": 'success'
@@ -83,13 +81,15 @@ class getAlgorithmResult(Resource):
 
 class GetDataJson(Resource):
     def post(self):
-        dataName = request.json['dataName'].strip()
+        dataName = request.json['dataName']
         startTime = request.json['startTime'].strip()
         endTime = request.json['endTime'].strip()
         grain = request.json['grain'].strip()
         area = request.json['area'].strip()
         kind = request.json['kind'].strip()
         re = dao.getData(area + "_" + grain + "_" + kind, dataName, startTime, endTime)
+
+        # re = dao.getDataTest(area + "_" + grain + "_" + kind, dataName, startTime, endTime)
         return re
 
     def get(self):
@@ -103,431 +103,6 @@ class GetDataJson(Resource):
             "status": '200'
         }
         return re
-
-class Compute(Resource):
-    def post(self):
-
-        SelectYear = request.json['SelectYear'].strip()
-        SelectMonth = request.json['SelectMonth'].strip()
-        SelectDay = request.json['SelectDay'].strip()
-
-        re = ""
-        return re
-
-
-class Clamp_force(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        SelectYear = request.json['SelectYear'].strip()
-        SelectMonth = request.json['SelectMonth'].strip()
-        SelectDay = request.json['SelectDay'].strip()
-        premaxload = request.json['premaxload'].strip()
-        pretotal = request.json['pretotal'].strip()
-        re = ""
-        return re
-
-
-class Search(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        SelectYear = request.json['SelectYear'].strip()
-        SelectMonth = request.json['SelectMonth'].strip()
-        premaxload = request.json['premaxload'].strip()
-        SelectDay = request.json['SelectDay'].strip()
-        pretotal = request.json['pretotal'].strip()
-        pregamma = request.json['pregamma'].strip()
-        prebeta = request.json['prebeta'].strip()
-        re = ""
-        return re
-
-
-
-class Fractal(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        SelectYear = request.json['SelectYear'].strip()
-        SelectMonth = request.json['SelectMonth'].strip()
-        SelectDay = request.json['SelectDay'].strip()
-        premaxload = request.json['premaxload'].strip()
-        pretotal = request.json['pretotal'].strip()
-        re = ""
-        return re
-
-class SARIMA_Industry(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class EEMD__Industry(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class PCA__Industry(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-        Pclist = request.json['Pclist'].strip()
-
-        re = ""
-        return re
-
-
-class RandomForest_Industry(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class ANN__Industry(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class Combination_Industry(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class StepwiseRegression(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class GM(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class FGM(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class GPRM(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class GMR(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class FLR(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class FER(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class Combination(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class GBDT(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class SVM(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class RNN(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class LSTM(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-#ESQRM 算法
-class Esqrm(Resource):
-    def post(self):
-
-        StartYear = request.json['StartYear']
-        EndYear = request.json['EndYear']
-        PreStartYear = request.json['PreStartYear']
-        PreEndYear = request.json['PreEndYear']
-        result = ESQRM(StartYear, EndYear, PreStartYear, PreEndYear, quatile=0.95, pretype="consumption", econamelist=["GDP1"], city="云南省")
-        re = {
-            "result": result
-        }
-        return json.dumps(re, ensure_ascii=False)
-
-
-class QuantileRegression(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class MultiIndustryDailyProfile(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class MaxUtilizationHourR(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class SARIMA(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class LFconsideringTempHoliday(Resource):
-    def post(self):
-        PreLoad = request.json['PreLoad'].strip()
-        MAPE = request.json['MAPE'].strip()
-        RMSE = request.json['RMSE'].strip()
-
-        re = ""
-        return re
-
-
-class Unarylinear(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        PreStartYear = request.json['PreStartYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-        PlanFlag = request.json['PlanFlag'].strip()
-        Plan = request.json['Plan'].strip()
-        re = ""
-        return re
-
-
-class Squarereg(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        PreStartYear = request.json['PreStartYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-        PlanFlag = request.json['PlanFlag'].strip()
-        Plan = request.json['Plan'].strip()
-
-        re = ""
-        return re
-
-
-class Power(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        PreStartYear = request.json['PreStartYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-        PlanFlag = request.json['PlanFlag'].strip()
-        Plan = request.json['Plan'].strip()
-
-        re = ""
-        return re
-
-
-class Growth(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        PreStartYear = request.json['PreStartYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-        PlanFlag = request.json['PlanFlag'].strip()
-        Plan = request.json['Plan'].strip()
-
-        re = ""
-        return re
-
-
-class Exponent(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        PreStartYear = request.json['PreStartYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-        PlanFlag = request.json['PlanFlag'].strip()
-        Plan = request.json['Plan'].strip()
-
-        re = ""
-        return re
-
-
-class Logarithm(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        PreStartYear = request.json['PreStartYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-        PlanFlag = request.json['PlanFlag'].strip()
-        Plan = request.json['Plan'].strip()
-
-        re = ""
-        return re
-
-
-class Binarylinear(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        PreStartYear = request.json['PreStartYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-        PlanFlag = request.json['PlanFlag'].strip()
-        Plan = request.json['Plan'].strip()
-        VariableName2 = request.json['VariableName2'].strip()
-        PlanFlag2 = request.json['PlanFlag2'].strip()
-        Plan2 = request.json['Plan2'].strip()
-        re = ""
-        return re
-
-class Kmeans(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-
-        re = ""
-        return re
-class PCA(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-
-        re = ""
-        return re
-class AssociationRule(Resource):
-    def post(self):
-        StartYear = request.json['StartYear'].strip()
-        EndYear = request.json['EndYear'].strip()
-        MinConf = request.json['MinConf'].strip()
-        EndStartYear = request.json['EndStartYear'].strip()
-        VariableName = request.json['VariableName'].strip()
-
-        re = ""
-        return re
-
 
 class TestAlgorithm(Resource):
     def post(self):
@@ -557,22 +132,21 @@ class Login(Resource):
             username = request.json['username'].strip()
             password = request.json['password']
             # dummy judgement
-            if username == password:
+            if login(username, password):
                 re = {
                     "msg": "success",
                     "code": 200
                 }
-                return re
             else:
                 re = {
                     "msg": "fail",
                     "code": -1
                 }
-                return re
+            return re
         except RuntimeError:
             return {
-                    "msg": "success",
-                    "code": 200
+                    "msg": "fail",
+                    "code": -1
                 }
 
 @register('logout')
@@ -601,65 +175,27 @@ class LoadRecent(Resource):
             ]
         } 
 
-# 简化起见，value 就是 label，label 就是 value，不作区分。
+# 简化起见，value 就是 label，label 就是 value，不作区分。N16_15
+
+
+#  N14_30
+#  N21_15
 _metadata = [
                 {
-                    "value": "行政",
-                    "label": "白宫",
+                    "value": "电力电量类-测试1",
+                    "label": "电力电量类-测试1",
                     "children": [
                         {
-                            "value": "总统",
-                            "label": "唐納·川普",
+                            "value": "N16_15",
+                            "label": "N16_15",
                         },
                         {
-                            "value": "副总统",
-                            "label": "麦克·彭斯",
-                        }
-                    ]
-                },
-                {
-                    "value": "立法",
-                    "label": "国会",
-                    "children": [
-                        {
-                            "value": "上院",
-                            "label": "参议院",
-                            "children": [
-                                {
-                                    "value": "议长",
-                                    "label": "麦克·彭斯"
-                                },
-                                {
-                                    "value": "多数党",
-                                    "label": "共和党"
-                                }
-                            ]
-                        },  {
-                            "value": "下院",
-                            "label": "众议院",
-                            "children": [
-                                {
-                                    "value": "议长",
-                                    "label": "南希·佩洛西"
-                                },
-                                {
-                                    "value": "多数党",
-                                    "label": "民主党"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "value": "司法",
-                    "label": "最高法院",
-                    "children": [
-                        {
-                            "value": "首席大法官",
-                            "label": "約翰·格洛佛·羅勃茲",
+                            "value": "N14_30",
+                            "label": "N14_30",
                         }
                     ]
                 }
+
             ]
 
 @register('db', 'metadata')
@@ -710,29 +246,50 @@ class UploadMetadata(Resource):
 @register('db', 'query')
 class PerformQuery(Resource):
     def post(self):
-        try_print_json()
-        return {
+        startTime = request.json['beginYear']
+        endTime = request.json['endYear']
+        grain = request.json['grain'].strip()
+        area = request.json['region'].strip()
+        category = request.json['category']
+        data = getDataByCondition(grain = grain, startTime = str(startTime), endTime = str(endTime), kind = category[0], dataName = category[1], area = area)
+        datalist = []
+        if data is not None:
+            for d in data:
+                temp = {}
+                temp["key"] = d[0]
+                temp["category"] = [d[5], d[1]]
+                temp['region'] = d[4]
+                temp['grain'] = d[3]
+                temp['value'] = d[2]
+                datalist.append(temp)
+        re = {
             "msg": "success",
             "code": 200,
-            "data": [
-                {
-                    "key": "2021-1-8",
-                    "value": "陈瑞球"
-                },
-                {
-                    "key": "2021-1-7",
-                    "value": "杨咏曼"
-                },
-                {
-                    "key": "2021-1-5",
-                    "value": "蔡翠菊"
-                },
-                {
-                    "key": "2021-1-3",
-                    "value": "包玉刚"
-                }
-            ]
+            "data":datalist
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": [
+        #         {
+        #             "key": "2021-1-8",
+        #             "value": "陈瑞球"
+        #         },
+        #         {
+        #             "key": "2021-1-7",
+        #             "value": "杨咏曼"
+        #         },
+        #         {
+        #             "key": "2021-1-5",
+        #             "value": "蔡翠菊"
+        #         },
+        #         {
+        #             "key": "2021-1-3",
+        #             "value": "包玉刚"
+        #         }
+        #     ]
+        # }
 
 @register('db', 'create')
 class PerformCreate(Resource):
@@ -746,77 +303,95 @@ class PerformCreate(Resource):
 @register('db', 'update')
 class PerformUpdate(Resource):
     def post(self):
-        try_print_json()
-        return {
-            "msg": "success",
-            "code": 200
-        }
+        # try_print_json()
+        originData = request.json['originData']
+        modifiedData = request.json['modifiedData']
+        re = modifyDataByCondition(modifiedData['value'], grain=originData['grain'], startTime=originData['key'],
+                                   endTime=originData['key'], kind=originData['category'][0],
+                                   dataName=originData['category'][1], area=originData['region'])
+
+        return re
+
 
 @register('db', 'delete')
 class PerformDelete(Resource):
     def post(self):
-        try_print_json()
-        return {
-            "msg": "success",
-            "code": 200
-        }
+        # try_print_json()
+        originData = request.json['originData']
+        re = deleteDataByCondition(grain=originData['grain'], startTime=originData['key'],
+                                   endTime=originData['key'], kind=originData['category'][0], dataName=originData['category'][1], area=originData['region'])
+
+        return re
+        #         {
+        #     "msg": "success",
+        #     "code": 200
+        # }
+
+
 
 @register('db', 'except', 'query')
 class ExceptionQuery(Resource):
     def post(self):
-        try_print_json()
-        return {
+        # try_print_json()
+        category = request.json['category']
+        startTime = request.json['beginYear']
+        endTime = request.json['endYear']
+        grain = request.json['grain'].strip()
+        area = request.json['region'].strip()
+        result = exceptQuery(category, str(startTime), str(endTime), grain, area)
+        re = {
             "msg": "success",
             "code": 200,
-            "data": [
-                {
-                    "key": "2021-1-8",
-                    "category": ['三', '1', 'iv'],
-                    "grain": "天",
-                    "value": 10,
-                    "suggest": 42
-                },
-                {
-                    "key": "2021-1-7",
-                    "category": ['三', '1', 'i'],
-                    "grain": "年",
-                    "value": "杨咏曼",
-                    "suggest": "蔡翠菊"
-                },
-                {
-                    "key": "2021-1-5",
-                    "category": ['三', '2', 'iii'],
-                    "grain": "秒",
-                    "value": 3.141592653589,
-                    "suggest": 2.718281828
-                },
-                {
-                    "key": "2021-1-3",
-                    "category": ['四', '2', 'ii'],
-                    "grain": "年",
-                    "value": True,
-                    "suggest": False
-                }
-            ]
+            "data": result
         }
+        return re
+
+    # {
+    #     "key": "2021-1-8",
+    #     "category": ['三', '1', 'iv'],
+    #     "grain": "天",
+    #     "value": 10,
+    #     "suggest": 42
+    # },
+    # {
+    #     "key": "2021-1-7",
+    #     "category": ['三', '1', 'i'],
+    #     "grain": "年",
+    #     "value": "杨咏曼",
+    #     "suggest": "蔡翠菊"
+    # },
+    # {
+    #     "key": "2021-1-5",
+    #     "category": ['三', '2', 'iii'],
+    #     "grain": "秒",
+    #     "value": 3.141592653589,
+    #     "suggest": 2.718281828
+    # },
+    # {
+    #     "key": "2021-1-3",
+    #     "category": ['四', '2', 'ii'],
+    #     "grain": "年",
+    #     "value": True,
+    #     "suggest": False
+    # }
 
 @register('db', 'except', 'resolve')
 class ExceptionResolve(Resource):
+
     def post(self):
-        try_print_json()
-        return {
-            "msg": "success",
-            "code": 200
-        }
+        # try_print_json()
+        originData = request.json['originData']
+        modifiedData = request.json['modifiedData']
+        result = exceptResolve(originData, modifiedData)
+        return result
 
 @register('db', 'except', 'accept')
 class ExceptionAccept(Resource):
     def post(self):
-        try_print_json()
-        return {
-            "msg": "success",
-            "code": 200
-        }
+        # try_print_json()
+        acceptData = request.json['acceptData']
+        result = exceptAccept(acceptData)
+        return result
 
 _versions = ['v1.0', 'v1.1', 'v1.2', 'v2.0', 'v2.1a', 'v2.1b']
 
@@ -826,16 +401,28 @@ _categories_count = len(_categories)
 @register('tags', 'query')
 class TagsQuery(Resource):
     def get(self):
-        return {
+        try:
+            tagType = request.args['tagType']
+            result = tagsQuery(tagType)
+        except:
+            result = tagsQuery()
+        re = {
             "msg": "success",
             "code": 200,
-            "data": [
-                {
-                    'id': tag,
-                    'tagType': _categories[randint(0, _categories_count - 1)]
-                } for tag in sorted(_versions)
-            ]
+            "data": result
         }
+        return re
+
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": [
+        # #         {
+        #             'id': tag,
+        #             'tagType': _categories[randint(0, _categories_count - 1)]
+        #         } for tag in sorted(_versions)
+        #     ]
+        # }
 
 @register('tags', 'detail')
 class TagsDetail(Resource):
@@ -898,59 +485,65 @@ class TagsDetail(Resource):
 @register('tags', 'rename')
 class TagsRename(Resource):
     def post(self):
-        try_print_json()
+        # try_print_json()
         try:
             current_name = request.json['tag'].strip()
             new_name = request.json['newTag'].strip()
-            if not current_name in _versions:
-                return {
-                "msg": "no key found",
-                "code": -1
-            }
-            if new_name in _versions:
-                return {
-                "msg": "key existed",
-                "code": -1
-            }
-            _versions.remove(current_name)
-            _versions.append(new_name)
-            return {
-                "msg": "success",
-                "code": 200,
-            }
+            re = tagsRename(current_name, new_name)
+            return re
         except RuntimeError:
             return {
-                "msg": "success",
-                "code": 200
+                "msg": "fail",
+                "code": -1
             }
 
 
 @register('tags', 'delete')
 class TagsDelete(Resource):
     def post(self):
-        try_print_json()
+        # try_print_json()
         try:
             current_name = request.json['tag'].strip()
-            if not current_name in _versions:
-                return {
-                "msg": "no key found",
-                "code": -1
-            }
-            _versions.remove(current_name)
-            return {
-                "msg": "success",
-                "code": 200,
-            }
+            re = tagDelete(current_name)
+            return re
         except RuntimeError:
             return {
-                "msg": "success",
-                "code": 200,
+                "msg": "fail",
+                "code": -1,
             }
+
 
 @register('mining', 'request')
 class MiningRequest(Resource):
     def post(self):
-        try_print_json()
+        # try_print_json()
+        args = request.json
+        tag = request.json['tag']
+        # tagType: 'MINING'
+        tagType = request.json['tagType']
+        region = request.json['region']
+        # factors: list[str]
+        factors = request.json['factors']
+        # method: str  # Pearson / KMeans / PCA / ARL
+        method = request.json['method']
+        beginYear = request.json['beginYear']
+        endYear = request.json['endYear']
+        if method == "Pearson":
+           pearson = request.json['pearson']
+           re = miningRequest(tag, tagType, region, factors, method, pearson, beginYear, endYear, args)
+
+        elif method == "KMeans":
+            kMeans = request.json['kMeans']
+            re = miningRequest(tag, tagType, region, factors, method, kMeans, beginYear, endYear, args)
+
+        elif method == "PCA":
+            PCA = request.json['PCA']
+            re = miningRequest(tag, tagType, region, factors, method, PCA, beginYear, endYear, args)
+
+        elif method == "ARL":
+            ARL = request.json['ARL']
+            re = miningRequest(tag, tagType, region, factors, method, ARL, beginYear, endYear, args)
+
         return {
             "msg": "success",
             "code": 200,
@@ -961,35 +554,54 @@ class MiningRequest(Resource):
 class MiningKMeansSuggestCategoryCount(Resource):
     def get(self):
         try_print_args()
-        return {
+        factors = request.args['factors']
+        factorslist = factors.split(",")
+        re = {
             "msg": "success",
             "code": 200,
             "data": {
-                "count": 2
+                "count": len(factorslist)
             }
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         "count": 2
+        #     }
+        # }
 
 @register('mining', 'results')
 class MiningResults(Resource):
     def get(self):
-        return {
+
+        # tagType = request.args["tagType"]
+        result = miningResults("MINING")
+        re = {
             "msg": "success",
-            "code": 200,
-            "data": [
-                {
-                    'plan': '某个挖掘计划',
-                    'results': ['阳光', '空气', '水']
-                },
-                {
-                    'plan': '另一个挖掘计划',
-                    'results': ['光风', '霁月']
-                },
-                {
-                    'plan': '最后一个挖掘计划',
-                    'results': ['阴雨', '晦冥']
-                },
-            ]
-        } 
+            "code":200,
+            "data": result
+        }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": [
+        #         {
+        #             'plan': '某个挖掘计划',
+        #             'results': ['阳光', '空气', '水']
+        #         },
+        #         {
+        #             'plan': '另一个挖掘计划',
+        #             'results': ['光风', '霁月']
+        #         },
+        #         {
+        #             'plan': '最后一个挖掘计划',
+        #             'results': ['阴雨', '晦冥']
+        #         },
+        #     ]
+        # }
 
 
 _regions = ['仰光', '丽江市', '红河州', '内比都']
@@ -997,11 +609,13 @@ _regions = ['仰光', '丽江市', '红河州', '内比都']
 @register('region', 'query')
 class RegionQuery(Resource):
     def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": _regions
-        }
+        re = regionQuery()
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": _regions
+        # }
 
 
 _industries = ['工业', '农业', '医疗业', '餐饮业']
@@ -1009,11 +623,13 @@ _industries = ['工业', '农业', '医疗业', '餐饮业']
 @register('industry', 'query')
 class IndustryQuery(Resource):
     def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": _industries
-        }
+        re = industryQuery()
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": _industries
+        # }
 
 _industrial_methods = ['基于ARIMA季节分解的行业电量预测', '基于EEMD的行业用电量预测', '基于主成分因子的行业用电量预测', '基于随机森林的行业用电量预测', '基于神经网络的行业用电量预测']
 
@@ -1045,11 +661,13 @@ class RegionalMethodQuery(Resource):
 @register('grain', 'query')
 class GrainQuery(Resource):
     def get(self):
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": ['年', '月', '日', '时', '分', '秒']
-        }
+        re = grainQuery()
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": ['年', '月', '日', '时', '分', '秒']
+        # }
 
 _factors = ['GDP', 'GNP', 'GPPPP', 'GNPPP']
 
@@ -1065,47 +683,51 @@ class MiningFactorQuery(Resource):
 @register('predict', 'region', 'single')
 class RegionSinglePredict(Resource):
     def post(self):
-        try_print_json()
+        # try_print_json()
+        re = regionSinglePredict(request.json)
+
         
-        payload = {
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # payload = {
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('predict', 'region', 'mix', 'validate')
 class RegionMixModelValidate(Resource):
     def post(self):
-        try_print_json()
-        
-        ok = (randint(0, 1) == 0)
+        # try_print_json()
+        methods = request.json['methods']
+        re = regionMixModelValidate(methods)
+        # ok = (randint(0, 1) == 0)
         return {
             "msg": "success",
             "code": 200,
             "data": {
-                "ok": ok
+                "ok": re
             }
         }
 
@@ -1113,80 +735,88 @@ class RegionMixModelValidate(Resource):
 @register('predict', 'region', 'mix')
 class RegionMixPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = {
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_json()
+        re = regionMixPredict(request.json)
+
+        # payload = {
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('predict', 'industry', 'single')
 class IndustrySinglePredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = {
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_json()
+        re = industrySinglePredict(request.json)
+
+
+
+        # payload = {
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('predict', 'industry', 'mix', 'validate')
 class IndustryMixModelValidate(Resource):
     def post(self):
-        try_print_json()
-        
-        ok = (randint(0, 1) == 0)
+        # try_print_json()
+        methods = request.json['methods']
+        re = industryMixModelValidate(methods)
+        # ok = (randint(0, 1) == 0)
         return {
             "msg": "success",
             "code": 200,
             "data": {
-                "ok": ok
+                "ok": re
             }
         }
 
@@ -1194,101 +824,107 @@ class IndustryMixModelValidate(Resource):
 @register('predict', 'industry', 'mix')
 class IndustryMixPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = {
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_json()
+        re = industryMixPredict(request.json)
+
+        # payload = {
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('predict', 'saturation')
 class SaturationCurvePredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = {
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_json()
+        re = saturationCurvePredict(request.json)
+
+        # payload = {
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('predict', 'payload')
 class PayloadDensityPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = {
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_json()
+        re = payloadDensityPredict(request.json)
+
+        # payload = {
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 _files = ['红河州.csv', '迪庆州.json', '仰光.txt', '...']
 
@@ -1296,6 +932,7 @@ _files = ['红河州.csv', '迪庆州.json', '仰光.txt', '...']
 class MunicipalDataUpload(Resource):
     def post(self):
         try_print_files()
+
         _files.append(request.files.get('file').filename)
         return {
             "msg": "success",
@@ -1314,66 +951,81 @@ class MunicipalDataQuery(Resource):
 @register('predict', 'provmuni')
 class ProvincialAndMunicipalPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = {
-            'tableThreeData': [
-                {
-                    'year': i + 2010,
-                    'region': '某个地方',
-                    'predictValueBefore': random() * randint(300, 500),
-                    'predictErrorBefore': random() * randint(30, 50),
-                    'predictValueAfter': random() * randint(300, 500),
-                    'predictErrorAfter': random() * randint(20, 80)
-                } for i in range(1, 18)
-            ],
-            'tableFourData': [
-                {
-                    'year': i + 2010,
-                    'region': '地方 %d' % i,
-                    'predictBefore': random() * randint(300, 500),
-                    'predictAfter': random() * randint(300, 500),
-                } for i in range(17)
-            ]
-        }
-        return {
+        # try_print_json()
+        result = provincialAndMunicipalPredict(request.json)
+
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": result
         }
+        # payload = {
+        #     'tableThreeData': [
+        #         {
+        #             'year': i + 2010,
+        #             'region': '某个地方',
+        #             'predictValueBefore': random() * randint(300, 500),
+        #             'predictErrorBefore': random() * randint(30, 50),
+        #             'predictValueAfter': random() * randint(300, 500),
+        #             'predictErrorAfter': random() * randint(20, 80)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableFourData': [
+        #         {
+        #             'year': i + 2010,
+        #             'region': '地方 %d' % i,
+        #             'predictBefore': random() * randint(300, 500),
+        #             'predictAfter': random() * randint(300, 500),
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
+
+#大用户预测
 @register('predict', 'bigdata')
 class BigDataPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = {
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
+        # try_print_json()
+        result = bigDataPredict(request.json)
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": result
         }
+        # payload = {
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 _bigdata_methods = ['猜测法', '穷举法', '归纳法', '放弃法']
 
@@ -1389,545 +1041,774 @@ class BigDataMethodQuery(Resource):
 @register('payload', 'traits', 'daily')
 class DailyPayloadTraits(Resource):
     def get(self):
-        try_print_args()
-        
-        payload = [
-                {
-                    'day': '2020 年 %d 月 %d 日' % (i, i * 2),
-                    'dayMaxPayload': randint(0, 1000),
-                    'dayAveragePayload': random() * 500,
-                    'dayPayloadRate': random() * 500,
-                    'dayMinPayloadRate': random() * 500,
-                    'dayPeekValleyDiff': random() * 500,
-                    'dayPeekValleyDiffRate': random() * 500
-                } for i in range(1, 13)
-            ]
-        return {
+        # try_print_args()
+        result = dailyPayloadTraits(request.args)
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": result["content"]
         }
+        # payload = [
+        #         {
+        #             'day': '2020 年 %d 月 %d 日' % (i, i * 2),
+        #             'dayMaxPayload': randint(0, 1000),
+        #             'dayAveragePayload': random() * 500,
+        #             'dayPayloadRate': random() * 500,
+        #             'dayMinPayloadRate': random() * 500,
+        #             'dayPeekValleyDiff': random() * 500,
+        #             'dayPeekValleyDiffRate': random() * 500
+        #         } for i in range(1, 13)
+        #     ]
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'traits', 'monthly')
 class MonthlyPayloadTraits(Resource):
     def get(self):
-        try_print_args()
-        
-        payload = [
-                {
-                    'month': '2020 年 %d 月' % i,
-                    'monthAverageDailyPayload': randint(0, 1000),
-                    'monthMaxPeekValleyDiff': random() * 500,
-                    'monthAverageDailyPayloadRate': random() * 500,
-                    'monthImbaRate': random() * 500,
-                    'monthMinPayloadRate': random() * 500,
-                    'monthMaxPeekValleyDiffRate': random() * 500
-                } for i in range(1, 13)
-            ]
-        return {
-            "msg": "success",
+        # try_print_args()
+        result = monthlyPayloadTraits(request.args)
+        re = {
+            "msg":"success",
             "code": 200,
-            "data": payload
+            "data" : result["content"]
         }
+        # payload = [
+        #         {
+        #             'month': '2020 年 %d 月' % i,
+        #             'monthAverageDailyPayload': randint(0, 1000),
+        #             'monthMaxPeekValleyDiff': random() * 500,
+        #             'monthAverageDailyPayloadRate': random() * 500,
+        #             'monthImbaRate': random() * 500,
+        #             'monthMinPayloadRate': random() * 500,
+        #             'monthMaxPeekValleyDiffRate': random() * 500
+        #         } for i in range(1, 13)
+        #     ]
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'traits', 'yearly')
 class YearlyPayloadTraits(Resource):
     def get(self):
-        try_print_args()
-        
-        payload = [
-                {
-                    'year': '%d 年' % (2010 + i),
-                    'yearMaxPayload': randint(10000, 1000000),
-                    'yearAverageDailyPayloadRate': random() * 500,
-                    'seasonImbaRate': random() * 500,
-                    'yearMaxPeekValleyDiff': random() * 500,
-                    'yearMaxPeekValleyDiffRate': random() * 500,
-                    'yearMaxPayloadUsageHours': 20
-                } for i in range(1, 13)
-            ]
-        return {
+        # try_print_args()
+        result = yearlyPayloadTraits(request.args)
+
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": result["content"]
         }
+        # payload = [
+        #         {
+        #             'year': '%d 年' % (2010 + i),
+        #             'yearMaxPayload': randint(10000, 1000000),
+        #             'yearAverageDailyPayloadRate': random() * 500,
+        #             'seasonImbaRate': random() * 500,
+        #             'yearMaxPeekValleyDiff': random() * 500,
+        #             'yearMaxPeekValleyDiffRate': random() * 500,
+        #             'yearMaxPayloadUsageHours': 20
+        #         } for i in range(1, 13)
+        #     ]
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'predict', 'dbquery')
 class SokuPayloadPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = [
-                {
-                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
-                    'actualPayload': randint(10000, 1000000),
-                    'predictPayload': randint(10000, 1000000)
-                } for _ in range(1, 13)
-            ]
-        return {
+        # try_print_json()
+        result = sokuPayloadPredict(request.json)
+
+        data = result["content"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": data
         }
+        # payload = [
+        #         {
+        #             'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+        #             'actualPayload': randint(10000, 1000000),
+        #             'predictPayload': randint(10000, 1000000)
+        #         } for _ in range(1, 13)
+        #     ]
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'predict', 'clamping')
 class ClampingPayloadPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = [
-                {
-                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
-                    'actualPayload': randint(10000, 1000000),
-                    'predictPayload': randint(10000, 1000000)
-                } for _ in range(1, 13)
-            ]
-        return {
+        # try_print_json()
+        result = clampingPayloadPredict(request.json)
+
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": result["content"]
         }
+
+        # payload = [
+        #         {
+        #             'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+        #             'actualPayload': randint(10000, 1000000),
+        #             'predictPayload': randint(10000, 1000000)
+        #         } for _ in range(1, 13)
+        #     ]
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'predict', 'interp')
 class InterpolatingPayloadPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = [
-                {
-                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
-                    'actualPayload': randint(10000, 1000000),
-                    'predictPayload': randint(10000, 1000000)
-                } for _ in range(1, 13)
-            ]
-        return {
+        # try_print_json()
+        result = interpolatingPayloadPredict(request.json)
+
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": result["content"]
         }
+        # payload = [
+        #         {
+        #             'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+        #             'actualPayload': randint(10000, 1000000),
+        #             'predictPayload': randint(10000, 1000000)
+        #         } for _ in range(1, 13)
+        #     ]
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'predict', 'yearly')
 class YearlyContinuousPayloadPredict(Resource):
     def post(self):
-        try_print_json()
-        
-        payload = [
-                {
-                    'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
-                    'payload': randint(10000, 1000000)
-                } for _ in range(1, 13)
-            ]
-        return {
+        # try_print_json()
+        result = yearlyContinuousPayloadPredict(request.json)
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": result["content"]
         }
+        # payload = [
+        #         {
+        #             'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
+        #             'payload': randint(10000, 1000000)
+        #         } for _ in range(1, 13)
+        #     ]
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('params', 'mining')
 class DataMiningParameters(Resource):
     def get(self):
-        print(request.args)
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                "region": '地域',
-                "factors": ['factor 1', 'factor 2', 'factor 3'],
-                "method": '方法',
-                "pearson": {
-                    "threshold": 0.77777
-                },
-                "kMeans": {
-                    "categoryCount": 2
-                },
-                "PCA": {
-                    "absThreshold": 0.77777
-                },
-                "ARL": {
-                    "minSupport": 0.11111,
-                    "minConfidence": 0.11111
-                },
-                "beginYear": 2024,
-                "endYear": 2029,
-                "tag": request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         "region": '地域',
+        #         "factors": ['factor 1', 'factor 2', 'factor 3'],
+        #         "method": '方法',
+        #         "pearson": {
+        #             "threshold": 0.77777
+        #         },
+        #         "kMeans": {
+        #             "categoryCount": 2
+        #         },
+        #         "PCA": {
+        #             "absThreshold": 0.77777
+        #         },
+        #         "ARL": {
+        #             "minSupport": 0.11111,
+        #             "minConfidence": 0.11111
+        #         },
+        #         "beginYear": 2024,
+        #         "endYear": 2029,
+        #         "tag": request.args['tag']
+        #     }
+        # }
 
 @register('params', 'predict', 'static', 'region')
 class StaticRegionalPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                "historyBeginYear": 1999,
-                "historyEndYear": 2009,
-                'beginYear': 2023,
-                'endYear': 2033,
-                'region': '地域',
-                'industry': '行业',
-                'method': '方法',
-                'factor1': {
-                    'name': 'MINGZI',
-                    'hasValue': True,
-                    'value': 0.1
-                },
-                'factor2': {
-                    'name': 'MINGZI2',
-                    'hasValue': True,
-                    'value': 0.9
-                },
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         "historyBeginYear": 1999,
+        #         "historyEndYear": 2009,
+        #         'beginYear': 2023,
+        #         'endYear': 2033,
+        #         'region': '地域',
+        #         'industry': '行业',
+        #         'method': '方法',
+        #         'factor1': {
+        #             'name': 'MINGZI',
+        #             'hasValue': True,
+        #             'value': 0.1
+        #         },
+        #         'factor2': {
+        #             'name': 'MINGZI2',
+        #             'hasValue': True,
+        #             'value': 0.9
+        #         },
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 @register('params', 'predict', 'dynamic', 'industry')
 class DynamicIndustrialPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'industry': '行业',
-                'method': '方法',
-                'parameters': ['paramA', 'paramB', '...'],
-                'beginYear': 1995,
-                'endYear': 2006,
-                'historyBeginYear': 2012,
-                'historyEndYear': 2055,
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'industry': '行业',
+        #         'method': '方法',
+        #         'parameters': ['paramA', 'paramB', '...'],
+        #         'beginYear': 1995,
+        #         'endYear': 2006,
+        #         'historyBeginYear': 2012,
+        #         'historyEndYear': 2055,
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 @register('params', 'predict', 'mix')
 class MixPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        if result is not None:
+            contentstr = result[0]["content"]
+            content = json.loads(contentstr)
+            arg = content["arg"]
+        else:
+            arg = None
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'historyBeginYear': 2012,
-                'historyEndYear': 2066,
-                'beginYear': 2012,
-                'endYear': 2022,
-                'region': '地域',
-                'industry': '工业',
-                'selectedMethods': ['methodA', 'methodB', '...'],
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'historyBeginYear': 2012,
+        #         'historyEndYear': 2066,
+        #         'beginYear': 2012,
+        #         'endYear': 2022,
+        #         'region': '地域',
+        #         'industry': '工业',
+        #         'selectedMethods': ['methodA', 'methodB', '...'],
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 @register('params', 'predict', 'dynamic', 'region')
 class LongTermPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'region': '地域',
-                'method': '行业',
-                'parameters': ['1', '2', '...'],
-                'beginYear': 1993,
-                'endYear': 2013,
-                'historyBeginYear': 2012,
-                'historyEndYear': 2022,
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'region': '地域',
+        #         'method': '行业',
+        #         'parameters': ['1', '2', '...'],
+        #         'beginYear': 1993,
+        #         'endYear': 2013,
+        #         'historyBeginYear': 2012,
+        #         'historyEndYear': 2022,
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 
 @register('params', 'predict', 'biguser')
 class BigUserPredictionParameters(Resource):
     def get(self):
-        print(request.args)
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'historyBeginYear': 1966,
-                'historyEndYear': 1997,
-                'beginYear': 1994,
-                'endYear': 2004,
-                'method': '测试方法',
-                'region': '测试地域',
-                'patches': [
-                    {
-                        'metaData': ['a', 'b', 'c'],
-                        'grain': '粒度（总是「年」）',
-                        'year': '年份',
-                        'value': '42',
-                    }, '...'
-                ],
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'historyBeginYear': 1966,
+        #         'historyEndYear': 1997,
+        #         'beginYear': 1994,
+        #         'endYear': 2004,
+        #         'method': '测试方法',
+        #         'region': '测试地域',
+        #         'patches': [
+        #             {
+        #                 'metaData': ['a', 'b', 'c'],
+        #                 'grain': '粒度（总是「年」）',
+        #                 'year': '年份',
+        #                 'value': '42',
+        #             }, '...'
+        #         ],
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 @register('params', 'predict', 'soku')
 class SokuPayloadPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'beginYear': 1955,
-                'endYear': 2055,
-                'season': 3,
-                'maxPayload': 2033,
-                'dailyAmount': 1000,
-                'gamma': 0.555,
-                'beta': 0.777,
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'beginYear': 1955,
+        #         'endYear': 2055,
+        #         'season': 3,
+        #         'maxPayload': 2033,
+        #         'dailyAmount': 1000,
+        #         'gamma': 0.555,
+        #         'beta': 0.777,
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 
 @register('params', 'predict', 'clamping')
 class ClampingPayloadPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'beginYear': 2021,
-                'endYear': 2022,
-                'season': 3,
-                'maxPayload': 2013,
-                'dailyAmount': 155,
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'beginYear': 2021,
+        #         'endYear': 2022,
+        #         'season': 3,
+        #         'maxPayload': 2013,
+        #         'dailyAmount': 155,
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 
 @register('params', 'predict', 'interp')
 class InterpolatingPayloadPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'beginYear': 2012,
-                'endYear': 2022,
-                'season': 3,
-                'maxPayload': 14444,
-                'dailyAmount': 28888,
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'beginYear': 2012,
+        #         'endYear': 2022,
+        #         'season': 3,
+        #         'maxPayload': 14444,
+        #         'dailyAmount': 28888,
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 
 @register('params', 'predict', 'yearcont')
 class YearlyContinuousPayloadPredictionParameters(Resource):
     def get(self):
-        return {
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": {
-                'beginYear': 2023,
-                'endYear': 2033,
-                'maxPayload': 98768,
-                'tag': request.args['tag']
-            }
+            "data": arg
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'beginYear': 2023,
+        #         'endYear': 2033,
+        #         'maxPayload': 98768,
+        #         'tag': request.args['tag']
+        #     }
+        # }
 
 @register('predict', 'results', 'query')
 class PredictionResultsQuery(Resource):
     def get(self):
-        return {
+        re = {
             "msg": "success",
             "code": 200,
-            "data": [
-                {
-                    'id': tag,
-                    'tagType': _categories[randint(0, _categories_count - 1)]
-                } for tag in sorted(_versions)
-            ]
+            "data": []
         }
+        re1 = getTagByKind("STATIC_REGIONAL")
+        if re1 is not None:
+            for t in re1:
+                re["data"].append(t)
+        re2 = getTagByKind("MIX")
+        if re2 is not None:
+            for t in re2:
+                re["data"].append(t)
+        re3 = getTagByKind("LONGTERM")
+        if re3 is not None:
+            for t in re3:
+                re["data"].append(t)
+        re4 = getTagByKind("BIGUSER")
+        if re4 is not None:
+            for t in re4:
+                re["data"].append(t)
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": [
+        #         {
+        #             'id': tag,
+        #             'tagType': _categories[randint(0, _categories_count - 1)]
+        #         } for tag in sorted(_versions)
+        #     ]
+        # }
 
 @register('predict', 'results', 'detail')
 class PredictionResultDetail(Resource):
     def get(self):
-        try_print_args()
-        payload = {
-            'parameters': [
-                {
-                    'key': '方案名称',
-                    'value': request.args['tag']
-                },
-                {
-                    'key': '预测类型',
-                    'value': '远期预测'
-                },
-                {
-                    'key': '预测年份',
-                    'value': '2015 到 2020'
-                },
-                {
-                    'key': '预测方法',
-                    'value': '猜测法'
-                },
-                {
-                    'key': '预测时间',
-                    'value': '2021 年 1 月 21 日 11:04:33'
-                }
-            ],
-            'graphData': [
-                {
-                    'xName': str(i), 
-                    'yValue': randint(0, 1000)
-                } for i in range(1, 18)
-            ],
-            'tableOneData': [
-                {
-                    'index': '评价指标 %d' % i,
-                    'r2': random(),
-                    'mape': random(),
-                    'rmse': random()
-                } for i in range(1, 18)
-            ],
-            'tableTwoData': [
-                {
-                    'year': i + 2010,
-                    'predict': random() * randint(300, 500)
-                } for i in range(17)
-            ]
-        }
-        return {
+        # try_print_args()
+        tag = request.args['tag']
+        result = getAlgorithmContentByTag(tag)
+        contentstr = result[0]["content"]
+        content = json.loads(contentstr)
+        arg = content["arg"]
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": {
+                "parameters": arg
+
+            }
         }
+        # payload = {
+        #     'parameters': [
+        #         {
+        #             'key': '方案名称',
+        #             'value': request.args['tag']
+        #         },
+        #         {
+        #             'key': '预测类型',
+        #             'value': '远期预测'
+        #         },
+        #         {
+        #             'key': '预测年份',
+        #             'value': '2015 到 2020'
+        #         },
+        #         {
+        #             'key': '预测方法',
+        #             'value': '猜测法'
+        #         },
+        #         {
+        #             'key': '预测时间',
+        #             'value': '2021 年 1 月 21 日 11:04:33'
+        #         }
+        #     ],
+        #     'graphData': [
+        #         {
+        #             'xName': str(i),
+        #             'yValue': randint(0, 1000)
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableOneData': [
+        #         {
+        #             'index': '评价指标 %d' % i,
+        #             'r2': random(),
+        #             'mape': random(),
+        #             'rmse': random()
+        #         } for i in range(1, 18)
+        #     ],
+        #     'tableTwoData': [
+        #         {
+        #             'year': i + 2010,
+        #             'predict': random() * randint(300, 500)
+        #         } for i in range(17)
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('predict', 'results', 'compare')
 class PredictionResultComparison(Resource):
     def post(self):
-        try_print_json()
+        # try_print_json()
         tags = request.json['tags']
-        payload = [
-            {
-                'tag': tag,
-                'data': [random() for _ in range(40)]
-            } for tag in tags
-        ]
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": {
-                'xName': '年份',
-                'xData': ['%i 年' % (i + 2000) for i in range(40)],
-                'yName': 'RMSE 值',
-                'yData': payload
-            }
-        }
+        trait = request.json['trait']
+        result = getAlgorithmContentByTag(tags)
+        re = {}
+        re['msg'] = "success"
+        re['code'] = 200
+        re["data"] = result['content']
+        re["data"]['tag'] = result['tag']
+        # payload = [
+        #     {
+        #         'tag': tag,
+        #         'data': [random() for _ in range(40)]
+        #     } for tag in tags
+        # ]
+        return re
+        #     {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": {
+        #         'xName': '年份',
+        #         'xData': ['%i 年' % (i + 2000) for i in range(40)],
+        #         'yName': 'RMSE 值',
+        #         'yData': payload
+        #     }
+        # }
 
 @register('payload', 'charts', 'daily')
 class PayloadChartsDaily(Resource):
     def get(self):
-        try_print_args()
-        payload = {
-            'metaData': [
-                {
-                    'key': '日最大负载',
-                    'value': 42.4
-                },
-                {
-                    'key': '日平均负载',
-                    'value': 11.6
-                },
-                {
-                    'key': '日负载率',
-                    'value': '50.5%'
-                },
-                {
-                    'key': '日峰谷差',
-                    'value': 3000
-                },
-                {
-                    'key': '日峰谷差率',
-                    'value': '50%'
-                }
-            ],
-            'xName': '小时',
-            'xData': list(range(0, 24, 2)),
-            'yName': '单位：MW',
-            'yData': [
-                {
-                    'tag': '原始负荷',
-                    'data': [random() for _ in range(12)]
-                },
-                {
-                    'tag': '预测负荷',
-                    'data': [random() for _ in range(12)]
-                }
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_args()
+        day = request.json['day']
+        result = payloadChartsDaily(day)
+        re = {}
+        re['msg'] = "success"
+        re['code'] = 200
+        re["data"] = result['content']
+        re["data"]['tag'] = result['tag']
+        # payload = {
+        #     'metaData': [
+        #         {
+        #             'key': '日最大负载',
+        #             'value': 42.4
+        #         },
+        #         {
+        #             'key': '日平均负载',
+        #             'value': 11.6
+        #         },
+        #         {
+        #             'key': '日负载率',
+        #             'value': '50.5%'
+        #         },
+        #         {
+        #             'key': '日峰谷差',
+        #             'value': 3000
+        #         },
+        #         {
+        #             'key': '日峰谷差率',
+        #             'value': '50%'
+        #         }
+        #     ],
+        #     'xName': '小时',
+        #     'xData': list(range(0, 24, 2)),
+        #     'yName': '单位：MW',
+        #     'yData': [
+        #         {
+        #             'tag': '原始负荷',
+        #             'data': [random() for _ in range(12)]
+        #         },
+        #         {
+        #             'tag': '预测负荷',
+        #             'data': [random() for _ in range(12)]
+        #         }
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'charts', 'daily', 'typical')
 class PayloadChartsDailyTypical(Resource):
     def get(self):
-        try_print_args()
-        payload = {
-            'xName': '小时',
-            'xData': list(range(0, 24, 2)),
-            'yName': '单位：MW',
-            'yData': [
-                {
-                    'tag': '典型负荷',
-                    'data': [random() for _ in range(12)]
-                }
-            ]
-        }
-        return {
+        # try_print_args()
+        year = request.json['year']
+        period = request.json['period']  # 丰水期、汛前枯期、汛后枯期
+        category = request.json['category'] # 最大负荷、最小负荷、中位负荷
+        # payload = {
+        #     'xName': '小时',
+        #     'xData': list(range(0, 24, 2)),
+        #     'yName': '单位：MW',
+        #     'yData': [
+        #         {
+        #             'tag': '典型负荷',
+        #             'data': [random() for _ in range(12)]
+        #         }
+        #     ]
+        # }
+        re = {
             "msg": "success",
             "code": 200,
-            "data": payload
+            "data": "payload"
         }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'charts', 'monthly')
 class PayloadChartsMonthly(Resource):
     def get(self):
-        try_print_args()
-        payload = {
-            'xName': '月份',
-            'xData': list(range(1, 13)),
-            'yName': '单位：MW',
-            'yData': [
-                {
-                    'tag': '负荷',
-                    'data': [random() for _ in range(12)]
-                }
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_args()
+        year = request.json['year']
+        category = request.json['category']
+    # payload = {
+    #         'xName': '月份',
+    #         'xData': list(range(1, 13)),
+    #         'yName': '单位：MW',
+    #         'yData': [
+    #             {
+    #                 'tag': '负荷',
+    #                 'data': [random() for _ in range(12)]
+    #             }
+    #         ]
+    #     }
+        re = {}
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 @register('payload', 'charts', 'yearly')
 class PayloadChartsYearly(Resource):
     def get(self):
-        try_print_args()
-        payload = {
-            'xName': '年份',
-            'xData': list(range(2000, 2012)),
-            'yName': '单位：MW',
-            'yData': [
-                {
-                    'tag': '负荷',
-                    'data': [random() for _ in range(12)]
-                }
-            ]
-        }
-        return {
-            "msg": "success",
-            "code": 200,
-            "data": payload
-        }
+        # try_print_args()
+        beginYear = request.json['beginYear']
+        endYear = request.json['endYear']
+        category = request.json['category']
+        re = payloadChartsYearly(beginYear, endYear, category)
+        # payload = {
+        #     'xName': '年份',
+        #     'xData': list(range(2000, 2012)),
+        #     'yName': '单位：MW',
+        #     'yData': [
+        #         {
+        #             'tag': '负荷',
+        #             'data': [random() for _ in range(12)]
+        #         }
+        #     ]
+        # }
+        return re
+        # {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": payload
+        # }
 
 """
 fore-end related http apis
@@ -1937,46 +1818,6 @@ END
 api.add_resource(UploadCSV, "/api/upload")
 api.add_resource(GetDataJson, '/getDataJson')
 api.add_resource(TestAlgorithm, "/interface")
-api.add_resource(Compute, "/api/compute")
-api.add_resource(Clamp_force, "/api/clampforce")
-api.add_resource(Search, "/api/search")
-api.add_resource(Fractal, "/api/fractal")
-
-api.add_resource(SARIMA_Industry, "/api/SARIMA_Industry")
-api.add_resource(EEMD__Industry, "/api/EEMD__Industry")
-api.add_resource(PCA__Industry, "/api/PCA__Industry")
-api.add_resource(RandomForest_Industry, "/api/RandomForest_Industry")
-api.add_resource(ANN__Industry, "/api/ANN__Industry")
-api.add_resource(Combination_Industry, "/api/Combination_Industry")
-api.add_resource(StepwiseRegression, "/api/StepwiseRegression")
-api.add_resource(GM, "/api/GM")
-api.add_resource(FGM, "/api/FGM")
-api.add_resource(GPRM, "/api/GPRM")
-api.add_resource(GMR, "/api/GMR")
-api.add_resource(FLR, "/api/FLR")
-api.add_resource(FER, "/api/FER")
-api.add_resource(Combination, "/api/Combination")
-api.add_resource(GBDT, "/api/GBDT")
-api.add_resource(SVM, "/api/SVM")
-api.add_resource(RNN, "/api/RNN")
-api.add_resource(LSTM, "/api/LSTM")
-api.add_resource(Esqrm, "/api/Esqrm")
-api.add_resource(QuantileRegression, "/api/QuantileRegression")
-api.add_resource(MultiIndustryDailyProfile, "/api/MultiIndustryDailyProfile")
-api.add_resource(MaxUtilizationHourR, "/api/MaxUtilizationHourR")
-api.add_resource(SARIMA, "/api/SARIMA")
-api.add_resource(LFconsideringTempHoliday, "/api/LFconsideringTempHoliday")
-
-api.add_resource(Unarylinear, "/api/Unarylinear")
-api.add_resource(Squarereg, "/api/Squarereg")
-api.add_resource(Power, "/api/Power")
-api.add_resource(Growth, "/api/Growth")
-api.add_resource(Exponent, "/api/Exponent")
-api.add_resource(Logarithm, "/api/Logarithm")
-api.add_resource(Binarylinear, "/api/Binarylinear")
-api.add_resource(Kmeans, "/api/Kmeans")
-api.add_resource(PCA, "/api/PCA")
-api.add_resource(AssociationRule, "/api/AssociationRule")
 api.add_resource(insertAlgorithmResult, "/api/insert/result")
 api.add_resource(getAlgorithmResult, "/api/get/result")
 
