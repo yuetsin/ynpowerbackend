@@ -1,6 +1,8 @@
 import requests
 import json
 from datetime import datetime
+import pandas as pd
+import numpy as np
 
 # host = "http://dclab.club:18000/"
 host = "http://localhost:5000/"
@@ -111,6 +113,34 @@ if __name__ == '__main__':
     # content = json.loads(re['results'][0][1])
     # print(type(content))
     # print(content['trainfromyear'])
-    result = getData("yunnan_day_电力电量类-测试1", "N19_15", "2013/1/1", "2013/1/3")
-    print(result)
+    # result = getData("yunnan_day_电力电量类-测试1", "N19_15", "2013/1/1", "2013/1/3")
+    # print(result)
+    data  = pd.read_excel("./args.xlsx", None, index_col = None)
+    args = {}
+    for row in data.values():
+        # print(row)
+        x,y= row.shape
+        header = [i for i in row.columns]
+        for j in range(1, y):
+            args[header[j]] = {
+                "name": row.iloc[0][j],
+            }
+            count = 0
+            for i in range(1, x):
+                if row.iloc[i][0] != row.iloc[i][0] or row.iloc[i][j] != row.iloc[i][j]:
+                    break
+                if i % 2 == 0:
+                    count += 1
+                    continue
+                args[header[j]][row.iloc[i][j]] = row.iloc[i+1][j]
+            args[header[j]]["num"] = count
+
+
+    print(args)
+        # print(row.shape)
+        # for i, r in row.iterrows():
+        #     print(r)
+
+    # print(data)
+
 

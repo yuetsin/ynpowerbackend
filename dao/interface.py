@@ -252,8 +252,6 @@ def getUserByPsAndName(username, password):
 
 
 def insertAlgorithmResult(result, tag):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                            port="32345")
     cur = conn.cursor()
     result = json.dumps(result)
     sql = "INSERT INTO program (tag, content) VALUES('{}', '{}') on conflict on constraint unique_tag do update set content='{}';".format(tag, result, result)
@@ -264,8 +262,6 @@ def insertAlgorithmResult(result, tag):
     return
 
 def getAlgorithmResultByTag(tags):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                            port="32345")
     cur = conn.cursor()
     tagslist = tags.split(',')
     tag = ""
@@ -283,13 +279,14 @@ def getAlgorithmResultByTag(tags):
 
 
 def checkPerson(username, password):
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         sql = "select * from person where username = '{}' and password = '{}';".format(username, password)
         cur.execute(sql)
         rows = cur.fetchall()
+        conn.commit()
         if len(rows) >= 1:
             return True
         else:
@@ -297,19 +294,20 @@ def checkPerson(username, password):
     except:
         return False
     finally:
-        conn.commit()
+
         conn.close()
 
 
 def addPerson(username, password):
 
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         sql = "select * from person where username = '{}' ;".format(username)
         cur.execute(sql)
         rows = cur.fetchall()
+        conn.commit()
         if len(rows) >= 1:
             msg = "用户名已存在"
         else:
@@ -319,20 +317,20 @@ def addPerson(username, password):
     except:
         msg = "创建失败"
     finally:
-        conn.commit()
         conn.close()
         return msg
 
 def insertAlgorithmContent(tag, kind, content):
 
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         result = json.dumps(content)
         sql = "INSERT INTO program (tag, content, kind) VALUES('{}', '{}', '{}') on conflict on constraint unique_tag do update set content='{}';".format(tag, result, kind, result)
         # print(sql)
         cur.execute(sql)
+        conn.commit()
         re = {
             "code": 200
         }
@@ -343,14 +341,13 @@ def insertAlgorithmContent(tag, kind, content):
         }
 
     finally:
-        conn.commit()
         conn.close()
     return re
 
 def getAlgorithmContentByTag(tags):
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         tagslist = tags.split(',')
         tag = ""
@@ -362,6 +359,8 @@ def getAlgorithmContentByTag(tags):
         # print(sql)
         cur.execute(sql)
         rows = cur.fetchall()
+        conn.commit()
+
         resultdata = []
         for r in rows:
             temp = {}
@@ -374,19 +373,20 @@ def getAlgorithmContentByTag(tags):
         re = None
 
     finally:
-        conn.commit()
         conn.close()
     return re
 
 def getAllTag():
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         sql = "select tag, kind from program"
         # print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
+        conn.commit()
+
         result = []
         for i in resultDict:
             temp = {}
@@ -398,21 +398,21 @@ def getAllTag():
     except:
         re = None
     finally:
-        conn.commit()
         conn.close()
     return re
 
 
 def getTagByKind(kind):
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         sql = "select tag from program where kind = '{}'".format(kind)
         # print(sql)
         cur.execute(sql)
         rows = cur.fetchall()
         result = []
+        conn.commit()
         for i in rows:
             temp = {}
             temp['id'] = i[0]
@@ -422,18 +422,19 @@ def getTagByKind(kind):
     except:
         re = None
     finally:
-        conn.commit()
         conn.close()
     return re
 
 def renameTag(oldtag, newtag):
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         sql = "update program set tag = '{}' where tag = '{}'".format(newtag, oldtag)
         # print(sql)
         cur.execute(sql)
+        conn.commit()
+
         re = {
             "msg": "更新成功",
             "code": 200
@@ -444,34 +445,36 @@ def renameTag(oldtag, newtag):
             "code": -1
         }
     finally:
-        conn.commit()
         conn.close()
     return re
 
 def checkTag(tag):
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         sql = "select * from program where tag = '{}';".format(tag)
         cur.execute(sql)
         rows = cur.fetchall()
+        conn.commit()
+
         if len(rows) >= 1:
             return True
         else:
             return False
     finally:
-        conn.commit()
         conn.close()
 
 def deleteTag(tag):
-    try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
+    try:
         cur = conn.cursor()
         sql = "delete from program where tag = '{}'".format(tag)
         # print(sql)
         cur.execute(sql)
+        conn.commit()
+
         re = {
             "msg": "已删除",
             "code": 200
@@ -482,11 +485,12 @@ def deleteTag(tag):
             "code": -1
         }
     finally:
-        conn.commit()
         conn.close()
     return re
 
 def getDataByCondition(grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                                port="32345")
     meta = getMetaData(area, kind, grain)
     metadataIds = []
     for i in meta:
@@ -502,14 +506,16 @@ def getDataByCondition(grain = None, startTime = None, endTime = None, kind = No
         # print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
+        conn.commit()
         return resultDict
     except:
         return None
     finally:
-        conn.commit()
         conn.close()
 
 def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                                port="32345")
     whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
     try:
         conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
@@ -519,6 +525,8 @@ def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = No
         sql = "update electric_data set datavalue = {} where ".format(newdata) + wherestr + ";"
         # print(sql)
         cur.execute(sql)
+        conn.commit()
+
         return {
             "msg": "更新成功",
             "code": 200
@@ -529,10 +537,11 @@ def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = No
             "code": -1
         }
     finally:
-        conn.commit()
         conn.close()
 
 def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                                port="32345")
     whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
     try:
         conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
@@ -542,6 +551,7 @@ def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind 
         sql = "delete from  electric_data where " + wherestr + ";"
         print(sql)
         cur.execute(sql)
+        conn.commit()
         return {
             "msg": "删除成功",
             "code": 200
@@ -552,10 +562,12 @@ def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind 
             "code": -1
         }
     finally:
-        conn.commit()
+
         conn.close()
 
 def getArea():
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                                port="32345")
     try:
         conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
                             port="32345")
@@ -564,6 +576,7 @@ def getArea():
         # print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
+        conn.commit()
         result = []
         for i in resultDict:
             result.append(i[0])
@@ -580,10 +593,12 @@ def getArea():
             "code": -1
         }
     finally:
-        conn.commit()
+
         conn.close()
 
 def getKind():
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                                port="32345")
     try:
         conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
                             port="32345")
@@ -592,6 +607,7 @@ def getKind():
         # print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
+        conn.commit()
 
         result = []
         for i in resultDict:
@@ -608,10 +624,11 @@ def getKind():
             "code": -1
         }
     finally:
-        conn.commit()
         conn.close()
 
 def getGrain():
+    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
+                                port="32345")
     try:
         conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
                             port="32345")
@@ -621,6 +638,8 @@ def getGrain():
         cur.execute(sql)
         resultDict = cur.fetchall()
         result = []
+        conn.commit()
+
         for i in resultDict:
             result.append(i[0])
 
@@ -636,7 +655,6 @@ def getGrain():
             "code": -1
         }
     finally:
-        conn.commit()
         conn.close()
 
 if __name__ == '__main__':

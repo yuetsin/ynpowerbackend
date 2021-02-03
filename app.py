@@ -8,7 +8,7 @@ from Controller.login import *
 from Controller.program import *
 from algorithms import *
 import dao
-import csv
+import os
 import json
 from Controller.operate import *
 
@@ -1815,12 +1815,27 @@ fore-end related http apis
 END
 """
 
+class getAlgorithmArg(Resource):
+    def get(self):
+        method = request.args["method"]
+        print(method)
+        filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+
+        args = getAlgorithmArgs(method= method, filename=filename)
+        re = {
+            "msg":"success",
+            "code":200,
+            "data":args
+        }
+        return re
+
+
 api.add_resource(UploadCSV, "/api/upload")
 api.add_resource(GetDataJson, '/getDataJson')
 api.add_resource(TestAlgorithm, "/interface")
 api.add_resource(insertAlgorithmResult, "/api/insert/result")
 api.add_resource(getAlgorithmResult, "/api/get/result")
-
+api.add_resource(getAlgorithmArg, "/api/get/args")
 
 
 if __name__ == '__main__':
