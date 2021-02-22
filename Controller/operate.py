@@ -344,7 +344,7 @@ def miningResults(tagType):
     re = getTagByKind(tagType)
     return re
 
-def regionQuery():
+def regionQueryCon():
     re = getArea()
     return re
 

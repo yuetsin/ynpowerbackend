@@ -1,4 +1,3 @@
-import sqlalchemy
 from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import Resource, Api
@@ -9,10 +8,8 @@ from Controller.program import *
 from algorithms import *
 import dao
 import os
-import json
 from Controller.operate import *
 
-# import os
 # _dir = './apis'
 # if not os.path.exists(_dir):
 #     os.makedirs(_dir)
@@ -608,14 +605,15 @@ _regions = ['仰光', '丽江市', '红河州', '内比都']
 
 @register('region', 'query')
 class RegionQuery(Resource):
-    def get(self):
-        re = regionQuery()
-        return re
-        # {
-        #     "msg": "success",
-        #     "code": 200,
-        #     "data": _regions
-        # }
+    def post(self):
+        region = regionQueryCon()
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": region
+        }
+        return _regions
+
 
 
 _industries = ['工业', '农业', '医疗业', '餐饮业']
@@ -636,10 +634,12 @@ _industrial_methods = ['基于ARIMA季节分解的行业电量预测', '基于EE
 @register('method', 'industry', 'query')
 class IndustrialMethodQuery(Resource):
     def get(self):
+        filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+        a, b = getAlgorithmName(filename)
         return {
             "msg": "success",
             "code": 200,
-            "data": _industrial_methods
+            "data": a
         }
 
 _regional_methods = ['逐步回归模型', '灰色滑动平均模型', '分数阶灰色模型',
@@ -652,10 +652,12 @@ _regional_methods = ['逐步回归模型', '灰色滑动平均模型', '分数�
 @register('method', 'region', 'query')
 class RegionalMethodQuery(Resource):
     def get(self):
+        filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+        a, b = getAlgorithmName(filename)
         return {
             "msg": "success",
             "code": 200,
-            "data": _regional_methods
+            "data": a
         }
 
 @register('grain', 'query')
@@ -1837,6 +1839,5 @@ api.add_resource(insertAlgorithmResult, "/api/insert/result")
 api.add_resource(getAlgorithmResult, "/api/get/result")
 api.add_resource(getAlgorithmArg, "/api/get/args")
 
-
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port=5000, debug=True)

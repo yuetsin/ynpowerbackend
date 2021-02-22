@@ -6,12 +6,11 @@ import pandas as pd
 
 eng = matlab.engine.start_matlab()
 
-zhlist = ['基于ARIMA季节分解的行业电量预测', '基于EEMD的行业用电量预测', '基于主成分因子的行业用电量预测', '基于随机森林的行业用电量预测', '基于神经网络的行业用电量预测', '灰色滑动平均模型', '基于滚动机制的灰色预测模型', '模糊线性回归模型', '模糊指数平滑模型', '组合预测模型', '梯度提升模型', '支持向量机模型', 'BP神经网络模型', '循环神经网络模型', '长短期神经网络模型', '扩展索洛模型', '分位数回归模型', '一元线性函数', '生长函数', '指数函数', '对数函数', '二元一次函数', '一元线性外推', '生长函数外推', '指数函数外推', '对数函数外推', '饱和曲线法', '负荷密度法', '大用户法', '增长率法', '数据异常检测', 'K均值算法', '主成分分析算法', '关联规则分析算法']
-english = ['SARIMAIndustry', 'EEMDIndustry', 'PCAIndustry', 'RFIndustry', 'BPNNIndustry', 'GM', 'GPRM', 'FLR', 'FER',
-     'Combination', 'GBDT', 'SVM', 'BPNN', 'RNN', 'LSTM', 'ESQRM', 'QuantileRegression', 'Unarylinear', 'Growth',
-     'Exponent', 'Logarithm', 'Binarylinear', 'UnarylinearTime', 'GrowthTime', 'ExponentTime', 'LogarithmTime',
-     'SaturationCurve', 'LDM', 'ForIndustry', 'Increase', 'Outlier', 'Kmeans', 'PCA', 'AssociationRule']
-
+# zhlist = ['基于ARIMA季节分解的行业电量预测', '基于EEMD的行业用电量预测', '基于主成分因子的行业用电量预测', '基于随机森林的行业用电量预测', '基于神经网络的行业用电量预测', '灰色滑动平均模型', '基于滚动机制的灰色预测模型', '模糊线性回归模型', '模糊指数平滑模型', '组合预测模型', '梯度提升模型', '支持向量机模型', 'BP神经网络模型', '循环神经网络模型', '长短期神经网络模型', '扩展索洛模型', '分位数回归模型', '一元线性函数', '生长函数', '指数函数', '对数函数', '二元一次函数', '一元线性外推', '生长函数外推', '指数函数外推', '对数函数外推', '饱和曲线法', '负荷密度法', '大用户法', '增长率法', '数据异常检测', 'K均值算法', '主成分分析算法', '关联规则分析算法']
+# english = ['SARIMAIndustry', 'EEMDIndustry', 'PCAIndustry', 'RFIndustry', 'BPNNIndustry', 'GM', 'GPRM', 'FLR', 'FER',
+#      'Combination', 'GBDT', 'SVM', 'BPNN', 'RNN', 'LSTM', 'ESQRM', 'QuantileRegression', 'Unarylinear', 'Growth',
+#      'Exponent', 'Logarithm', 'Binarylinear', 'UnarylinearTime', 'GrowthTime', 'ExponentTime', 'LogarithmTime',
+#      'SaturationCurve', 'LDM', 'ForIndustry', 'Increase', 'Outlier', 'Kmeans', 'PCA', 'AssociationRule']
 
 #flag = 0,开始时间，flag=1，结束时间
 def formateTimeString(t, grain, flag):
@@ -132,7 +131,7 @@ def getArgs(args):
         tagType = None
     return beginYear, endYear, region, industry, method, tag, tagType
 
-def methodNameZhToEn(zh = None, en = None):
+def methodNameZhToEn( zhlist, english, zh = None, en = None):
 
     if en is None and zh is None:
         return None
@@ -146,9 +145,22 @@ def methodNameZhToEn(zh = None, en = None):
                 return english[i]
 
 
+def getAlgorithmName(filename):
+    data = pd.read_excel(filename, None, index_col=None)
+    zhname = []
+    enname = []
+    for row in data.values():
+        x, y = row.shape
+        header = [i for i in row.columns]
+        for j in range(1, y):
+            enname.append(header[j])
+            zhname.append(row.iloc[0][j])
+    return zhname, enname
+
 def getAlgorithmArgs(method = None, filename = None):
     # print(filename)
-    method = methodNameZhToEn(method)
+    a, b = getAlgorithmName(filename)
+    method = methodNameZhToEn(a, b, method)
     # print(method)
     data = pd.read_excel(filename, None, index_col=None)
     args = {}

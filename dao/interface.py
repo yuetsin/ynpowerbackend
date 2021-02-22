@@ -318,7 +318,7 @@ def addPerson(username, password):
         msg = "创建失败"
     finally:
         conn.close()
-        return msg
+    return msg
 
 def insertAlgorithmContent(tag, kind, content):
 
@@ -459,11 +459,12 @@ def checkTag(tag):
         conn.commit()
 
         if len(rows) >= 1:
-            return True
+            re =  True
         else:
-            return False
+            re = False
     finally:
         conn.close()
+    return re
 
 def deleteTag(tag):
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
@@ -498,8 +499,6 @@ def getDataByCondition(grain = None, startTime = None, endTime = None, kind = No
 
     whe = formatDataCondition(startTime, endTime, dataName, grain, metadataIds)
     try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                            port="32345")
         cur = conn.cursor()
         wherestr = " and ".join(whe)
         sql = "select datatime, dataname, datavalue, metadataid from electric_data_test where " + wherestr + ";"
@@ -507,19 +506,19 @@ def getDataByCondition(grain = None, startTime = None, endTime = None, kind = No
         cur.execute(sql)
         resultDict = cur.fetchall()
         conn.commit()
-        return resultDict
+        re = resultDict
+
     except:
-        return None
+        re =  None
     finally:
         conn.close()
+    return re
 
 def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
     whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
     try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                                port="32345")
         cur = conn.cursor()
         wherestr = " and ".join(whe)
         sql = "update electric_data set datavalue = {} where ".format(newdata) + wherestr + ";"
@@ -527,50 +526,48 @@ def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = No
         cur.execute(sql)
         conn.commit()
 
-        return {
+        re =  {
             "msg": "更新成功",
             "code": 200
         }
     except:
-        return {
+        re =  {
             "msg": "更新失败",
             "code": -1
         }
     finally:
         conn.close()
+    return re
 
 def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
     whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
     try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                                port="32345")
         cur = conn.cursor()
         wherestr = " and ".join(whe)
         sql = "delete from  electric_data where " + wherestr + ";"
         print(sql)
         cur.execute(sql)
         conn.commit()
-        return {
+        re =  {
             "msg": "删除成功",
             "code": 200
         }
     except:
-        return {
+        re =  {
             "msg": "删除失败",
             "code": -1
         }
     finally:
 
         conn.close()
+    return re
 
 def getArea():
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
     try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                            port="32345")
         cur = conn.cursor()
         sql = "select distinct area from electric_data;"
         # print(sql)
@@ -581,13 +578,13 @@ def getArea():
         for i in resultDict:
             result.append(i[0])
 
-        return {
+        re =  {
             "msg": "success",
             "data": result,
             "code": 200
         }
     except:
-        return {
+        re =  {
             "msg": "fail",
             "data": None,
             "code": -1
@@ -595,13 +592,12 @@ def getArea():
     finally:
 
         conn.close()
+    return re
 
 def getKind():
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
     try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                            port="32345")
         cur = conn.cursor()
         sql = "select distinct kind from electric_data;"
         # print(sql)
@@ -612,26 +608,25 @@ def getKind():
         result = []
         for i in resultDict:
             result.append(i[0])
-        return {
+        re =  {
             "msg": "success",
             "data": result,
             "code": 200
         }
     except:
-        return {
+        re =  {
             "msg": "fail",
             "data": None,
             "code": -1
         }
     finally:
         conn.close()
+    return re
 
 def getGrain():
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
                                 port="32345")
     try:
-        conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                            port="32345")
         cur = conn.cursor()
         sql = "select distinct grain from electric_data;"
         # print(sql)
@@ -643,19 +638,20 @@ def getGrain():
         for i in resultDict:
             result.append(i[0])
 
-        return {
+        re =  {
             "msg": "success",
             "data": result,
             "code": 200
         }
     except:
-        return {
+        re =  {
             "msg": "fail",
             "data": None,
             "code": -1
         }
     finally:
         conn.close()
+    return re
 
 if __name__ == '__main__':
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
