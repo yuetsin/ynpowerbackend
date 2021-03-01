@@ -22,13 +22,13 @@ import math
 
 """SVM，未联调，已修改"""
 
-def SVM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省"):
+def SVM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",region="云南省", kind = "电力电量类", grain="year"):
     #读取数据，确定参数
     name=[pretype]
     finaldata=[]
     outputlen=int(PreEndYear)-int(PreStartYear)+1
     
-    datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+    datajson=getData(region+"_"+grain+"_"+kind, pretype, StartYear, EndYear)
     data=json.loads(datajson)
     finaldata.append(data)
     final=pd.DataFrame(finaldata,index=name)
@@ -77,7 +77,7 @@ def SVM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption"
                 break
 
     ypre=np.array(pre).flatten()
-    result={"trainfromyear":trainyear[0],"traintoyear":trainyear[-1],"trainresult":ytrain,"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre,"MAPE":mape,"RMSE":rmse}
+    result={"trainfromyear":trainyear[0],"traintoyear":trainyear[-1],"trainresult":list(ytrain),"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":list(ypre),"MAPE":mape,"RMSE":rmse}
     #保存
     return result
 if __name__ == '__main__':

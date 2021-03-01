@@ -1,5 +1,8 @@
-from dao.interface import *
-from utils.tools import *
+# from dao.interface import getDataByCondition, modifyDataByCondition, getTagByKind, getAllTag, renameTag, deleteTag, \
+#     checkTag, insertAlgorithmContent, getGrain, getKind, getArea
+from dao import *
+from utils import *
+
 
 def exceptQuery(category, startTime, endTime, grain, area):
     data = getDataByCondition(grain = grain, startTime = startTime, endTime = endTime, kind = category[0], dataName = category[1], area = area)
@@ -270,6 +273,8 @@ def clampingPayloadPredict(args):
 
     data = getDataByCondition(grain=None, startTime=str(startYear), endTime=str(endYear), kind=None, dataName=None,
                               area=None)
+    method = args["name"]
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
     content['content'] = []
@@ -356,3 +361,9 @@ def grainQuery():
     re = getGrain()
 
     return re
+
+def getDatas(location, dataName, startTime, endTime):
+    re = getData(location, dataName, startTime, endTime)
+    return re
+def executeAlgorithmTest(method, args):
+    executeAlgorithm(method, args)

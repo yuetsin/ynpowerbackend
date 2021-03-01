@@ -2,13 +2,9 @@ from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import Resource, Api
 from pprint import pprint, pformat
-from Controller import uploadData
-from Controller.login import *
-from Controller.program import *
 from algorithms import *
-import dao
 import os
-from Controller.operate import *
+from Controller import *
 
 # _dir = './apis'
 # if not os.path.exists(_dir):
@@ -17,7 +13,7 @@ from Controller.operate import *
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 api = Api(app)
-
+filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
 
 def try_print_args():
     try:
@@ -84,7 +80,7 @@ class GetDataJson(Resource):
         grain = request.json['grain'].strip()
         area = request.json['area'].strip()
         kind = request.json['kind'].strip()
-        re = dao.getData(area + "_" + grain + "_" + kind, dataName, startTime, endTime)
+        re = getDatas(area + "_" + grain + "_" + kind, dataName, startTime, endTime)
 
         # re = dao.getDataTest(area + "_" + grain + "_" + kind, dataName, startTime, endTime)
         return re
@@ -94,7 +90,7 @@ class GetDataJson(Resource):
         startTime = request.args.get('startTime')
         endTime = request.args.get('endTime')
         location = request.args.get('location')
-        data = dao.getData(location, dataName, startTime, endTime)
+        data = getDatas(location, dataName, startTime, endTime)
         re = {
             "data": data,
             "status": '200'
@@ -605,14 +601,14 @@ _regions = ['仰光', '丽江市', '红河州', '内比都']
 
 @register('region', 'query')
 class RegionQuery(Resource):
-    def post(self):
-        region = regionQueryCon()
-        re = {
-            "msg": "success",
-            "code": 200,
-            "data": region
-        }
-        return _regions
+    def get(self):
+        re = regionQueryCon()
+        # re = {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": region
+        # }
+        return re
 
 
 
@@ -622,6 +618,11 @@ _industries = ['工业', '农业', '医疗业', '餐饮业']
 class IndustryQuery(Resource):
     def get(self):
         re = industryQuery()
+        # re = {
+        #     "msg": "success",
+        #     "code": 200,
+        #     "data": industry
+        # }
         return re
         # {
         #     "msg": "success",
@@ -1820,7 +1821,6 @@ END
 class getAlgorithmArg(Resource):
     def get(self):
         method = request.args["method"]
-        print(method)
         filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
 
         args = getAlgorithmArgs(method= method, filename=filename)
@@ -1830,7 +1830,11 @@ class getAlgorithmArg(Resource):
             "data":args
         }
         return re
-
+class testExecuteAlgorithm(Resource):
+    def post(self):
+        method = request.json['method']
+        result = executeAlgorithm(method, request.json)
+        return result
 
 api.add_resource(UploadCSV, "/api/upload")
 api.add_resource(GetDataJson, '/getDataJson')
@@ -1838,6 +1842,7 @@ api.add_resource(TestAlgorithm, "/interface")
 api.add_resource(insertAlgorithmResult, "/api/insert/result")
 api.add_resource(getAlgorithmResult, "/api/get/result")
 api.add_resource(getAlgorithmArg, "/api/get/args")
+api.add_resource(testExecuteAlgorithm, "/api/test")
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run()

@@ -15,12 +15,12 @@ import algorithms.predict_economic as preeco
 
 from algorithms.evaluation import RMSE,MAPE
 from dao.interface import getData
-import json 
+import json
 
 """扩展索洛分位数回归"""
 
 
-def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省"):
+def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省", kind = "电力电量类", grain="year"):
     """
     
 

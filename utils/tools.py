@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 import re
 from dateutil.relativedelta import relativedelta
-import matlab.engine
+# import matlab.engine
 import pandas as pd
-
-eng = matlab.engine.start_matlab()
+from app import filename
+#
+# eng = matlab.engine.start_matlab()
 
 # zhlist = ['基于ARIMA季节分解的行业电量预测', '基于EEMD的行业用电量预测', '基于主成分因子的行业用电量预测', '基于随机森林的行业用电量预测', '基于神经网络的行业用电量预测', '灰色滑动平均模型', '基于滚动机制的灰色预测模型', '模糊线性回归模型', '模糊指数平滑模型', '组合预测模型', '梯度提升模型', '支持向量机模型', 'BP神经网络模型', '循环神经网络模型', '长短期神经网络模型', '扩展索洛模型', '分位数回归模型', '一元线性函数', '生长函数', '指数函数', '对数函数', '二元一次函数', '一元线性外推', '生长函数外推', '指数函数外推', '对数函数外推', '饱和曲线法', '负荷密度法', '大用户法', '增长率法', '数据异常检测', 'K均值算法', '主成分分析算法', '关联规则分析算法']
 # english = ['SARIMAIndustry', 'EEMDIndustry', 'PCAIndustry', 'RFIndustry', 'BPNNIndustry', 'GM', 'GPRM', 'FLR', 'FER',
@@ -135,10 +136,12 @@ def methodNameZhToEn( zhlist, english, zh = None, en = None):
 
     if en is None and zh is None:
         return None
+    # elif en is not None:
+    #     for i in range(len(english)):
+    #         if english[i] == en:
+    #             return zhlist[i]
     elif en is not None:
-        for i in range(len(english)):
-            if english[i] == en:
-                return zhlist[i]
+        return en
     elif zh is not None:
         for i in range(len(zhlist)):
             if zhlist[i] == zh:
@@ -158,10 +161,10 @@ def getAlgorithmName(filename):
     return zhname, enname
 
 def getAlgorithmArgs(method = None, filename = None):
-    # print(filename)
+    # print(method)
     a, b = getAlgorithmName(filename)
     method = methodNameZhToEn(a, b, method)
-    # print(method)
+    print(method)
     data = pd.read_excel(filename, None, index_col=None)
     args = {}
     for row in data.values():
@@ -193,23 +196,72 @@ def getAlgorithm(name):
     return f
 
 def executeAlgorithm(method, args):
+
+    a, b = getAlgorithmName(filename)
+    method = methodNameZhToEn(a, b, method)
     f = getAlgorithm(method)
+    argstr = ""
+    for v in args:
+        if v == "method":
+            continue
+        if v[-1] == "*":
+            k = v[:-1]
+        else:
+            k = v
+        if type(args[v]) == str:
+            argstr += "{} = '{}',".format(k, args[v])
+        else:
+            argstr += "{} = {},".format(k, args[v])
+
+    # print(argstr)
+    result = eval("f("+argstr+")")
+    return result
+
+def executeAlgorithmtest(method, args):
+
+    arg = getAlgorithmArgs(method, filename)
+    a, b = getAlgorithmName(filename)
+    method = methodNameZhToEn(a, b, method)
+
+    f = getAlgorithm(method)
+    print(arg)
+    argstr = ""
+    for v in args:
+        if v == "method":
+            continue
+        if v[-1] == "*":
+            k = v[:-1]
+        else:
+            k = v
+        if type(args[v]) == int:
+            argstr += "{} = {},".format(k, args[v])
+        else:
+            argstr += "{} = '{}',".format(k, args[v])
+
+    print(argstr)
+    result = eval("f("+argstr+")")
+    return result
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     if method == "SVM":
+        for v in args:
+            if v == "method":
+                continue
+            exec('var{} = {}'.format(v, args[v]))
+        # historyBeginYear = args['historyBeginYear']
+        # historyEndYear = args['historyEndYear']
+        # factor1 = args['factor1']
+        # name1 = factor1['name']
+        # hasValue1 = factor1['hasValue']
+        # value1 = factor1['value']
+        #
+        # factor2 = args['factor2']
+        # name = factor2['name']
+        # hasValue = factor2['hasValue']
+        # value = factor2['value']
+        # presult = f(StartYear, EndYear, PreStartYear, PreEndYear, timestep, pretype, city)
 
-        historyBeginYear = args['historyBeginYear']
-        historyEndYear = args['historyEndYear']
-        factor1 = args['factor1']
-        name1 = factor1['name']
-        hasValue1 = factor1['hasValue']
-        value1 = factor1['value']
-
-        factor2 = args['factor2']
-        name = factor2['name']
-        hasValue = factor2['hasValue']
-        value = factor2['value']
-        presult = f(historyBeginYear, historyEndYear, beginYear, endYear, timestep=10, pretype="consumption", city = region)
-        return presult
+        # presult = f(historyBeginYear, historyEndYear, beginYear, endYear, timestep=10, pretype="consumption", city = region)
+        # return presult
     elif method == "PCAIndustry":
         historyBeginYear = args['historyBeginYear']
         historyEndYear = args['historyEndYear']

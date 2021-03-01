@@ -6,18 +6,29 @@ import json
 import pandas as pd
 import numpy as np
 import psycopg2
-from utils.tools import *
 
+from utils import formatMetadataCondition, formateTimeString
+
+dbname="electric"
+user="postgres"
+password="admin123"
+host="dclab.club"
+port="32345"
 
 class Database():
     # replace the user, password, hostname and database according to your configuration according to your information
-    engine = db.create_engine('postgresql://postgresadmin:admin123@192.168.1.108:32345/electric')
+    engine = db.create_engine('postgresql://postgres:admin123@192.168.1.108:32345/electric')
     #engine = db.create_engine('postgresql://postgres:ynpower@localhost:5432/electric')
 
     def __init__(self):
         self.connection = self.engine.connect()
         print("DB Instance created")
 
+
+def getConn():
+    conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host,
+                            port=port)
+    return conn
 
 # 示例：   print(getDataJson("曲靖GDP数据","2010-10-20","2010-10-21"))
 # 时间请保证均为两位，例如2019年2月1日，即2019-02-01
@@ -108,8 +119,7 @@ def insertData(data):
 
 #新增metadata操作
 def getMetaData(area = None, kind = None, grain=None):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                            port="32345")
+    conn = getConn()
     cur = conn.cursor()
     whe = formatMetadataCondition(grain, kind, area)
     wherestr = " and ".join(whe)
@@ -121,9 +131,9 @@ def getMetaData(area = None, kind = None, grain=None):
     return result
 
 def insertMetadata(area, kind, grain):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                            port="32345")
+    conn = getConn()
     cur = conn.cursor()
+
     if area is None or kind is None or grain is None:
         return None
     re = getMetaData(area, kind, grain)
@@ -139,9 +149,9 @@ def insertMetadata(area, kind, grain):
 
 def insertPowerData(value):
     print("inserting")
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                            port="32345")
+    conn = getConn()
     cur = conn.cursor()
+
     insertjoin = " "
     insert = insertjoin.join(value)
     # print(insert)
@@ -153,8 +163,9 @@ def addPowerData(data, area, grain, kind):
     insertMetadata(area, kind, grain)
     metadata = getMetaData(area, kind, grain)
     metadataId = metadata[0][0]
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club", port="32345")
+    conn = getConn()
     cur = conn.cursor()
+
     values = []
     insertjoin = " "
     header = [i for i in data.columns]
@@ -187,37 +198,39 @@ def getData(location, dataName, startTime, endTime):
     area = l[0]
     kind = l[2]
     metadata = getMetaData(area, kind, grain)
+    # print(metadata)
     metadataId = metadata[0][0]
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                            port="32345")
+    conn = getConn()
     cur = conn.cursor()
+    whe = []
+    whe.append("metadataid = {} ".format(metadataId))
     startTime = formateTimeString(startTime, grain, 0)
     endTime = formateTimeString(endTime, grain, 1)
-    dataNamelist = dataName.split(',')
-    dataNames = ""
-    for i in range(len(dataNamelist)):
-        dataNames += "'" + dataNamelist[i] + "'"
-        if i != len(dataNamelist) - 1:
-            dataNames += ","
+    whe.append("datatime >= '{}' and datatime <= '{}'".format(startTime, endTime))
 
+    if dataName != None:
+        dataNamelist = dataName.split(',')
+        print(dataNamelist)
+        dataNames = ""
+        for i in range(len(dataNamelist)):
+            dataNames += "'" + dataNamelist[i] + "'"
+            if i != len(dataNamelist) - 1:
+                dataNames += ","
+        whe.append("dataname in ({})".format(dataNames))
+
+    wherestr = " and ".join(whe)
     if grain == "year":
-        sql = "select to_char(datatime::TIMESTAMP, 'yyyy') as datatime, dataname, datavalue, metadataid, id from electric_data_test where metadataid = {} and dataname in ({}) and datatime >= '{}' and datatime <= '{}'; ".format(
-           metadataId,  dataNames, startTime, endTime)
+        sql = "select to_char(datatime::TIMESTAMP, 'yyyy') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
     elif grain == "month":
-        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm') as datatime, dataname, datavalue, metadataid, id from electric_data_test where metadataid = {} and dataname in ({}) and datatime >= '{}' and datatime <= '{}'; ".format(
-           metadataId,  dataNames, startTime, endTime)
+        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
     elif grain == "day":
-        sql = "select to_char(datatime::TIMESTAMP , 'yyyy/mm/dd') as datatime, dataname, datavalue, metadataid, id from electric_data_test where metadataid = {} and dataname in ({}) and datatime >= '{}' and datatime <= '{}'; ".format(
-           metadataId,  dataNames, startTime, endTime)
+        sql = "select to_char(datatime::TIMESTAMP , 'yyyy/mm/dd') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
     elif grain == "hour":
-        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh') as datatime, dataname, datavalue, metadataid, id from electric_data_test where metadataid = {} and dataname in ({}) and datatime >= '{}' and datatime <= '{}'; ".format(
-           metadataId,  dataNames, startTime, endTime)
+        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
     elif grain == "min":
-        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh:mi') as datatime, dataname, datavalue, metadataid, id from electric_data_test where metadataid = {} and dataname in ({}) and datatime >= '{}' and datatime <= '{}'; ".format(
-           metadataId,  dataNames, startTime, endTime)
+        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh:mi') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
     elif grain == "sec":
-        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh:mi:ss') as datatime, dataname, datavalue, metadataid, id from electric_data_test where metadataid = {} and dataname in ({}) and datatime >= '{}' and datatime <= '{}'; ".format(
-           metadataId,  dataNames, startTime, endTime)
+        sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh:mi:ss') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
 
     # print(sql)
     cur.execute(sql)
@@ -225,7 +238,7 @@ def getData(location, dataName, startTime, endTime):
     conn.commit()
     conn.close()
     # print(resultDict)
-    if len(dataNamelist) > 1:
+    if  dataName == None or len(dataNamelist) > 1:
         return resultDict
     elif len(dataNamelist) <= 1:
         newDict = {}
@@ -238,8 +251,9 @@ def getData(location, dataName, startTime, endTime):
 
 
 def getUserByPsAndName(username, password):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108", port="32345")
+    conn = getConn()
     cur = conn.cursor()
+
     cur.execute("select count(*) from electric where username = '{}' and password = '{}'".format(username, password))
     rows = cur.fetchall()
     conn.commit()
@@ -252,7 +266,9 @@ def getUserByPsAndName(username, password):
 
 
 def insertAlgorithmResult(result, tag):
+    conn = getConn()
     cur = conn.cursor()
+
     result = json.dumps(result)
     sql = "INSERT INTO program (tag, content) VALUES('{}', '{}') on conflict on constraint unique_tag do update set content='{}';".format(tag, result, result)
     # print(sql)
@@ -262,7 +278,9 @@ def insertAlgorithmResult(result, tag):
     return
 
 def getAlgorithmResultByTag(tags):
+    conn = getConn()
     cur = conn.cursor()
+
     tagslist = tags.split(',')
     tag = ""
     for i in range(len(tagslist)):
@@ -279,10 +297,10 @@ def getAlgorithmResultByTag(tags):
 
 
 def checkPerson(username, password):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         sql = "select * from person where username = '{}' and password = '{}';".format(username, password)
         cur.execute(sql)
         rows = cur.fetchall()
@@ -300,10 +318,10 @@ def checkPerson(username, password):
 
 def addPerson(username, password):
 
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         sql = "select * from person where username = '{}' ;".format(username)
         cur.execute(sql)
         rows = cur.fetchall()
@@ -322,10 +340,10 @@ def addPerson(username, password):
 
 def insertAlgorithmContent(tag, kind, content):
 
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         result = json.dumps(content)
         sql = "INSERT INTO program (tag, content, kind) VALUES('{}', '{}', '{}') on conflict on constraint unique_tag do update set content='{}';".format(tag, result, kind, result)
         # print(sql)
@@ -345,10 +363,10 @@ def insertAlgorithmContent(tag, kind, content):
     return re
 
 def getAlgorithmContentByTag(tags):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         tagslist = tags.split(',')
         tag = ""
         for i in range(len(tagslist)):
@@ -377,10 +395,10 @@ def getAlgorithmContentByTag(tags):
     return re
 
 def getAllTag():
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         sql = "select tag, kind from program"
         # print(sql)
         cur.execute(sql)
@@ -403,10 +421,10 @@ def getAllTag():
 
 
 def getTagByKind(kind):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         sql = "select tag from program where kind = '{}'".format(kind)
         # print(sql)
         cur.execute(sql)
@@ -426,10 +444,10 @@ def getTagByKind(kind):
     return re
 
 def renameTag(oldtag, newtag):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         sql = "update program set tag = '{}' where tag = '{}'".format(newtag, oldtag)
         # print(sql)
         cur.execute(sql)
@@ -449,10 +467,10 @@ def renameTag(oldtag, newtag):
     return re
 
 def checkTag(tag):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         sql = "select * from program where tag = '{}';".format(tag)
         cur.execute(sql)
         rows = cur.fetchall()
@@ -467,10 +485,10 @@ def checkTag(tag):
     return re
 
 def deleteTag(tag):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
         sql = "delete from program where tag = '{}'".format(tag)
         # print(sql)
         cur.execute(sql)
@@ -490,8 +508,8 @@ def deleteTag(tag):
     return re
 
 def getDataByCondition(grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
     meta = getMetaData(area, kind, grain)
     metadataIds = []
     for i in meta:
@@ -499,7 +517,6 @@ def getDataByCondition(grain = None, startTime = None, endTime = None, kind = No
 
     whe = formatDataCondition(startTime, endTime, dataName, grain, metadataIds)
     try:
-        cur = conn.cursor()
         wherestr = " and ".join(whe)
         sql = "select datatime, dataname, datavalue, metadataid from electric_data_test where " + wherestr + ";"
         # print(sql)
@@ -515,11 +532,11 @@ def getDataByCondition(grain = None, startTime = None, endTime = None, kind = No
     return re
 
 def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
     try:
-        cur = conn.cursor()
         wherestr = " and ".join(whe)
         sql = "update electric_data set datavalue = {} where ".format(newdata) + wherestr + ";"
         # print(sql)
@@ -540,11 +557,11 @@ def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = No
     return re
 
 def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
     try:
-        cur = conn.cursor()
         wherestr = " and ".join(whe)
         sql = "delete from  electric_data where " + wherestr + ";"
         print(sql)
@@ -565,11 +582,11 @@ def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind 
     return re
 
 def getArea():
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
-        sql = "select distinct area from electric_data;"
+        sql = "select distinct area from metadata;"
         # print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
@@ -595,11 +612,11 @@ def getArea():
     return re
 
 def getKind():
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
+    cur = conn.cursor()
+
     try:
-        cur = conn.cursor()
-        sql = "select distinct kind from electric_data;"
+        sql = "select distinct kind from metadata;"
         # print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
@@ -624,11 +641,10 @@ def getKind():
     return re
 
 def getGrain():
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="dclab.club",
-                                port="32345")
+    conn = getConn()
     try:
         cur = conn.cursor()
-        sql = "select distinct grain from electric_data;"
+        sql = "select distinct grain from metadata;"
         # print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
