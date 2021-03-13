@@ -14,7 +14,6 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from PyEMD import EMD
-from pyemd import emd
 from sklearn.multioutput import MultiOutputRegressor
 
 import algorithms.predict_economic as preeco

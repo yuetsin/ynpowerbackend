@@ -99,40 +99,35 @@ def miningRequest(tag, tagType, region, factors, method, arg, beginYear, endYear
 
 def regionSinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    # historyBeginYear = args['historyBeginYear']
-    # historyEndYear = args['historyEndYear']
-    # factor1= args['factor1']
-    # name1 = factor1['name']
-    # hasValue1 = factor1['hasValue']
-    # value1 = factor1['value']
-    #
-    # factor2= args['factor2']
-    # name = factor2['name']
-    # hasValue= factor2['hasValue']
-    # value= factor2['value']
-    # data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-    #                           area=region)  # 是否需要粒度，和kind，dataname
     result = executeAlgorithm(method, args)
+    print(result)
+    result = formatPredictResult(result)
+
+    print(result)
     content = {}
     content['arg'] = args
     content["result"] = result
     re = insertAlgorithmContent(tag, tagType, content)
-    return re
+    return result
 
 def regionMixPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
+    result = formatPredictResult(result)
+    print(result)
     content = {}
     content['arg'] = args
     content["result"] = result
 
     re = insertAlgorithmContent(tag, tagType, content)
-    return re
+    return result
 
 
 def industrySinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
+    result = formatPredictResult(result)
+
     content = {}
     content['arg'] = args
     content["result"] = result

@@ -12,10 +12,10 @@ import pandas as pd
 from sklearn import linear_model
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from train_test_set import generate_data,inverse_data
-import predict_economic as preeco
-from evaluation import RMSE,MAPE
-from interface import getData
+from algorithms.train_test_set import generate_data,inverse_data
+import algorithms.predict_economic as preeco
+from algorithms.evaluation import RMSE,MAPE
+from dao.interface import getData
 import json 
 
 """分位数回归，未联调，已修改"""

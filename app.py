@@ -686,9 +686,12 @@ class MiningFactorQuery(Resource):
 class RegionSinglePredict(Resource):
     def post(self):
         # try_print_json()
-        re = regionSinglePredict(request.json)
-
-        
+        result = regionSinglePredict(request.json)
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": result
+        }
         # payload = {
         #     'graphData': [
         #         {
@@ -774,9 +777,13 @@ class RegionMixPredict(Resource):
 class IndustrySinglePredict(Resource):
     def post(self):
         # try_print_json()
-        re = industrySinglePredict(request.json)
+        result = industrySinglePredict(request.json)
 
-
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": result
+        }
 
         # payload = {
         #     'graphData': [

@@ -10,11 +10,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 import math
-from train_test_set import generate_data,inverse_data
-from interface import getData
+from algorithms.train_test_set import generate_data,inverse_data
+from dao.interface import getData
 import json 
 from sklearn.multioutput import MultiOutputRegressor
-from evaluation import RMSE,MAPE
+from algorithms.evaluation import RMSE,MAPE
 """随机森林预测模型"""
 
 def RandomForest(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",n_estimators=50,city="云南省"):

@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn import metrics
 from scipy.optimize import leastsq
-from evaluation import RMSE,MAPE
-import io_csv as ic
-from interface import getData
+from algorithms.evaluation import RMSE,MAPE
+import algorithms.io_csv as ic
+from dao.interface import getData
 import json 
 import math
 

@@ -15,10 +15,10 @@ from sklearn import metrics
 from scipy.optimize import leastsq
 import math
 #import predict_economic_LDM as predict
-import predict_inputdata as predict
-from interface import getData
+import algorithms.predict_inputdata as predict
+from dao.interface import getData
 import json
-from evaluation import RMSE,MAPE 
+from algorithms.evaluation import RMSE,MAPE
 
 def LDM(PreStartYear,PreEndYear,buildingarea,loaddensity,pretype="consumption",city="云南省"):
     

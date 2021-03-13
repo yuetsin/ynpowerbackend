@@ -149,7 +149,7 @@ def RNNpre(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumpti
                 trainyear.append(final.index[count])
                 break
     
-    result={"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist(),"MAPE":mape,"RMSE":rmse}
+    result={"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist()[0],"MAPE":mape,"RMSE":rmse}
 
     
     return result

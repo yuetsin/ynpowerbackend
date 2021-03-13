@@ -728,7 +728,13 @@ def executeAlgorithm(method, args):
             k = key
         if v["kind"].startswith("list"):
             valuelist = args[key].split(",")
-            argstr += "{} = {},".format(k, valuelist)
+            value = []
+            if v['kind'].endswith("int"):
+                for i in valuelist:
+                    value.append(int(i))
+            elif v['kind'].endswith("string"):
+                value = valuelist
+            argstr += "{} = {},".format(k, value)
         elif v["kind"] == "string" or v["kind"] == "option":
             argstr += "{} = '{}',".format(k, args[key])
         else:
