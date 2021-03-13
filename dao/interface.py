@@ -7,11 +7,12 @@ import pandas as pd
 import numpy as np
 import psycopg2
 import os
-from app import app
+from os.path import dirname, realpath
+# from app import app
 from utils import formatMetadataCondition, formateTimeString, formatDataCondition, methodNameZhToEn, getAlgorithmName, \
     getAlgorithm
-
-filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+filename = os.path.join(os.getcwd(), os.path.dirname(os.path.dirname(__file__)),'algorithms', 'args.xlsx')
+# filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
 
 dbname="electric"
 user="postgres"
@@ -714,7 +715,7 @@ def getAlgorithmArgs(method = None, filename = None):
 
 
 def executeAlgorithm(method, args):
-    # print(filename)
+    print(filename)
     arg = getAlgorithmArgs(method, filename)
     a, b = getAlgorithmName(filename)
     method = methodNameZhToEn(a, b, method)

@@ -4,7 +4,7 @@ RUN mkdir -p /usr/src/app  && \
     mkdir -p /var/log/gunicorn
 
 WORKDIR /usr/src/app
-COPY requirements.txt /usr/src/app/requirements.txt
+COPY requirementsb.txt /usr/src/app/requirements.txt
 
 RUN pip install --no-cache-dir gunicorn && \
     pip install --no-cache-dir -r /usr/src/app/requirements.txt
