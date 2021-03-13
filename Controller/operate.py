@@ -1,5 +1,12 @@
 # from dao.interface import getDataByCondition, modifyDataByCondition, getTagByKind, getAllTag, renameTag, deleteTag, \
 #     checkTag, insertAlgorithmContent, getGrain, getKind, getArea
+from algorithms.loadcompute.main import dayFeature, monthFeature, yearfeature, yearLoad, dayLoad, typicalDay, \
+    yearLoadCon
+from algorithms.loadcompute.pre_process import d_pre_character
+from algorithms.loadpredict.fenxing.fenxing import fenxingpre
+from algorithms.loadpredict.shuangxiangjiabi.shuangxiangjiabi import shuangxiangjiabi
+from algorithms.loadpredict.souku.souku import soukupre
+from algorithms.loadpredict.zhishupinghua.zhishupinghua import zhishupinghua
 from dao import *
 from utils import *
 
@@ -92,92 +99,78 @@ def miningRequest(tag, tagType, region, factors, method, arg, beginYear, endYear
 
 def regionSinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    factor1= args['factor1']
-    name1 = factor1['name']
-    hasValue1 = factor1['hasValue']
-    value1 = factor1['value']
-
-    factor2= args['factor2']
-    name = factor2['name']
-    hasValue= factor2['hasValue']
-    value= factor2['value']
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
-    result = executeAlgorithm(method)
-
-
+    # historyBeginYear = args['historyBeginYear']
+    # historyEndYear = args['historyEndYear']
+    # factor1= args['factor1']
+    # name1 = factor1['name']
+    # hasValue1 = factor1['hasValue']
+    # value1 = factor1['value']
+    #
+    # factor2= args['factor2']
+    # name = factor2['name']
+    # hasValue= factor2['hasValue']
+    # value= factor2['value']
+    # data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
+    #                           area=region)  # 是否需要粒度，和kind，dataname
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
-    # 补充算法模型
+    content["result"] = result
     re = insertAlgorithmContent(tag, tagType, content)
     return re
 
 def regionMixPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    selectedMethods = args['selectedMethods']
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
     return re
 
 
 def industrySinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    method = args['method']
-    parameters = args['parameters']
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
     return re
 
 def industryMixPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    selectedMethods = args['selectedMethods']
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
+
     return re
 
 def saturationCurvePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    method = args['method']
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
+    result = executeAlgorithm(method, args)
+    result = formatPredictResult(result)
+    print(result)
     content = {}
     content['arg'] = args
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
-    return re
+
+    return result
 
 def payloadDensityPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    method = args['method']
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
     return re
 
@@ -195,134 +188,281 @@ def provincialAndMunicipalPredict(args):
 
 def bigDataPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    method = args['method']
-    patches = args['patches']
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=industry, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
+
     return re
 
 def dailyPayloadTraits(args):
-    beginDay = args['beginDay']
-    endDay = args['endDay']
+    beginDay = args["beginDay"]
+    endDay = args["endDay"]
+    begin = timeFormat(beginDay, "day")
+    end = timeFormat(endDay, "day")
+    t1 = begin.strftime('%Y/%m/%d')
+    t2 = end.strftime('%Y/%m/%d')
+    result = dayFeature(t1, t2)
+    # print(result)
+    # result = []
+    # while begin <= end:
+    #     t = begin.strftime('%Y/%m/%d')
+    #     temp = dayFeature(start=t, end=t)
+    #     temp["day"] = t
+    #     result.append(temp)
+    #     begin = getNextDay(begin)
 
-    data = getDataByCondition(grain="day", startTime=beginDay, endTime=endDay, kind=None, dataName=None,
-                              area=None)
-    content = {}
-    content['arg'] = args
-    content['content'] = []
-    # 补充算法模型
+
+
+    # content = {}
+    # content['arg'] = args
+    # content["result"] = result
+    #
     # re = insertAlgorithmContent(tag, tagType, content)
-    return content
+
+    return result
+
 def monthlyPayloadTraits(args):
-    beginMonth = args['beginMonth']
-    endMonth = args['endMonth']
-    data = getDataByCondition(grain="month", startTime=beginMonth, endTime=endMonth, kind=None, dataName=None,
-                              area=None)
-    content = {}
-    content['arg'] = args
-    content['content'] = []
-    # 补充算法模型
-    # re = insertAlgorithmContent(tag, tagType, content)
-    return content
+    beginMonth = args["beginMonth"]
+    endMonth = args["endMonth"]
 
-def yearlyPayloadTraits(args):
-    beginYear = args['beginYear']
-    endYear = args['endYear']
-    data = getDataByCondition(grain="year", startTime=beginYear, endTime=endYear, kind=None, dataName=None,
-                              area=None)
-    content = {}
-    content['arg'] = args
-    content["content"] = []
-    # 补充算法模型
+    begin = timeFormat(beginMonth, "month")
+    end = timeFormat(endMonth, "month")
+    end = getEndMonth(end)
+
+    result = monthFeature(begin.strftime('%Y/%m/%d'), end.strftime("%Y/%m/%d"))
+    # result = []
+    # while begin <= end:
+    #     t = begin.strftime('%Y/%m/%d')
+    #     te = getEndMonth(begin)
+    #     te = te.strftime("%Y/%m/%d")
+    #     temp = monthFeature(start=t, end=te)
+    #     temp["month"] = begin.strftime("%Y/%m")
+    #     result.append(temp)
+    #     begin = getNextMonth(begin)
+
+
+
+    # content = {}
+    # content['arg'] = args
+    # content["result"] = result
+    #
     # re = insertAlgorithmContent(tag, tagType, content)
-    return content
+
+    return result
+def yearlyPayloadTraits(args):
+    beginYear = args["beginYear"]
+    endYear = args["endYear"]
+
+    begin = timeFormat(beginYear, "year")
+    end = timeFormat(endYear, "year")
+    end = getEndYear(end)
+    # result = []
+    result = yearfeature(begin.strftime('%Y/%m/%d'), end.strftime('%Y/%m/%d'))
+    # while begin <= end:
+    #     t = begin.strftime('%Y/%m/%d')
+    #     te = getEndYear(begin)
+    #     te = te.strftime("%Y/%m/%d")
+    #     temp = yearfeature(start=t, end=te)
+    #     temp["year"] = begin.strftime("%Y")
+    #     result.append(temp)
+    #     begin = getNextYear(begin)
+
+
+    # content = {}
+    # content['arg'] = args
+    # content["result"] = result
+    #
+    # re = insertAlgorithmContent(tag, tagType, content)
+
+    return result
 
 
 def sokuPayloadPredict(args):
-    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    startYear = args['beginYear']
-    endYear = args['endYear']
-    season = args["season"]  # 2 or 3 or 4, Spring, Summer, Autumn, Winter
-    predictMaxPayload= args["maxPayload"]
-    predictDailyAmount= args["dailyAmount"]
-    gammaValue= args["gamma"]
-    betaValue= args["beta"]
-    data = getDataByCondition(grain=None, startTime=str(startYear), endTime=str(endYear), kind=None, dataName=None,
-                              area=None)
+    start = args["beginYear"]
+    ending = args["endYear"]
+    premaxload = args["maxPayload"]
+    pretotal = args["dailyAmount"]
+    pregamma = args["gamma"]
+    prebeta = args["beta"]
+    result = soukupre(start, ending, premaxload, pretotal,pregamma,prebeta)
+    tag = args["tag"]
+    tagType = args["tagType"]
     content = {}
     content['arg'] = args
-    content['content'] =[]
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
+
     return content
 
 
 def clampingPayloadPredict(args):
-    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    startYear = args['beginYear']
-    endYear = args['endYear']
-    season = args["season"]  # 2 or 3 or 4, Spring, Summer, Autumn, Winter
-    predictMaxPayload= args["maxPayload"]
-    predictDailyAmount= args["dailyAmount"]
+    start = args["beginYear"]
+    ending = args["endYear"]
+    premaxload = args["maxPayload"]
+    pretotal = args["dailyAmount"]
 
-    data = getDataByCondition(grain=None, startTime=str(startYear), endTime=str(endYear), kind=None, dataName=None,
-                              area=None)
-    method = args["name"]
-    result = executeAlgorithm(method, args)
+    result = shuangxiangjiabi(start, ending, premaxload, pretotal)
+    tag = args["tag"]
+    tagType = args["tagType"]
     content = {}
     content['arg'] = args
-    content['content'] = []
-    # 补充算法模型
+    content["result"] = result
+
     re = insertAlgorithmContent(tag, tagType, content)
+
     return content
 
 
 def interpolatingPayloadPredict(args):
-    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    startYear = args['beginYear']
-    endYear = args['endYear']
-    season = args["season"]  # 2 or 3 or 4, Spring, Summer, Autumn, Winter
-    predictMaxPayload = args["maxPayload"]
-    predictDailyAmount = args["dailyAmount"]
-
-    data = getDataByCondition(grain=None, startTime=str(startYear), endTime=str(endYear), kind=None, dataName=None,
-                              area=None)
+    start = args["beginYear"]
+    ending = args["endYear"]
+    power = args["dailyAmount"]
+    maxload = args["maxPayload"]
+    result = fenxingpre(start, ending, power,maxload)
+    tag = args["tag"]
+    tagType = args["tagType"]
     content = {}
     content['arg'] = args
-    content['content'] = []
-    # 补充算法模型
+    content["result"] = result
     re = insertAlgorithmContent(tag, tagType, content)
+
     return content
 
 def yearlyContinuousPayloadPredict(args):
-    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    startYear = args['beginYear']
-    endYear = args['endYear']
-    predictMaxPayload = args["maxPayload"]
-    data = getDataByCondition(grain=None, startTime=str(startYear), endTime=str(endYear), kind=None, dataName=None,
-                              area=None)
+    start = str(args["beginYear"])
+    end = str(args["endYear"])
+    premaxload = args["maxPayload"]
+    endyear = timeFormat(end, "year")
+    Tyear = getNextYear(endyear)
+    Tyear = Tyear.strftime("%Y")
+    result = zhishupinghua(start, end, Tyear = Tyear, premaxload = premaxload)
+    tag = args["tag"]
+    tagType = args["tagType"]
     content = {}
     content['arg'] = args
-    content['content']  = []
-    # 补充算法模型
+    content["result"] = result
     re = insertAlgorithmContent(tag, tagType, content)
+
     return content
 
+def DailyTypicalOp(year,periodnum,category):
+    beginyear = timeFormat(year, "year")
+    endyear = getEndYear(beginyear)
+    start = beginyear.strftime("%Y/%m/%d")
+    end = endyear.strftime("%Y/%m/%d")
+    result = typicalDay(start, end, periodnum)
+    if category == "最大负荷":
+        re = result[3].tolist()
+    elif category == "最小负荷":
+        re = result[4].tolist()
+    elif category == "中位负荷":
+        re = result[5].tolist()
+    d_max, d_mean, d_min, d_r, d_m_r, peak, peak_r = d_pre_character(re)
+    data = {
+        'dayMaxPayload': d_max,
+        'dayMinPayload': d_min,
+        'dayAveragePayload': d_mean,
+        'dayPayloadRate': d_r,
+        'dayMinPayloadRate': d_m_r,
+        'dayPeekValleyDiff': peak,
+        'dayPeekValleyDiffRate': peak_r
+    }
+    content = {
+        "data":data,
+        "re": re
+    }
+    return content
+
+def ChartMonthlyOp(year, category):
+    beginyear = timeFormat(year, "year")
+    endyear = getEndYear(beginyear)
+    start = beginyear.strftime("%Y/%m/%d")
+    end = endyear.strftime("%Y/%m/%d")
+    if category == "年负荷曲线":
+        return yearLoad(start, end)
+    elif category == "年持续负荷曲线":
+        return yearLoadCon(start,end)
+    else:
+        beginMonth = beginyear
+        endMonth = getNextYear(beginyear)
+        endMonth = endMonth - timedelta(days=1)
+        # print(beginMonth)
+        # print(endMonth)
+        result1 = []
+        result2 = []
+        result3 = []
+        result4 = []
+
+        result = monthFeature(beginMonth.strftime('%Y/%m/%d'), endMonth.strftime('%Y/%m/%d'))
+        # print(result)
+        for temp in result:
+            result1.append(temp["monthAverageDailyPayload"])
+            result2.append(temp["monthAverageDailyPayloadRate"])
+            result3.append(temp["monthMaxPeekValleyDiff"])
+            result4.append(temp["monthMaxPeekValleyDiffRate"])
+
+        # while beginMonth < endMonth:
+        #     t = beginMonth.strftime('%Y/%m/%d')
+        #     te = getEndMonth(beginMonth)
+        #     te = te.strftime("%Y/%m/%d")
+        #     temp = monthFeature(start=t, end=te)
+        #     result1.append(temp["monthAverageDailyPayload"])
+        #     result2.append(temp["monthAverageDailyPayloadRate"])
+        #     result3.append(temp["monthMaxPeekValleyDiff"])
+        #     result4.append(temp["monthMaxPeekValleyDiffRate"])
+        #     beginMonth = getNextMonth(beginMonth)
+        #     print(t)
+        if category == "月平均日负荷曲线":
+            return result1
+        elif category == "月平均日负荷率曲线":
+            return result2
+        elif category == "月最大峰谷差曲线":
+            return result3
+        elif category == "月最大峰谷差率曲线":
+            return result4
 
 def payloadChartsDaily(day):
-    re = {}
-    return re
 
-def payloadChartsYearly(beginYear, endYear, category):
-    re = {}
-    return re
+    result = dayLoad(day, day)
 
+    return result
+def payloadChartsYearly(args):
+    beginyear = args["beginYear"]
+    beginyear = timeFormat(beginyear, "year")
+    endyear = args["endYear"]
+    endyear = timeFormat(endyear, "year")
+    endyear = getEndYear(endyear)
+    start = beginyear.strftime("%Y/%m/%d")
+    end = endyear.strftime("%Y/%m/%d")
+    category = args["category"]
+    # print(endyear)
+    result1 = []
+    result2 = []
+    result3 = []
+    result4 = []
+    result5 = []
+    result = yearfeature(start, end)
+    for temp in result:
+        result1.append(temp["yearMaxPayload"])
+        result2.append(temp["yearAverageDailyPayloadRate"])
+        result3.append(temp["yearMaxPeekValleyDiff"])
+        result4.append(temp["monthImbaRate"])
+        result5.append(temp["seasonImbaRate"])
+
+    if category == "历年最大负荷曲线":
+        return result1
+    elif category == "历年平均日负荷率曲线":
+        return result2
+    elif category == "历年最大峰谷差曲线":
+        return result3
+    elif category == "历年月不均衡曲线":
+        return result4
+    elif category == "历年季不平衡系数曲线":
+        return result5
 
 def industryMixModelValidate(methods):
     methodlist = []

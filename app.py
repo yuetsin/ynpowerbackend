@@ -2,7 +2,6 @@ from flask import Flask, request
 from flask_cors import CORS
 from flask_restful import Resource, Api
 from pprint import pprint, pformat
-from algorithms import *
 import os
 from Controller import *
 
@@ -46,7 +45,7 @@ class UploadCSV(Resource):
 
         datatype = {'Year': 'S', 'year': 'S','datetime':'S', 'DT':'S'}
         data = pd.read_csv(file, encoding='utf-8', dtype=datatype)
-
+        # print(data)
         uploadData(data, area, grain, kind)
         re = {
             "message": 'success'
@@ -99,7 +98,7 @@ class GetDataJson(Resource):
 
 class TestAlgorithm(Resource):
     def post(self):
-        test()
+        return ""
 
 """
 BEGIN
@@ -602,12 +601,12 @@ _regions = ['仰光', '丽江市', '红河州', '内比都']
 @register('region', 'query')
 class RegionQuery(Resource):
     def get(self):
-        re = regionQueryCon()
-        # re = {
-        #     "msg": "success",
-        #     "code": 200,
-        #     "data": region
-        # }
+        region = regionQueryCon()
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": region
+        }
         return re
 
 
@@ -863,7 +862,12 @@ class IndustryMixPredict(Resource):
 class SaturationCurvePredict(Resource):
     def post(self):
         # try_print_json()
-        re = saturationCurvePredict(request.json)
+        result = saturationCurvePredict(request.json)
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": result
+        }
 
         # payload = {
         #     'graphData': [
@@ -1049,7 +1053,7 @@ class DailyPayloadTraits(Resource):
         re = {
             "msg": "success",
             "code": 200,
-            "data": result["content"]
+            "data": result
         }
         # payload = [
         #         {
@@ -1077,7 +1081,7 @@ class MonthlyPayloadTraits(Resource):
         re = {
             "msg":"success",
             "code": 200,
-            "data" : result["content"]
+            "data" : result
         }
         # payload = [
         #         {
@@ -1106,11 +1110,12 @@ class YearlyPayloadTraits(Resource):
         re = {
             "msg": "success",
             "code": 200,
-            "data": result["content"]
+            "data": result
         }
         # payload = [
         #         {
-        #             'year': '%d 年' % (2010 + i),
+        #             'year
+        #             ': '%d 年' % (2010 + i),
         #             'yearMaxPayload': randint(10000, 1000000),
         #             'yearAverageDailyPayloadRate': random() * 500,
         #             'seasonImbaRate': random() * 500,
@@ -1131,12 +1136,21 @@ class SokuPayloadPredict(Resource):
     def post(self):
         # try_print_json()
         result = sokuPayloadPredict(request.json)
-
-        data = result["content"]
+        payload = {
+            'xName': '小时',
+            'xData': list(range(0, 24, 2)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '预测负荷',
+                    'data': result["result"]
+                }
+            ]
+        }
         re = {
             "msg": "success",
             "code": 200,
-            "data": data
+            "data": payload
         }
         # payload = [
         #         {
@@ -1157,20 +1171,25 @@ class ClampingPayloadPredict(Resource):
     def post(self):
         # try_print_json()
         result = clampingPayloadPredict(request.json)
-
+        print(result)
+        payload = {
+            'xName': '小时',
+            'xData': list(range(0, 24, 2)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '预测负荷',
+                    'data': result["result"]
+                }
+            ]
+        }
         re = {
             "msg": "success",
             "code": 200,
-            "data": result["content"]
+            "data": payload
         }
 
-        # payload = [
-        #         {
-        #             'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
-        #             'actualPayload': randint(10000, 1000000),
-        #             'predictPayload': randint(10000, 1000000)
-        #         } for _ in range(1, 13)
-        #     ]
+
         return re
         # {
         #     "msg": "success",
@@ -1183,19 +1202,23 @@ class InterpolatingPayloadPredict(Resource):
     def post(self):
         # try_print_json()
         result = interpolatingPayloadPredict(request.json)
-
+        payload = {
+            'xName': "小时",
+            'xData': list(range(0, 24, 2)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '预测负荷',
+                    'data': result["result"]
+                }
+            ]
+        }
         re = {
             "msg": "success",
             "code": 200,
-            "data": result["content"]
+            "data": payload
         }
-        # payload = [
-        #         {
-        #             'time': '%d:%d' % (randint(10, 20), randint(10, 50)),
-        #             'actualPayload': randint(10000, 1000000),
-        #             'predictPayload': randint(10000, 1000000)
-        #         } for _ in range(1, 13)
-        #     ]
+
         return re
         # {
         #     "msg": "success",
@@ -1208,10 +1231,21 @@ class YearlyContinuousPayloadPredict(Resource):
     def post(self):
         # try_print_json()
         result = yearlyContinuousPayloadPredict(request.json)
+        payload = {
+            'xName': "时刻",
+            'xData': list(range(0, 8760)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '预测负荷',
+                    'data': result["result"]
+                }
+            ]
+        }
         re = {
             "msg": "success",
             "code": 200,
-            "data": result["content"]
+            "data": payload
         }
         # payload = [
         #         {
@@ -1681,13 +1715,24 @@ class PredictionResultComparison(Resource):
 class PayloadChartsDaily(Resource):
     def get(self):
         # try_print_args()
-        day = request.json['day']
+        day = request.args['day']
         result = payloadChartsDaily(day)
-        re = {}
-        re['msg'] = "success"
-        re['code'] = 200
-        re["data"] = result['content']
-        re["data"]['tag'] = result['tag']
+        payload = {
+            'xName': '小时',
+            'xData': list(range(0, 24, 2)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '负荷',
+                    'data': result
+                }
+            ]
+        }
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
         # payload = {
         #     'metaData': [
         #         {
@@ -1726,34 +1771,37 @@ class PayloadChartsDaily(Resource):
         #     ]
         # }
         return re
-        # {
-        #     "msg": "success",
-        #     "code": 200,
-        #     "data": payload
-        # }
+
 
 @register('payload', 'charts', 'daily', 'typical')
 class PayloadChartsDailyTypical(Resource):
     def get(self):
         # try_print_args()
-        year = request.json['year']
-        period = request.json['period']  # 丰水期、汛前枯期、汛后枯期
-        category = request.json['category'] # 最大负荷、最小负荷、中位负荷
-        # payload = {
-        #     'xName': '小时',
-        #     'xData': list(range(0, 24, 2)),
-        #     'yName': '单位：MW',
-        #     'yData': [
-        #         {
-        #             'tag': '典型负荷',
-        #             'data': [random() for _ in range(12)]
-        #         }
-        #     ]
-        # }
+        year = request.args['year']
+        period = request.args['period']  # 丰水期、汛前枯期、汛后枯期
+        category = request.args['category'] # 最大负荷、最小负荷、中位负荷
+        if period == "丰水期":
+            periodnum = 1
+        elif period == "汛前枯期":
+            periodnum = 0
+        else:
+            periodnum = 2
+        result = DailyTypicalOp(year,periodnum,category)
+        payload = {
+            'xName': '小时',
+            'xData': list(range(0, 24, 2)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '典型负荷',
+                    'data': result["re"]
+                }
+            ]
+        }
         re = {
             "msg": "success",
             "code": 200,
-            "data": "payload"
+            "data": payload
         }
         return re
         # {
@@ -1766,20 +1814,26 @@ class PayloadChartsDailyTypical(Resource):
 class PayloadChartsMonthly(Resource):
     def get(self):
         # try_print_args()
-        year = request.json['year']
-        category = request.json['category']
-    # payload = {
-    #         'xName': '月份',
-    #         'xData': list(range(1, 13)),
-    #         'yName': '单位：MW',
-    #         'yData': [
-    #             {
-    #                 'tag': '负荷',
-    #                 'data': [random() for _ in range(12)]
-    #             }
-    #         ]
-    #     }
-        re = {}
+        year = request.args['year']
+        category = request.args['category']
+        result = ChartMonthlyOp(year, category)
+        payload = {
+                'xName': '月份',
+                'xData': list(range(1, 13)),
+                'yName': '单位：MW',
+                'yData': [
+                    {
+                        'tag': category,
+                        'data': result
+                    }
+                ]
+            }
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
+
         return re
         # {
         #     "msg": "success",
@@ -1791,27 +1845,26 @@ class PayloadChartsMonthly(Resource):
 class PayloadChartsYearly(Resource):
     def get(self):
         # try_print_args()
-        beginYear = request.json['beginYear']
-        endYear = request.json['endYear']
-        category = request.json['category']
-        re = payloadChartsYearly(beginYear, endYear, category)
-        # payload = {
-        #     'xName': '年份',
-        #     'xData': list(range(2000, 2012)),
-        #     'yName': '单位：MW',
-        #     'yData': [
-        #         {
-        #             'tag': '负荷',
-        #             'data': [random() for _ in range(12)]
-        #         }
-        #     ]
-        # }
+        result = payloadChartsYearly(request.args)
+
+        payload = {
+            # 'xName': '年份',
+            # 'xData': list(range(2000, 2012)),
+            'yName': '单位：MW',
+            'yData': [
+                {
+                    'tag': '负荷',
+                    'data': result
+                }
+            ]
+        }
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": payload
+        }
         return re
-        # {
-        #     "msg": "success",
-        #     "code": 200,
-        #     "data": payload
-        # }
+
 
 """
 fore-end related http apis
@@ -1835,6 +1888,24 @@ class testExecuteAlgorithm(Resource):
         method = request.json['method']
         result = executeAlgorithm(method, request.json)
         return result
+class addData(Resource):
+    def post(self):
+        data = request.json['data']
+        area = request.json['area']
+        grain = request.json['grain']
+        kind = request.json['kind']
+        # print(data)
+        data = pd.read_json(data, orient='split')
+        # print(data)
+
+        uploadData(data, area, grain, kind)
+        re = {
+            "msg": "success",
+            "code":200
+        }
+        return re
+
+
 
 api.add_resource(UploadCSV, "/api/upload")
 api.add_resource(GetDataJson, '/getDataJson')
@@ -1843,6 +1914,8 @@ api.add_resource(insertAlgorithmResult, "/api/insert/result")
 api.add_resource(getAlgorithmResult, "/api/get/result")
 api.add_resource(getAlgorithmArg, "/api/get/args")
 api.add_resource(testExecuteAlgorithm, "/api/test")
+
+api.add_resource(addData, "/api/add/data")
 
 if __name__ == '__main__':
     app.run()

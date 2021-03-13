@@ -1,13 +1,17 @@
 import threading
-
+from  flask import  Flask
 import sqlalchemy
 import sqlalchemy as db
 import json
 import pandas as pd
 import numpy as np
 import psycopg2
+import os
+from app import app
+from utils import formatMetadataCondition, formateTimeString, formatDataCondition, methodNameZhToEn, getAlgorithmName, \
+    getAlgorithm
 
-from utils import formatMetadataCondition, formateTimeString
+filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
 
 dbname="electric"
 user="postgres"
@@ -210,7 +214,7 @@ def getData(location, dataName, startTime, endTime):
 
     if dataName != None:
         dataNamelist = dataName.split(',')
-        print(dataNamelist)
+        # print(dataNamelist)
         dataNames = ""
         for i in range(len(dataNamelist)):
             dataNames += "'" + dataNamelist[i] + "'"
@@ -595,20 +599,16 @@ def getArea():
         for i in resultDict:
             result.append(i[0])
 
-        re =  {
-            "msg": "success",
-            "data": result,
-            "code": 200
-        }
+        re = result
     except:
-        re =  {
-            "msg": "fail",
-            "data": None,
-            "code": -1
-        }
+        re = None
     finally:
-
         conn.close()
+    return re
+
+#确定经济列表后补充完整
+def getEconamesList():
+    re = ["GDP","GDPP"]
     return re
 
 def getKind():
@@ -668,6 +668,82 @@ def getGrain():
     finally:
         conn.close()
     return re
+
+def getAlgorithmArgs(method = None, filename = None):
+    # print(method)
+    a, b = getAlgorithmName(filename)
+    method = methodNameZhToEn(a, b, method)
+    print(method)
+    data = pd.read_excel(filename, None, index_col=None)
+    args = {}
+    for row in data.values():
+        # print(row)
+        x, y = row.shape
+        header = [i for i in row.columns]
+        for j in range(1, y):
+            if method != None:
+                if header[j] != method:
+                    continue
+            args[header[j]] = {
+                "name": row.iloc[0][j],
+            }
+            args[header[j]]["para"] = []
+            count = 0
+            temp = {}
+            for i in range(1, x):
+                if row.iloc[i][0] != row.iloc[i][0] or row.iloc[i][j] != row.iloc[i][j]:
+                    break
+                if i % 3 == 0:
+                    temp["kind"] = row.iloc[i][j]
+                    if row.iloc[i-1][j].startswith("预测省/市"):
+                        temp["value"] = getArea()
+                    if row.iloc[i - 1][j].startswith("社会经济因素列表"):
+                        temp["value"] = getEconamesList()
+
+                    args[header[j]]["para"].append(temp)
+                    temp = {}
+                    count += 1
+                if i % 3 == 2:
+                    temp["label"] = row.iloc[i][j]
+                if i % 3 == 1:
+                    temp["key"] = row.iloc[i][j]
+            args[header[j]]["num"] = count
+    if method != None:
+        return args[method]
+    return args
+
+
+def executeAlgorithm(method, args):
+    # print(filename)
+    arg = getAlgorithmArgs(method, filename)
+    a, b = getAlgorithmName(filename)
+    method = methodNameZhToEn(a, b, method)
+    f = getAlgorithm(method)
+    argstr = ""
+    for v in arg["para"]:
+        key = v["key"]
+        if key[-1] == "*":
+            k = key[:-1]
+        else:
+            k = key
+        if v["kind"].startswith("list"):
+            valuelist = args[key].split(",")
+            argstr += "{} = {},".format(k, valuelist)
+        elif v["kind"] == "string" or v["kind"] == "option":
+            argstr += "{} = '{}',".format(k, args[key])
+        else:
+            argstr += "{} = {},".format(k, args[key])
+
+        # print(v.keys())
+        # if v == "method" or v == "name" or v == "num":
+        #     continue
+    print(argstr)
+
+    result = eval("f("+argstr+")")
+    return result
+
+
+
 
 if __name__ == '__main__':
     conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",

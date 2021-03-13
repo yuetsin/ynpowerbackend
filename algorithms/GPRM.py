@@ -13,12 +13,12 @@ import numpy as np
 from algorithms.train_test_set import generate_data,inverse_data
 
 from algorithms.evaluation import RMSE,MAPE
-from algorithms.interface import getData
+from dao.interface import getData
 import json 
 """
-改进灰色预测模型,未联调，已修改
+改进灰色预测模型
 """
-def GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep=15,pretype="consumption",city="云南省"):
+def GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省"):
     def improve_GM(x,n):
         '''
         改进灰色预测
@@ -62,67 +62,69 @@ def GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep=15,pretype="consumpt
         return predict
 
 
+    if timestep > (int(EndYear)-int(StartYear)+1):
+        return {"trainfromyear":None,"traintoyear":None,"trainresult":None,"prefromyear":None,"pretoyear":None,"preresult":"训练步长过大，请调整后重试.","MAPE":None,"RMSE":None}
+    else:
 
-
-    """负荷预测"""
-    name=[pretype]
-    finaldata=[]
+        """负荷预测"""
+        name=[pretype]
+        finaldata=[]
+        
+        outputlen=int(PreEndYear)-int(PreStartYear)+1
+        
+        #读取历史负荷数据
+        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        # print(datajson)
+        data=json.loads(datajson)
+        finaldata.append(data)
+        final=pd.DataFrame(finaldata,index=name)
+        final=final.T
     
-    outputlen=int(PreEndYear)-int(PreStartYear)+1
+        
+        datafinalyear=int(EndYear)
+        trainyear=timestep
+        testyear=int(PreEndYear)-int(PreStartYear)+1
+        
+        y = final.values  
+        y = y.reshape(-1,1)
+        
+        #区分训练数据和预测数据
+        num=len(y)
+        #训练集
+        trainx=y[num-testyear-1-trainyear:num-testyear-1].squeeze()
+        trainy=y[num-testyear-1:].squeeze()
+        #测试集
+        testx=y[num-testyear-trainyear:num-testyear].squeeze()
+        testy=y[num-testyear:].squeeze()
+        #开始训练
+        trainpre,a,b,assess=improve_GM(trainx,testyear)
+        #获得测试结果
+        testpre=GMpre(testx,testyear,a,b)
+        
+        #获得最终预测
+        testpredx=np.array(np.flipud(y[-1:-(trainyear+1):-1]))
+        finalpre=GMpre(testpredx,testyear,a,b)
+        
+        mape=MAPE(testpre,testy)
+        rmse=RMSE(testpre,testy)
     
-    #读取历史负荷数据
-    datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
-    # print(datajson)
-    data=json.loads(datajson)
-    finaldata.append(data)
-    final=pd.DataFrame(finaldata,index=name)
-    final=final.T
-
+        
+        ypre=finalpre.reshape(1,-1).squeeze()
     
-    datafinalyear=int(EndYear)
-    trainyear=timestep
-    testyear=int(PreEndYear)-int(PreStartYear)+1
+        trainyear=[]
+        for t in testy:
+            count=-1
+            for d in final[pretype]:
+                count+=1
+                
+                if t>d-5 and t<d+5:
+                    # print("yes")
+                    trainyear.append(final.index[count])
+                    break
     
-    y = final.values  
-    y = y.reshape(-1,1)
-    
-    #区分训练数据和预测数据
-    num=len(y)
-    #训练集
-    trainx=y[num-testyear-1-trainyear:num-testyear-1].squeeze()
-    trainy=y[num-testyear-1:].squeeze()
-    #测试集
-    testx=y[num-testyear-trainyear:num-testyear].squeeze()
-    testy=y[num-testyear:].squeeze()
-    #开始训练
-    trainpre,a,b,assess=improve_GM(trainx,testyear)
-    #获得测试结果
-    testpre=GMpre(testx,testyear,a,b)
-    
-    #获得最终预测
-    testpredx=np.array(np.flipud(y[-1:-(trainyear+1):-1]))
-    finalpre=GMpre(testpredx,testyear,a,b)
-    
-    mape=MAPE(testpre,testy)
-    rmse=RMSE(testpre,testy)
-
-    
-    ypre=finalpre.squeeze().reshape(1,-1)
-
-    trainyear=[]
-    for t in testy:
-        count=-1
-        for d in final[pretype]:
-            count+=1
-            
-            if t>d-5 and t<d+5:
-                # print("yes")
-                trainyear.append(final.index[count])
-                break
-
-    result={"trainfromyear":trainyear[0],"traintoyear":trainyear[-1],"trainresult":trainpre,"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre,"MAPE":mape,"RMSE":rmse}
-    #保存
-    return result
+        result={"trainfromyear":trainyear[0],"traintoyear":trainyear[-1],"trainresult":trainpre.tolist(),"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist(),"MAPE":mape,"RMSE":rmse}
+        #保存
+        return result
 if __name__ == '__main__':
     StartYear="1990"
     EndYear="2019"
@@ -132,4 +134,4 @@ if __name__ == '__main__':
     pretype="consumption"
     city="云南省"
     result=GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省")
-    print(result)
+

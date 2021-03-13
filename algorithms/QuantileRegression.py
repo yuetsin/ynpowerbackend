@@ -12,10 +12,10 @@ import pandas as pd
 from sklearn import linear_model
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from algorithms.train_test_set import generate_data,inverse_data
-import algorithms.predict_economic as preeco
-from algorithms.evaluation import RMSE,MAPE
-from algorithms.interface import getData
+from train_test_set import generate_data,inverse_data
+import predict_economic as preeco
+from evaluation import RMSE,MAPE
+from interface import getData
 import json 
 
 """分位数回归，未联调，已修改"""
@@ -97,9 +97,11 @@ def QuantileRegression(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pr
 
 
         #返回结果
-        result={"trainfromyear":StartYear,"traintoyear":EndYear,"trainresult":ytrain,"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre,"MAPE":mape,"RMSE":rmse}
+        result={"trainfromyear":StartYear,"traintoyear":EndYear,"trainresult":ytrain.tolist(),"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist(),"MAPE":mape,"RMSE":rmse}
     else:
         result={"False":"暂不支持其他地区预测"}
     return result
+
 if __name__ == '__main__':
- result=QuantileRegression("1995","2019","2020","2021",quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省")
+
+    result=QuantileRegression("1995","2019","2020","2021",quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省")

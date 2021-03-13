@@ -15,12 +15,12 @@ import algorithms.predict_economic as preeco
 
 from algorithms.evaluation import RMSE,MAPE
 from dao.interface import getData
-import json
+import json 
 
-"""扩展索洛分位数回归"""
+"""扩展索洛分位数回归,联调成功"""
 
 
-def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省", kind = "电力电量类", grain="year"):
+def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省"):
     """
     
 
@@ -104,7 +104,7 @@ def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consum
         period=int(PreEndYear)-int(PreStartYear)+1
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_社会经济类", pretype, StartYear, EndYear)
+        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
@@ -141,15 +141,14 @@ def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consum
         ytraintrue=final[pretype].values[:len(y)-period]
         mape=MAPE(ytrain,ytraintrue)
         rmse=RMSE(ytrain,ytraintrue)
-        # print("MAPE=",mape)
-        # print("RMSE=",rmse)    
+    
         ypre=y[len(y)-period:]
-
-
+        
+        
         #返回结果
-        result={"trainfromyear":StartYear,"traintoyear":EndYear,"trainresult":list(ytrain),"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":list(ypre),"MAPE":mape,"RMSE":rmse}
+        result={"trainfromyear":StartYear,"traintoyear":EndYear,"trainresult":ytrain.tolist(),"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist(),"MAPE":mape,"RMSE":rmse}
     else:
-        result={"False":"暂不支持其他地区预测"}
+        result={"preresult":"暂不支持其他地区预测"}
     return result
 
-#result=ESQRM("1995","2019","2020","2021",quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省")
+result=ESQRM("1995","2019","2020","2021",quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省")

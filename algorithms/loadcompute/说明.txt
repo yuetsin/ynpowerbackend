@@ -1,0 +1,5 @@
+导入csv文件命名格式为“区域/类型_粒度_xxx.csv”,如yunnan_year_load.csv,区域为yunnan，粒度为year，粒度之后的_xxx不是必须，按需要自主命名。economic_year.csv,类型为economic，粒度为year。在csv文件中，第一列为Year，后续为要输入的电量值。
+
+读取数据时使用getData("yunnan_year", "load", "2008", "2016")，第一个参数为"区域/类型_粒度"，第二个参数为电量名，第三个为开始时间，第四个为结束时间。范围结果为json，{"时间"：电量值，“时间”：电量值，...}。
+
+上传文件的地址为https://ynpowerfrontend.dclab.club/#/upload，如果出现链接不安全的警告，选择继续链接即可。

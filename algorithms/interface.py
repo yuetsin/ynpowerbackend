@@ -4,8 +4,8 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-# host = "http://dclab.club:18000/"
-host = "http://localhost:5000/"
+host = "http://dclab.club:18000/"
+# host = "http://localhost:5000/"
 
 def getData(location, dataName, startTime, endTime):
     l = location.split("_")
@@ -39,6 +39,18 @@ def insertAlgorithmResult(tag, result):
     return r.json()
 
 
+def insertData(data, grain, area, kind):
+    usl = host + "api/add/data"
+    s = json.dumps({
+            "data": data.to_json(orient='split'),
+            "grain":grain,
+            "area": area,
+            "kind":kind
+        })
+    # print(s)
+    r = requests.post(usl, data = s, headers={'Content-Type': 'application/json'}, verify=False)
+    # print(r)
+    return r
 
 #"tags":"tv1,tv2", 是一个字符串
 def getAlgorithmResult(tags):
@@ -57,7 +69,7 @@ def formateTimeString(t, grain):
     if grain == 'day':
         timet = datetime.strptime(t, '%Y/%m/%d')
         timestr = timet.strftime('%Y/%m/%d')
-    elif grain == 'mouth':
+    elif grain == 'month':
         timet = datetime.strptime(t, '%Y/%m')
         timestr = timet.strftime('%Y/%m')
     elif grain == 'hour':

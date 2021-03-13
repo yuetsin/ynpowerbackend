@@ -1,8 +1,10 @@
 .idea
+.idea/
 /venv/*
 ./venv/*
-/resource/*
 .DS_Store
 *.pyc
 .DS_Store
 /__pycache__/*
+venv/
+.git

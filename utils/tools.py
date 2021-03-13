@@ -3,7 +3,6 @@ import re
 from dateutil.relativedelta import relativedelta
 # import matlab.engine
 import pandas as pd
-from app import filename
 #
 # eng = matlab.engine.start_matlab()
 
@@ -14,6 +13,8 @@ from app import filename
 #      'SaturationCurve', 'LDM', 'ForIndustry', 'Increase', 'Outlier', 'Kmeans', 'PCA', 'AssociationRule']
 
 #flag = 0,开始时间，flag=1，结束时间
+
+
 def formateTimeString(t, grain, flag):
     timestr = ""
     timet = None
@@ -98,6 +99,33 @@ def formatDataCondition(startTime = None, endTime = None, dataName = None, grain
     # print(whe)
     return whe
 
+def timeFormat(t, grain):
+    if grain == "year":
+        timet = datetime.strptime(t, '%Y')
+    elif grain == "month":
+        timet = datetime.strptime(t, '%Y/%m')
+    elif grain == "day":
+        timet = datetime.strptime(t, '%Y/%m/%d')
+    return timet
+
+#获取后一天
+def getNextDay(t):
+    timet = t + timedelta(days=1)
+    return timet
+def getEndYear(t):
+    timet = t + relativedelta(years=1) - timedelta(days=1)
+    return timet
+def getNextYear(t):
+    timet = t + relativedelta(years=1)
+    return timet
+
+def getEndMonth(t):
+    timet = t + relativedelta(months=1) - timedelta(days=1)
+    return timet
+def getNextMonth(t):
+    timet = t + relativedelta(months=1)
+    return timet
+
 #解析一些相同的参数
 def getArgs(args):
     try:
@@ -160,34 +188,6 @@ def getAlgorithmName(filename):
             zhname.append(row.iloc[0][j])
     return zhname, enname
 
-def getAlgorithmArgs(method = None, filename = None):
-    # print(method)
-    a, b = getAlgorithmName(filename)
-    method = methodNameZhToEn(a, b, method)
-    print(method)
-    data = pd.read_excel(filename, None, index_col=None)
-    args = {}
-    for row in data.values():
-        # print(row)
-        x, y = row.shape
-        header = [i for i in row.columns]
-        for j in range(1, y):
-            args[header[j]] = {
-                "name": row.iloc[0][j],
-            }
-            count = 0
-            for i in range(1, x):
-                if row.iloc[i][0] != row.iloc[i][0] or row.iloc[i][j] != row.iloc[i][j]:
-                    break
-                if i % 2 == 0:
-                    count += 1
-                    continue
-                args[header[j]][row.iloc[i][j]] = row.iloc[i + 1][j]
-            args[header[j]]["num"] = count
-    if method != None:
-        return args[method]
-    return args
-
 
 def getAlgorithm(name):
     dd = __import__("algorithms." + name, fromlist = True)
@@ -195,36 +195,40 @@ def getAlgorithm(name):
     # print(f)
     return f
 
-def executeAlgorithm(method, args):
+def formatPredictResult(result):
+    tableTwoData = []
+    prefromyear = timeFormat(result["prefromyear"], "year")
+    pretoyear = timeFormat(result["pretoyear"], "year")
+    i = 0
+    while prefromyear <= pretoyear:
+        temp={
+            'year': prefromyear.strftime("%Y"),
+            'predict': result['preresult'][i]
+        }
+        tableTwoData.append(temp)
+        i += 1
+        prefromyear = getNextYear(prefromyear)
 
-    a, b = getAlgorithmName(filename)
-    method = methodNameZhToEn(a, b, method)
-    f = getAlgorithm(method)
-    argstr = ""
-    for v in args:
-        if v == "method":
-            continue
-        if v[-1] == "*":
-            k = v[:-1]
-        else:
-            k = v
-        if type(args[v]) == str:
-            argstr += "{} = '{}',".format(k, args[v])
-        else:
-            argstr += "{} = {},".format(k, args[v])
+    re ={
+        "tableOneData":[
+            {
+            'mape': result["MAPE"],
+            "rmse": result["RMSE"]
+            }
+        ],
+        "tableTwoData": tableTwoData
+    }
+    return re
 
-    # print(argstr)
-    result = eval("f("+argstr+")")
-    return result
 
 def executeAlgorithmtest(method, args):
 
-    arg = getAlgorithmArgs(method, filename)
+    # arg = getAlgorithmArgs(method, filename)
     a, b = getAlgorithmName(filename)
     method = methodNameZhToEn(a, b, method)
 
     f = getAlgorithm(method)
-    print(arg)
+    # print(arg)
     argstr = ""
     for v in args:
         if v == "method":
