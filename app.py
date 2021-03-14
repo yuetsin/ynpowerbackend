@@ -12,7 +12,7 @@ from Controller import *
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 api = Api(app)
-filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+filename = os.path.join(app.root_path, 'algorithms', 'args.xls')
 
 def try_print_args():
     try:
@@ -634,7 +634,7 @@ _industrial_methods = ['基于ARIMA季节分解的行业电量预测', '基于EE
 @register('method', 'industry', 'query')
 class IndustrialMethodQuery(Resource):
     def get(self):
-        filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+        filename = os.path.join(app.root_path, 'algorithms', 'args.xls')
         a, b = getAlgorithmName(filename)
         return {
             "msg": "success",
@@ -652,7 +652,7 @@ _regional_methods = ['逐步回归模型', '灰色滑动平均模型', '分数�
 @register('method', 'region', 'query')
 class RegionalMethodQuery(Resource):
     def get(self):
-        filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+        filename = os.path.join(app.root_path, 'algorithms', 'args.xls')
         a, b = getAlgorithmName(filename)
         return {
             "msg": "success",
@@ -1881,7 +1881,7 @@ END
 class getAlgorithmArg(Resource):
     def get(self):
         method = request.args["method"]
-        filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+        filename = os.path.join(app.root_path, 'algorithms', 'args.xls')
 
         args = getAlgorithmArgs(method= method, filename=filename)
         re = {

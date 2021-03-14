@@ -11,7 +11,7 @@ from os.path import dirname, realpath
 # from app import app
 from utils import formatMetadataCondition, formateTimeString, formatDataCondition, methodNameZhToEn, getAlgorithmName, \
     getAlgorithm
-filename = os.path.join(os.getcwd(), os.path.dirname(os.path.dirname(__file__)),'algorithms', 'args.xlsx')
+filename = os.path.join(os.getcwd(), os.path.dirname(os.path.dirname(__file__)),'algorithms', 'args.xls')
 # filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
 
 dbname="electric"
