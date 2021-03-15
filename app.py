@@ -1914,7 +1914,7 @@ class addData(Resource):
 
 
 
-api.add_resource(UploadCSV, "/api/upload")
+api.add_resource(UploadCSV, "/api/db/upload")
 api.add_resource(GetDataJson, '/getDataJson')
 api.add_resource(TestAlgorithm, "/interface")
 api.add_resource(insertAlgorithmResult, "/api/insert/result")

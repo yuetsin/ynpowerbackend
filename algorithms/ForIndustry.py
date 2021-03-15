@@ -6,7 +6,7 @@ Created on Thu Mar  4 11:16:09 2021
 """
 
 
-from evaluation import RMSE,MAPE
+from algorithms.evaluation import RMSE,MAPE
 from dao.interface import getData, insertData
 import json 
 import pandas as pd
