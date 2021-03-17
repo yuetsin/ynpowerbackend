@@ -127,13 +127,13 @@ def industrySinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
     result = formatPredictResult(result)
-
+    print(result)
     content = {}
     content['arg'] = args
     content["result"] = result
 
     re = insertAlgorithmContent(tag, tagType, content)
-    return re
+    return result
 
 def industryMixPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
@@ -282,7 +282,10 @@ def sokuPayloadPredict(args):
     pretotal = args["dailyAmount"]
     pregamma = args["gamma"]
     prebeta = args["beta"]
-    result = soukupre(start, ending, premaxload, pretotal,pregamma,prebeta)
+    season = args["season"]
+    t = args["type"]
+    file = getFilenameOfLoadPre(season, t, "sk")
+    result = soukupre(start, ending, premaxload, pretotal,pregamma,prebeta, file=file)
     tag = args["tag"]
     tagType = args["tagType"]
     content = {}
@@ -299,8 +302,10 @@ def clampingPayloadPredict(args):
     ending = args["endYear"]
     premaxload = args["maxPayload"]
     pretotal = args["dailyAmount"]
-
-    result = shuangxiangjiabi(start, ending, premaxload, pretotal)
+    season = args["season"]
+    t = args["type"]
+    file = getFilenameOfLoadPre(season, t, "jb")
+    result = shuangxiangjiabi(start, ending, premaxload, pretotal,file=file)
     tag = args["tag"]
     tagType = args["tagType"]
     content = {}
@@ -317,7 +322,10 @@ def interpolatingPayloadPredict(args):
     ending = args["endYear"]
     power = args["dailyAmount"]
     maxload = args["maxPayload"]
-    result = fenxingpre(start, ending, power,maxload)
+    season = args["season"]
+    t = args["type"]
+    file = getFilenameOfLoadPre(season, t, "fx")
+    result = fenxingpre(start, ending, power,maxload, file=file)
     tag = args["tag"]
     tagType = args["tagType"]
     content = {}

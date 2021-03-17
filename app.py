@@ -635,7 +635,7 @@ _industrial_methods = ['基于ARIMA季节分解的行业电量预测', '基于EE
 class IndustrialMethodQuery(Resource):
     def get(self):
         filename = os.path.join(app.root_path, 'algorithms', 'args.xls')
-        a, b = getAlgorithmName(filename)
+        a, b = getAlgorithmName(filename, "industrypre")
         return {
             "msg": "success",
             "code": 200,
@@ -653,7 +653,7 @@ _regional_methods = ['逐步回归模型', '灰色滑动平均模型', '分数�
 class RegionalMethodQuery(Resource):
     def get(self):
         filename = os.path.join(app.root_path, 'algorithms', 'args.xls')
-        a, b = getAlgorithmName(filename)
+        a, b = getAlgorithmName(filename, "regionpre")
         return {
             "msg": "success",
             "code": 200,

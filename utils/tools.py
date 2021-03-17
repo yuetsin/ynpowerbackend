@@ -12,9 +12,65 @@ import pandas as pd
 #      'Exponent', 'Logarithm', 'Binarylinear', 'UnarylinearTime', 'GrowthTime', 'ExponentTime', 'LogarithmTime',
 #      'SaturationCurve', 'LDM', 'ForIndustry', 'Increase', 'Outlier', 'Kmeans', 'PCA', 'AssociationRule']
 
+#获取loadpredict的file参数
+def getFilenameOfLoadPre(season, type, func):
+    if season == "丰水期" and type == "最大值" and func == "fx":
+        return "yunnan_year_fengshui_f_max"
+    elif season == "丰水期" and type == "最小值" and func == "fx":
+        return "yunnan_year_fengshui_f_min"
+    elif season == "丰水期" and type == "中位值" and func == "fx":
+        return "yunnan_year_fengshui_f_median"
+    elif season == "丰水期" and type == "最大值" and func == "jb":
+        return "yunnan_year_fengshui_jiabi_max"
+    elif season == "丰水期" and type == "最小值" and func == "jb":
+        return "yunnan_year_fengshui_jiabi_min"
+    elif season == "丰水期" and type == "中位值" and func == "jb":
+        return "yunnan_year_fengshui_jiabi_medien"
+    elif season == "丰水期" and type == "最大值" and func == "sk":
+        return "yunnan_year_fengshui_souku_max"
+    elif season == "丰水期" and type == "最小值" and func == "sk":
+        return "yunnan_year_fengshui_souku_min"
+    elif season == "丰水期" and type == "中位值" and func == "sk":
+        return "yunnan_year_fengshui_souku_median"
+    elif season == "汛后枯期" and type == "最大值" and func == "fx":
+        return "yunnan_year_xunhou_f_max"
+    elif season == "汛后枯期" and type == "最小值" and func == "fx":
+        return "yunnan_year_xunhou_f_min"
+    elif season == "汛后枯期" and type == "中位值" and func == "fx":
+        return "yunnan_year_xunhou_f_median"
+    elif season == "汛后枯期" and type == "最大值" and func == "jb":
+        return "yunnan_year_xunhou_jiabi_max"
+    elif season == "汛后枯期" and type == "最小值" and func == "jb":
+        return "yunnan_year_xunhou_jiabi_min"
+    elif season == "汛后枯期" and type == "中位值" and func == "jb":
+        return "yunnan_year_xunhou_jiabi_medien"
+    elif season == "汛后枯期" and type == "最大值" and func == "sk":
+        return "yunnan_year_xunhou_souku_max"
+    elif season == "汛后枯期" and type == "最小值" and func == "sk":
+        return "yunnan_year_xunhou_souku_min"
+    elif season == "汛后枯期" and type == "中位值" and func == "sk":
+        return "yunnan_year_xunhou_souku_median"
+    elif season == "汛前枯期" and type == "最大值" and func == "fx":
+        return "yunnan_year_xunqian_f_max"
+    elif season == "汛前枯期" and type == "最小值" and func == "fx":
+        return "yunnan_year_xunqian_f_min"
+    elif season == "汛前枯期" and type == "中位值" and func == "fx":
+        return "yunnan_year_xunqian_f_median"
+    elif season == "汛前枯期" and type == "最大值" and func == "jb":
+        return "yunnan_year_xunqian_jiabi_max"
+    elif season == "汛前枯期" and type == "最小值" and func == "jb":
+        return "yunnan_year_xunqian_jiabi_min"
+    elif season == "汛前枯期" and type == "中位值" and func == "jb":
+        return "yunnan_year_xunqian_jiabi_medien"
+    elif season == "汛前枯期" and type == "最大值" and func == "sk":
+        return "yunnan_year_xunqian-souku-max"
+    elif season == "汛前枯期" and type == "最小值" and func == "sk":
+        return "yunnan_year_xunqian-souku-min"
+    elif season == "汛前枯期" and type == "中位值" and func == "sk":
+        return "yunnan_year_xunqian-souku-median"
+
+
 #flag = 0,开始时间，flag=1，结束时间
-
-
 def formateTimeString(t, grain, flag):
     timestr = ""
     timet = None
@@ -176,21 +232,33 @@ def methodNameZhToEn( zhlist, english, zh = None, en = None):
                 return english[i]
 
 
-def getAlgorithmName(filename):
-    data = pd.read_excel(filename, None, index_col=None)
+def getAlgorithmName(filename, kind = None):
+    if kind == None:
+        data = pd.read_excel(filename, None, index_col=None)
+    else:
+        data = pd.read_excel(filename, index_col=None, sheet_name=kind)
     zhname = []
     enname = []
-    for row in data.values():
-        x, y = row.shape
-        header = [i for i in row.columns]
+    if type(data) is dict:
+
+        for row in data.values():
+            # print(row)
+            x, y = row.shape
+            header = [i for i in row.columns]
+            for j in range(1, y):
+                enname.append(header[j])
+                zhname.append(row.iloc[0][j])
+    else:
+        # print(data)
+        x, y = data.shape
+        header = [i for i in data.columns]
         for j in range(1, y):
             enname.append(header[j])
-            zhname.append(row.iloc[0][j])
+            zhname.append(data.iloc[0][j])
     return zhname, enname
 
-
 def getAlgorithm(name):
-    dd = __import__("algorithms." + name, fromlist = True)
+    dd = __import__("algorithms." + name, fromlist= True)
     f = getattr(dd, name)
     # print(f)
     return f

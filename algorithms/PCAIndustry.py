@@ -19,7 +19,7 @@ import math
 
 
 
-def PCAindustry(StartYear,EndYear,PreStartYear,PreEndYear,pretype,econamelist,city="云南省"):
+def PCAIndustry(StartYear,EndYear,PreStartYear,PreEndYear,pretype,econamelist,city="云南省"):
     
     if city=="云南省":
         name=[pretype]

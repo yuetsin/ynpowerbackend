@@ -29,7 +29,7 @@ import json
 
 """BPNNindustry"""
 
-def BPNNindustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city="云南省", hidden=[24,12], learningrate=0.005,epoch=1000):
+def BPNNIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city="云南省", hidden=[24,12], learningrate=0.005,epoch=1000):
     """
 
     Parameters
@@ -172,7 +172,7 @@ if __name__ == '__main__':
     pretype="采矿业用电量"
     city="云南省"
     
-    result=BPNNindustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city, hidden=[24,12], learningrate=0.005,epoch=1000)
+    result=BPNNIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city, hidden=[24,12], learningrate=0.005,epoch=1000)
 
 
 
