@@ -4,10 +4,19 @@ Created on Thu Mar  4 11:16:09 2021
 
 @author: ZR_YL
 """
-
-
+from algorithms.FER import FER
+from algorithms.FLR import FLR
+from algorithms.GBDT import GBDT
+from algorithms.GM import GM
+from algorithms.GPRM import GPRM
+from algorithms.GrowthTime import GrowthTime
+from algorithms.LogarithmTime import LogarithmTime
+from algorithms.RandomForest import RandomForest
+from algorithms.SVM import SVM
+from algorithms.UnarylinearTime import UnarylinearTime
 from algorithms.evaluation import RMSE,MAPE
-from dao.interface import getData, insertData
+from dao.interface import getData
+from dao.interface import addPowerData as insertData
 import json 
 import pandas as pd
 import numpy as np
@@ -16,17 +25,7 @@ import statsmodels.tsa.stattools as ts
 import matplotlib.pyplot as plt
 import math
 
-import algorithms.ExponentTime
-import algorithms.GrowthTime
-import algorithms.UnarylinearTime
-import algorithms.LogarithmTime
-import algorithms.GM
-import algorithms.GPRM
-import algorithms.GBDT
-import algorithms.RandomForest
-import algorithms.SVM
-import algorithms.FER
-import algorithms.FLR
+from algorithms.ExponentTime import ExponentTime
 
 def ForIndustry(StartYear,EndYear,PreStartYear,PreEndYear,rejectlsit,proposedata,Premethod):
 
@@ -74,34 +73,34 @@ def ForIndustry(StartYear,EndYear,PreStartYear,PreEndYear,rejectlsit,proposedata
         
         
         if Premethod=="指数函数外推":
-            result= algorithms.ExponentTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype = savetype, city="云南省")
+            result= ExponentTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype = savetype, city="云南省")
         elif Premethod=="灰色滑动平均模型":
             T=math.floor(len(forpredata)/3)
-            result= algorithms.GM(StartYear, EndYear, PreStartYear, PreEndYear, timestep=T, pretype=savetype, city="云南省")
+            result= GM(StartYear, EndYear, PreStartYear, PreEndYear, timestep=T, pretype=savetype, city="云南省")
         elif Premethod== "生长函数外推":
-            result=algorithms.GrowthTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
+            result=GrowthTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
         elif Premethod== "一元线性外推":
-            result= algorithms.UnarylinearTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
+            result= UnarylinearTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
         elif Premethod== "对数函数外推":
-            result= algorithms.LogarithmTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
+            result= LogarithmTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
         elif Premethod=="基于滚动机制的灰色预测模型":
             T=math.floor(len(forpredata)/3)
-            result= algorithms.GPRM(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result= GPRM(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
         elif Premethod== "模糊指数平滑模型":
             T=math.floor(len(forpredata)/3)
-            result= algorithms.FER(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result= FER(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
         elif Premethod=="模糊线性回归模型":
             T=math.floor(len(forpredata)/3)
-            result= algorithms.FLR(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result= FLR(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
         elif Premethod == "梯度提升模型":
             T=math.floor(len(forpredata)/3)
-            result= algorithms.GBDT(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result= GBDT(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
         elif Premethod == "支持向量机模型":
             T=math.floor(len(forpredata)/3)
-            result= algorithms.SVM(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result= SVM(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
         elif Premethod == "随机森林模型":
             T=math.floor(len(forpredata)/3)
-            result= algorithms.RandomForest(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, n_estimators=50, city="云南省")
+            result= RandomForest(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, n_estimators=50, city="云南省")
             
         if isinstance(result["preresult"],str):
             return {"prefromyear":None,"pretoyear":None,"preresult":"预测失败，请重新选择预测方法."}

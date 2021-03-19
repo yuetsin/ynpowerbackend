@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_cors import CORS
 from flask_restful import Resource, Api
 from pprint import pprint, pformat
@@ -9,7 +9,7 @@ from Controller import *
 # if not os.path.exists(_dir):
 #     os.makedirs(_dir)
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder = "./dist/static", template_folder = "./dist")
 CORS(app, supports_credentials=True)
 api = Api(app)
 filename = os.path.join(app.root_path, 'algorithms', 'args.xls')
@@ -909,7 +909,14 @@ class SaturationCurvePredict(Resource):
 class PayloadDensityPredict(Resource):
     def post(self):
         # try_print_json()
-        re = payloadDensityPredict(request.json)
+        args = {}
+        args["buildingarea"] = request.files["buildingarea"]
+        args["loaddensity"] = request.files["loaddensity"]
+        # args["PreEndYear"] = request.form["PreEndYear"]
+        # args["PreStartYear"] = request.form["PreStartYear"]
+        arg = {**args, **request.form}
+
+        re = payloadDensityPredict(arg)
 
         # payload = {
         #     'graphData': [
@@ -966,13 +973,31 @@ class MunicipalDataQuery(Resource):
 class ProvincialAndMunicipalPredict(Resource):
     def post(self):
         # try_print_json()
+        year = request.json["Cooryear"]
         result = provincialAndMunicipalPredict(request.json)
+        if result["cityname"] == None:
+            re = {
+                "msg":result["cooresults"],
+                "code":-1,
+                "data": None
+            }
+        else:
+            tableThreeData = []
+            for i in range(len(result["cityname"])):
+                temp = {}
+                temp["year"] = year
+                temp["region"] = result["cityname"][i]
+                temp["predictvalue"] = result["cooresults"][i]
+                tableThreeData.append(temp)
 
-        re = {
-            "msg": "success",
-            "code": 200,
-            "data": result
-        }
+            payload = {
+                'tableThreeData': tableThreeData
+            }
+            re = {
+                "msg": "success",
+                "code": 200,
+                "data": payload
+            }
         # payload = {
         #     'tableThreeData': [
         #         {
@@ -1006,7 +1031,11 @@ class ProvincialAndMunicipalPredict(Resource):
 class BigDataPredict(Resource):
     def post(self):
         # try_print_json()
-        result = bigDataPredict(request.json)
+        args = {}
+        args["proposedata"] = request.files["proposedata"]
+        arg = {**args, **request.form}
+        print(arg)
+        result = bigDataPredict(arg)
         re = {
             "msg": "success",
             "code": 200,
@@ -1041,7 +1070,7 @@ class BigDataPredict(Resource):
         #     "data": payload
         # }
 
-_bigdata_methods = ['猜测法', '穷举法', '归纳法', '放弃法']
+_bigdata_methods = ['随机森林模型', '支持向量机模型', '梯度提升模型', '模糊线性回归模型', "模糊指数平滑模型", "基于滚动机制的灰色预测模型", "对数函数外推", "一元线性外推", "生长函数外推", "灰色滑动平均模型", "指数函数外推"]
 
 @register('method', 'bigdata', 'query')
 class BigDataMethodQuery(Resource):
@@ -1411,6 +1440,7 @@ class MixPredictionParameters(Resource):
 class LongTermPredictionParameters(Resource):
     def get(self):
         tag = request.args['tag']
+        print("test")
         result = getAlgorithmContentByTag(tag)
         contentstr = result[0]["content"]
         content = json.loads(contentstr)
@@ -1923,6 +1953,14 @@ api.add_resource(getAlgorithmArg, "/api/get/args")
 api.add_resource(testExecuteAlgorithm, "/api/test")
 
 api.add_resource(addData, "/api/add/data")
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    print("test")
+    return render_template("index.html")
+
+
 
 if __name__ == '__main__':
     app.run()

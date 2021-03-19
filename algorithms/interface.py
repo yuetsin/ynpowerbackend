@@ -4,8 +4,8 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-host = "http://dclab.club:18000/"
-# host = "http://localhost:5000/"
+# host = "http://dclab.club:18000/"
+host = "http://localhost:18000/"
 
 def getData(location, dataName, startTime, endTime):
     l = location.split("_")

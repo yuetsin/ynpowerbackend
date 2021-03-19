@@ -12,13 +12,13 @@ def yearfeature(start, end, datasource="yunnan_day_电力电量类"):
     for i in range(len(result[0])):
         temp = {
             'year': result[0][i],
-            'yearMaxPayload': result[1][i][0],
-            'yearMinPayload': result[1][i][1],
-            'yearAverageDailyPayloadRate': result[1][i][2],  # ,
-            'yearMaxPeekValleyDiff': result[1][i][3],  # ,
-            'yearRate': result[1][i][4],  # ,
-            'seasonImbaRate': result[1][i][5],  # ,
-            'monthImbaRate': result[1][i][6],  #
+            'yearMaxPayload': int(result[1][i][0]),
+            'yearMinPayload': int(result[1][i][1]),
+            'yearAverageDailyPayloadRate': round(result[1][i][2],3),  # ,
+            'yearMaxPeekValleyDiff': int(result[1][i][3]),  # ,
+            'yearRate': round(result[1][i][4],3),  # ,
+            'seasonImbaRate': round(result[1][i][5],3),  # ,
+            'monthImbaRate': round(result[1][i][6],3),  #
         }
         re.append(temp)
     return re
@@ -52,13 +52,13 @@ def dayFeature(start, end, datasource="yunnan_day_电力电量类"):
     for i in range(len(result[0].tolist())):
         temp = {
             'day': result[0][i][0],
-            'dayMaxPayload': result[1][i][0],
-            'dayMinPayload': result[1][i][2], #d_min,
-            'dayAveragePayload': result[1][i][1], #d_mean,
-            'dayPayloadRate': result[1][i][3], #d_r,
-            'dayMinPayloadRate': result[1][i][4], #d_m_r,
-            'dayPeekValleyDiff': result[1][i][5], #peak,
-            'dayPeekValleyDiffRate': result[1][i][6], #peak_r
+            'dayMaxPayload': int(result[1][i][0]),
+            'dayMinPayload': int(result[1][i][2]), #d_min,
+            'dayAveragePayload': int(result[1][i][1]), #d_mean,
+            'dayPayloadRate': round(result[1][i][3], 3), #d_r,
+            'dayMinPayloadRate': round(result[1][i][4],3), #d_m_r,
+            'dayPeekValleyDiff': int(result[1][i][5]), #peak,
+            'dayPeekValleyDiffRate': round(result[1][i][6],3), #peak_r
         }
         re.append(temp)
     return re
@@ -74,11 +74,11 @@ def monthFeature(start, end, datasource="yunnan_day_电力电量类"):
     for i in range(len(result[0])):
         temp = {
             'month': str(result[0][i][0]) + "/" +str(result[0][i][1]),
-            'monthAverageDailyPayload': result[1][i][0],
-            'monthMaxPeekValleyDiff': result[1][i][1],
-            'monthAverageDailyPayloadRate': result[1][i][2],
-            'monthMinPayloadRate': result[1][i][3],
-            'monthMaxPeekValleyDiffRate': result[1][i][4]
+            'monthAverageDailyPayload': int(result[1][i][0]),
+            'monthMaxPeekValleyDiff': int(result[1][i][1]),
+            'monthAverageDailyPayloadRate': round(result[1][i][2],3),
+            'monthMinPayloadRate': round(result[1][i][3],3),
+            'monthMaxPeekValleyDiffRate': round(result[1][i][4],3),
         }
         re.append(temp)
     return re

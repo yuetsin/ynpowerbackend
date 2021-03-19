@@ -10,7 +10,8 @@ import os
 from os.path import dirname, realpath
 # from app import app
 from utils import formatMetadataCondition, formateTimeString, formatDataCondition, methodNameZhToEn, getAlgorithmName, \
-    getAlgorithm
+    getAlgorithm, getCombinationMethod
+
 filename = os.path.join(os.getcwd(), os.path.dirname(os.path.dirname(__file__)),'algorithms', 'args.xls')
 # filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
 
@@ -379,7 +380,7 @@ def getAlgorithmContentByTag(tags):
             if i != len(tagslist) - 1:
                 tag += ","
         sql = "select tag, content, kind from program where tag in ({})".format(tag)
-        # print(sql)
+        print(sql)
         cur.execute(sql)
         rows = cur.fetchall()
         conn.commit()
@@ -399,6 +400,28 @@ def getAlgorithmContentByTag(tags):
         conn.close()
     return re
 
+def getAllTagList():
+    conn = getConn()
+    cur = conn.cursor()
+
+    try:
+        sql = "select tag, kind from program"
+        # print(sql)
+        cur.execute(sql)
+        resultDict = cur.fetchall()
+        conn.commit()
+
+        result = []
+        for i in resultDict:
+            result.append(i[0])
+
+        re = result
+    except:
+        re = None
+    finally:
+        conn.close()
+    return re
+
 def getAllTag():
     conn = getConn()
     cur = conn.cursor()
@@ -413,7 +436,7 @@ def getAllTag():
         result = []
         for i in resultDict:
             temp = {}
-            temp['id'] = i[0]
+            temp['tag'] = i[0]
             temp['tagType'] = i[1]
             result.append(temp)
 
@@ -700,7 +723,10 @@ def getAlgorithmArgs(method = None, filename = None):
                         temp["value"] = getArea()
                     if row.iloc[i - 1][j].startswith("社会经济因素列表"):
                         temp["value"] = getEconamesList()
-
+                    if row.iloc[i-1][j].startswith("组合方式"):
+                        temp["value"] = getCombinationMethod()
+                    if row.iloc[i - 1][j].startswith("单预测模型结果"):
+                        temp["value"] = getAllTagList()
                     args[header[j]]["para"].append(temp)
                     temp = {}
                     count += 1
@@ -715,7 +741,7 @@ def getAlgorithmArgs(method = None, filename = None):
 
 
 def executeAlgorithm(method, args):
-    print(filename)
+    # print(filename)
     arg = getAlgorithmArgs(method, filename)
     a, b = getAlgorithmName(filename)
     method = methodNameZhToEn(a, b, method)
@@ -736,6 +762,8 @@ def executeAlgorithm(method, args):
             elif v['kind'].endswith("string"):
                 value = valuelist
             argstr += "{} = {},".format(k, value)
+        elif v["kind"].startswith("file"):
+            argstr += "{} = {},".format(k, 'args["'+key+'"]')
         elif v["kind"] == "string" or v["kind"] == "option":
             argstr += "{} = '{}',".format(k, args[key])
         else:

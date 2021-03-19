@@ -9,6 +9,7 @@ from algorithms.loadpredict.souku.souku import soukupre
 from algorithms.loadpredict.zhishupinghua.zhishupinghua import zhishupinghua
 from dao import *
 from utils import *
+import json
 
 
 def exceptQuery(category, startTime, endTime, grain, area):
@@ -101,38 +102,46 @@ def regionSinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
     print(result)
-    result = formatPredictResult(result)
 
-    print(result)
     content = {}
     content['arg'] = args
     content["result"] = result
     re = insertAlgorithmContent(tag, tagType, content)
+    result = formatPredictResult(result)
+    print(result)
     return result
 
 def regionMixPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
+    singleresult = []
+    for tag in args["singleresult"]:
+        result = getAlgorithmContentByTag(tag)
+
+        singleresult.append(json.loads(result[0]["content"]))
+    args["singleresult"] = singleresult
     result = executeAlgorithm(method, args)
-    result = formatPredictResult(result)
-    print(result)
+
     content = {}
     content['arg'] = args
     content["result"] = result
 
     re = insertAlgorithmContent(tag, tagType, content)
+    result = formatPredictResult(result)
+    print(result)
     return result
 
 
 def industrySinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
-    result = formatPredictResult(result)
-    print(result)
+
     content = {}
     content['arg'] = args
     content["result"] = result
 
     re = insertAlgorithmContent(tag, tagType, content)
+    result = formatPredictResult(result)
+    print(result)
     return result
 
 def industryMixPredict(args):
@@ -149,7 +158,67 @@ def industryMixPredict(args):
 def saturationCurvePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
+
+    content = {}
+    content['arg'] = args
+    content["result"] = result
+
+    re = insertAlgorithmContent(tag, tagType, content)
     result = formatPredictResult(result)
+    print(result)
+    return result
+
+def payloadDensityPredict(args):
+    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
+    result1 = executeAlgorithm(method, args)
+    content = {}
+    content['arg'] = args
+    content["result"] = result1
+
+    re = insertAlgorithmContent(tag, tagType, content)
+    result = formatPredictResult(result1)
+    result["bu"] = result1["bu"]
+    print(result)
+
+    return result
+
+
+def provincialAndMunicipalPredict(args):
+    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
+
+    # provPlan = args['provPlan'] # 如果设置为 `__byUpload__` 则从上传文件中读取
+    # provFile = args['provFile']  # 如果 provPlan 是 __byUpload__，那么从这里读
+    # muniData  = args['muniData']
+    result = executeAlgorithm(method, args)
+
+    print(result)
+
+
+    # content = {}
+    # content['arg'] = args
+    # content["result"] = result
+    #
+    # re = insertAlgorithmContent(tag, tagType, content)
+    return result
+
+def bigDataPredict(args):
+    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
+    result = executeAlgorithm(method, args)
+    tableTwoData = []
+    prefromyear = timeFormat(result["prefromyear"], "year")
+    pretoyear = timeFormat(result["pretoyear"], "year")
+    i = 0
+    while prefromyear <= pretoyear:
+        temp = {
+            'year': prefromyear.strftime("%Y"),
+            'predict': result['preresult'][i]
+        }
+        tableTwoData.append(temp)
+        i += 1
+        prefromyear = getNextYear(prefromyear)
+    result = {
+        "tableTwoData": tableTwoData
+    }
     print(result)
     content = {}
     content['arg'] = args
@@ -158,39 +227,6 @@ def saturationCurvePredict(args):
     re = insertAlgorithmContent(tag, tagType, content)
 
     return result
-
-def payloadDensityPredict(args):
-    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    result = executeAlgorithm(method, args)
-    content = {}
-    content['arg'] = args
-    content["result"] = result
-
-    re = insertAlgorithmContent(tag, tagType, content)
-    return re
-
-
-def provincialAndMunicipalPredict(args):
-    historyBeginYear = args['historyBeginYear']
-    historyEndYear = args['historyEndYear']
-    predictYear = args['predictYear']
-    provPlan = args['provPlan'] # 如果设置为 `__byUpload__` 则从上传文件中读取
-    provFile = args['provFile']  # 如果 provPlan 是 __byUpload__，那么从这里读
-    muniData  = args['muniData']
-    # 补充算法模型
-    re = {}
-    return re
-
-def bigDataPredict(args):
-    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
-    result = executeAlgorithm(method, args)
-    content = {}
-    content['arg'] = args
-    content["result"] = result
-
-    re = insertAlgorithmContent(tag, tagType, content)
-
-    return re
 
 def dailyPayloadTraits(args):
     beginDay = args["beginDay"]
