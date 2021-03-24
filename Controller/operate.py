@@ -1,5 +1,6 @@
 # from dao.interface import getDataByCondition, modifyDataByCondition, getTagByKind, getAllTag, renameTag, deleteTag, \
 #     checkTag, insertAlgorithmContent, getGrain, getKind, getArea
+from algorithms.loadcompute.default import default_jiabi, default_souku, default_f
 from algorithms.loadcompute.main import dayFeature, monthFeature, yearfeature, yearLoad, dayLoad, typicalDay, \
     yearLoadCon
 from algorithms.loadcompute.pre_process import d_pre_character
@@ -70,32 +71,33 @@ def tagDelete(current_name):
     return deleteTag(current_name)
 
 def miningRequest(tag, tagType, region, factors, method, arg, beginYear, endYear, args):
-    data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=None, dataName=None,
-                              area=region)  # 是否需要粒度，和kind，dataname
-    f = getAlgorithm(method)
-    result = None
-    if method == "Pearson":
-        threshold = arg['threshold']
-        result = f()
-    elif method == "KMeans":
-        suggestCategoryCount = arg['suggestCategoryCount']
-        categoryCount = arg['categoryCount']
-        result = f()
-    elif method == "PCA":
-        absThreshold = arg['absThreshold']
-        result = f()
-    elif method == "ARL":
-        minSupport = arg['minSupport']
-        minConfidence = arg['minConfidence']
-        result = f()
+    # data = getDataByCondition(grain=None, startTime=str(beginYear), endTime=str(endYear), kind=None, dataName=None,
+    #                           area=region)  # 是否需要粒度，和kind，dataname
+    # f = getAlgorithm(method)
+    # result = None
+    # if method == "Pearson":
+    #     threshold = arg['threshold']
+    #     result = f()
+    # elif method == "KMeans":
+    #     suggestCategoryCount = arg['suggestCategoryCount']
+    #     categoryCount = arg['categoryCount']
+    #     result = f()
+    # elif method == "PCA":
+    #     absThreshold = arg['absThreshold']
+    #     result = f()
+    # elif method == "ARL":
+    #     minSupport = arg['minSupport']
+    #     minConfidence = arg['minConfidence']
+    #     result = f()
     # (tag, tagType, region, factors, method, pearson, beginYear, endYear)
-
+    beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
+    result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
     content['result'] = result
-    #补充算法模型
     re = insertAlgorithmContent(tag, tagType, content)
-    return re
+
+    return result
 
 
 def regionSinglePredict(args):
@@ -117,7 +119,7 @@ def regionMixPredict(args):
     for tag in args["singleresult"]:
         result = getAlgorithmContentByTag(tag)
 
-        singleresult.append(json.loads(result[0]["content"]))
+        singleresult.append(json.loads(result[0]["content"])["result"])
     args["singleresult"] = singleresult
     result = executeAlgorithm(method, args)
 
@@ -146,14 +148,21 @@ def industrySinglePredict(args):
 
 def industryMixPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
+    singleresult = []
+    for tag in args["singleresult"]:
+        result = getAlgorithmContentByTag(tag)
+
+        singleresult.append(json.loads(result[0]["content"])["result"])
+    args["singleresult"] = singleresult
     result = executeAlgorithm(method, args)
     content = {}
     content['arg'] = args
     content["result"] = result
 
     re = insertAlgorithmContent(tag, tagType, content)
-
-    return re
+    result = formatPredictResult(result)
+    print(result)
+    return result
 
 def saturationCurvePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
@@ -546,3 +555,27 @@ def getDatas(location, dataName, startTime, endTime):
     return re
 def executeAlgorithmTest(method, args):
     executeAlgorithm(method, args)
+
+
+def getDefault(start, end):
+    file = "yunnan_year_loadchara-fengshui-souku-max"
+    result = {}
+    loadmax, electricity = default_jiabi(file, start, end)
+
+    result["jiabi"] = {
+        "maxPayload": loadmax,
+        "dailyAmount": electricity
+    }
+    loadmax, electricity = default_f(file, start, end)
+    result["fenxing"] = {
+        "maxPayload": loadmax,
+        "dailyAmount": electricity
+    }
+    load_max, electricity, gamma, beta = default_souku(file, start, end)
+    result["souku"] = {
+        "maxPayload": loadmax,
+        "dailyAmount": electricity,
+        "gamma":gamma,
+        "beta":beta
+    }
+    return result

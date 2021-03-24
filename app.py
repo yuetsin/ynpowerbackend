@@ -508,39 +508,41 @@ class TagsDelete(Resource):
 @register('mining', 'request')
 class MiningRequest(Resource):
     def post(self):
-        # try_print_json()
-        args = request.json
-        tag = request.json['tag']
-        # tagType: 'MINING'
-        tagType = request.json['tagType']
-        region = request.json['region']
-        # factors: list[str]
-        factors = request.json['factors']
-        # method: str  # Pearson / KMeans / PCA / ARL
-        method = request.json['method']
-        beginYear = request.json['beginYear']
-        endYear = request.json['endYear']
-        if method == "Pearson":
-           pearson = request.json['pearson']
-           re = miningRequest(tag, tagType, region, factors, method, pearson, beginYear, endYear, args)
-
-        elif method == "KMeans":
-            kMeans = request.json['kMeans']
-            re = miningRequest(tag, tagType, region, factors, method, kMeans, beginYear, endYear, args)
-
-        elif method == "PCA":
-            PCA = request.json['PCA']
-            re = miningRequest(tag, tagType, region, factors, method, PCA, beginYear, endYear, args)
-
-        elif method == "ARL":
-            ARL = request.json['ARL']
-            re = miningRequest(tag, tagType, region, factors, method, ARL, beginYear, endYear, args)
-
-        return {
+        # # try_print_json()
+        # args = request.json
+        # tag = request.json['tag']
+        # # tagType: 'MINING'
+        # tagType = request.json['tagType']
+        # region = request.json['region']
+        # # factors: list[str]
+        # factors = request.json['factors']
+        # # method: str  # Pearson / KMeans / PCA / ARL
+        # method = request.json['method']
+        # beginYear = request.json['beginYear']
+        # endYear = request.json['endYear']
+        # if method == "Pearson":
+        #    pearson = request.json['pearson']
+        #    re = miningRequest(tag, tagType, region, factors, method, pearson, beginYear, endYear, args)
+        #
+        # elif method == "KMeans":
+        #     kMeans = request.json['kMeans']
+        #     re = miningRequest(tag, tagType, region, factors, method, kMeans, beginYear, endYear, args)
+        #
+        # elif method == "PCA":
+        #     PCA = request.json['PCA']
+        #     re = miningRequest(tag, tagType, region, factors, method, PCA, beginYear, endYear, args)
+        #
+        # elif method == "ARL":
+        #     ARL = request.json['ARL']
+        #     re = miningRequest(tag, tagType, region, factors, method, ARL, beginYear, endYear, args)
+        result = miningRequest(request.json)
+        re = {
             "msg": "success",
             "code": 200,
-            "data": ['阳光', '空气', '水']
+            "data": result
+
         }
+        return re
 
 @register('mining', 'factor', 'kmeans', 'suggest')
 class MiningKMeansSuggestCategoryCount(Resource):
@@ -741,8 +743,12 @@ class RegionMixModelValidate(Resource):
 class RegionMixPredict(Resource):
     def post(self):
         # try_print_json()
-        re = regionMixPredict(request.json)
-
+        result = regionMixPredict(request.json)
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": result
+        }
         # payload = {
         #     'graphData': [
         #         {
@@ -767,11 +773,7 @@ class RegionMixPredict(Resource):
         # }
         return re
 
-        # {
-        #     "msg": "success",
-        #     "code": 200,
-        #     "data": payload
-        # }
+
 
 @register('predict', 'industry', 'single')
 class IndustrySinglePredict(Resource):
@@ -834,8 +836,12 @@ class IndustryMixModelValidate(Resource):
 class IndustryMixPredict(Resource):
     def post(self):
         # try_print_json()
-        re = industryMixPredict(request.json)
-
+        result = industryMixPredict(request.json)
+        re = {
+            "msg": "success",
+            "code": 200,
+            "data": result
+        }
         # payload = {
         #     'graphData': [
         #         {
@@ -1942,6 +1948,17 @@ class addData(Resource):
         }
         return re
 
+class getDefaultOfLoadPre(Resource):
+    def get(self):
+        start = request.args["start"]
+        end = request.args["end"]
+        result = getDefault(start, end)
+        return {
+            "msg":"success",
+            "code": 200,
+            "data": result
+        }
+
 
 
 api.add_resource(UploadCSV, "/api/db/upload")
@@ -1953,6 +1970,7 @@ api.add_resource(getAlgorithmArg, "/api/get/args")
 api.add_resource(testExecuteAlgorithm, "/api/test")
 
 api.add_resource(addData, "/api/add/data")
+api.add_resource(getDefaultOfLoadPre, "/api/get/default")
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
