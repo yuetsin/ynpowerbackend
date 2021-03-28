@@ -20,7 +20,7 @@ from dao.interface import getData
 import json
 from algorithms.evaluation import RMSE,MAPE
 
-def LDM(PreStartYear,PreEndYear,buildingarea,loaddensity,pretype="consumption",city="云南省"):
+def LDM(PreStartYear,PreEndYear,buildingarea,loaddensity,pretype="全社会用电量",city="云南省"):
     
     def Density(n,Dlist,Plist):
         #n为所画片区，Dlist为对应的负荷密度，Plist为对应的建筑面积
@@ -59,7 +59,7 @@ def LDM(PreStartYear,PreEndYear,buildingarea,loaddensity,pretype="consumption",c
         period=int(EndYear)-int(StartYear)+1
         finaldata=[]
         name=[pretype]
-        datajson = getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson = getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         data=json.loads(datajson)
         finaldata.append(data)
     
@@ -103,7 +103,7 @@ def LDM(PreStartYear,PreEndYear,buildingarea,loaddensity,pretype="consumption",c
         rmse=RMSE(pretrainy,trainx)
         
         #返回结果
-        result={"bu":building,"trainfromyear":StartYear,"traintoyear":EndYear,"trainresult":ytrain.tolist(),"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist(),"MAPE":mape,"RMSE":rmse}
+        result={"trainfromyear":StartYear,"traintoyear":EndYear,"trainresult":ytrain.tolist(),"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist(),"MAPE":mape,"RMSE":rmse}
     return result
 
 if __name__ == '__main__':
@@ -112,4 +112,4 @@ if __name__ == '__main__':
     PreEndYear = "2029"
     buildingarea="D:/lab/Yunnan_Pre/data/yunnan_building.csv"
     loaddensity="D:/lab/Yunnan_Pre/data/yunnan_loaddensity.csv"
-    result=LDM(PreStartYear,PreEndYear,buildingarea,loaddensity,pretype="consumption",city="云南省")
+    result=LDM(PreStartYear,PreEndYear,buildingarea,loaddensity)

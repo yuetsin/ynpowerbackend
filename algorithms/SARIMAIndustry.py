@@ -27,12 +27,12 @@ def SARIMAIndustry(StartYear,EndYear,PreStartYear,PreEndYear,pretype,city="云�
     StartMonth="%s/1"%(StartYear)
     EndMonth="%s/12"%(EndYear)
     #读取月度数据
-    monthdatajson=getData("yunnan_month_电力电量类", pretype, StartMonth, EndMonth)
+    monthdatajson=getData("yunnan_month_电力电量类-行业", pretype, StartMonth, EndMonth)
     monthdata=json.loads(monthdatajson)
     pdmonthdata=pd.DataFrame(monthdata,index=[pretype])
     pdmonthdata=pdmonthdata.T
     #读取年度数据
-    yeardatajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+    yeardatajson=getData("yunnan_year_电力电量类-行业", pretype, StartYear, EndYear)
     yeardata=json.loads(yeardatajson)
     pdyeardata=pd.DataFrame(yeardata,index=[pretype])
     pdyeardata=pdyeardata.T

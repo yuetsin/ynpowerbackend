@@ -14,8 +14,8 @@ import numpy as np
 import pandas as pd
 import copy
 
-def Apriori(StartYear,EndYear,pretype,loadlist,econamelist,city="云南省"):
-    
+def Apriori(StartYear,EndYear,pretype,econamelist,city="云南省"):
+    loadlist=None
     def frecount(vnum,data1,data2,f):
         
         fre = np.zeros(shape=(4,4))
@@ -51,7 +51,7 @@ def Apriori(StartYear,EndYear,pretype,loadlist,econamelist,city="云南省"):
     #读取历史负荷数据
     finaldata=[]
     name=[pretype]
-    datajson = getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+    datajson = getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
     data=json.loads(datajson)
     finaldata.append(data)
 
@@ -60,7 +60,7 @@ def Apriori(StartYear,EndYear,pretype,loadlist,econamelist,city="云南省"):
         pass
     else:
         for i in range(len(loadlist)):
-            datajson = getData("yunnan_year_电力电量类", loadlist[i], StartYear, EndYear)
+            datajson = getData("云南省_year_电力电量类", loadlist[i], StartYear, EndYear)
             data=json.loads(datajson)
             finaldata.append(data)
             name.append(loadlist[i])
@@ -70,7 +70,7 @@ def Apriori(StartYear,EndYear,pretype,loadlist,econamelist,city="云南省"):
     else:
         #读取经济数据
         for i in range(len(econamelist)):
-            ecodatajson=getData("yunnan_year_社会经济类", econamelist[i], StartYear, EndYear)
+            ecodatajson=getData("云南省_year_社会经济类", econamelist[i], StartYear, EndYear)
             ecodata=json.loads(ecodatajson)
             finaldata.append(ecodata)
             name.append(econamelist[i])
@@ -119,8 +119,7 @@ def Apriori(StartYear,EndYear,pretype,loadlist,econamelist,city="云南省"):
 if __name__ == '__main__':
     StartYear="1995"
     EndYear="2015"
-    pretype="consumption"
-    loadlist=None
-    econamelist=["GDPperpop","energyconsumption","GDP1","GDP2","GDP","energyconsumption","population"]
+    pretype="全社会用电量"
+    econamelist=["人均GDP","能源消费总值","第一产业GDP","第二产业GDP","GDP","人口"]
     
-    result=Apriori(StartYear,EndYear,pretype,loadlist,econamelist)
+    result=Apriori(StartYear,EndYear,pretype,econamelist)

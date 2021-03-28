@@ -2,7 +2,6 @@ from flask import Flask, request, render_template
 from flask_cors import CORS
 from flask_restful import Resource, Api
 from pprint import pprint, pformat
-import os
 from Controller import *
 
 # _dir = './apis'
@@ -193,10 +192,12 @@ _metadata = [
 @register('db', 'metadata')
 class GetMetadata(Resource):
     def get(self):
+        result = getMetaDataTree()
+        # print(result)
         return {
             "msg": "success",
             "code": 200,
-            "data": _metadata
+            "data": result
         }
 
 @register('db', 'metadata', 'create')
@@ -238,20 +239,25 @@ class UploadMetadata(Resource):
 @register('db', 'query')
 class PerformQuery(Resource):
     def post(self):
+        grain1 = ['年', '月', '日', '时']
+        grain2 = ["year", "month",  "day","hour"]
         startTime = request.json['beginYear']
         endTime = request.json['endYear']
         grain = request.json['grain'].strip()
+        for i in range(len(grain1)):
+            if grain1[i] == grain:
+                grain = grain2[i]
+                break
         area = request.json['region'].strip()
         category = request.json['category']
         data = getDataByCondition(grain = grain, startTime = str(startTime), endTime = str(endTime), kind = category[0], dataName = category[1], area = area)
+        # print(data)
         datalist = []
         if data is not None:
             for d in data:
                 temp = {}
+                temp["metadataid"] = d[3]
                 temp["key"] = d[0]
-                temp["category"] = [d[5], d[1]]
-                temp['region'] = d[4]
-                temp['grain'] = d[3]
                 temp['value'] = d[2]
                 datalist.append(temp)
         re = {
@@ -286,7 +292,8 @@ class PerformQuery(Resource):
 @register('db', 'create')
 class PerformCreate(Resource):
     def post(self):
-        try_print_json()
+
+        # createDataByMetadataid(datavalue=, dataname=, datatime=, metadataid=)
         return {
             "msg": "success",
             "code": 200
@@ -298,9 +305,9 @@ class PerformUpdate(Resource):
         # try_print_json()
         originData = request.json['originData']
         modifiedData = request.json['modifiedData']
-        re = modifyDataByCondition(modifiedData['value'], grain=originData['grain'], startTime=originData['key'],
-                                   endTime=originData['key'], kind=originData['category'][0],
-                                   dataName=originData['category'][1], area=originData['region'])
+        category = request.json["category"]
+
+        re = modifyDataByCondition(modifiedData['value'], startTime=originData['key'], endTime= originData["key"], dataName=category[1], metadataid = modifiedData["metadataid"])
 
         return re
 
@@ -310,8 +317,10 @@ class PerformDelete(Resource):
     def post(self):
         # try_print_json()
         originData = request.json['originData']
-        re = deleteDataByCondition(grain=originData['grain'], startTime=originData['key'],
-                                   endTime=originData['key'], kind=originData['category'][0], dataName=originData['category'][1], area=originData['region'])
+        category = request.json["category"]
+
+        re = deleteDataByCondition(startTime=originData['key'],
+                                   endTime=originData['key'], dataName=category[1], metadataid = originData["metadataid"])
 
         return re
         #         {
@@ -325,10 +334,16 @@ class PerformDelete(Resource):
 class ExceptionQuery(Resource):
     def post(self):
         # try_print_json()
+        grain1 = ['年', '月', '日', '时']
+        grain2 = ["year", "month", "day", "hour"]
+        grain = request.json['grain'].strip()
+        for i in range(len(grain1)):
+            if grain1[i] == grain:
+                grain = grain2[i]
+                break
         category = request.json['category']
         startTime = request.json['beginYear']
         endTime = request.json['endYear']
-        grain = request.json['grain'].strip()
         area = request.json['region'].strip()
         result = exceptQuery(category, str(startTime), str(endTime), grain, area)
         re = {
@@ -665,23 +680,23 @@ class RegionalMethodQuery(Resource):
 @register('grain', 'query')
 class GrainQuery(Resource):
     def get(self):
-        re = grainQuery()
-        return re
-        # {
-        #     "msg": "success",
-        #     "code": 200,
-        #     "data": ['年', '月', '日', '时', '分', '秒']
-        # }
+        # re = grainQuery()
+        return {
+            "msg": "success",
+            "code": 200,
+            "data": ['年', '月', '日', '时']
+        }
 
 _factors = ['GDP', 'GNP', 'GPPPP', 'GNPPP']
 
 @register('factor', 'query')
 class MiningFactorQuery(Resource):
     def get(self):
+        re = getDataNameByAreaAndKind(area="云南省", kind="社会经济类")
         return {
             "msg": "success",
             "code": 200,
-            "data": _factors
+            "data": re
         }
 
 @register('predict', 'region', 'single')

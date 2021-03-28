@@ -18,7 +18,7 @@ import json
 """
 改进灰色预测模型
 """
-def GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省"):
+def GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="全社会用电量",city="云南省"):
     def improve_GM(x,n):
         '''
         改进灰色预测
@@ -73,7 +73,7 @@ def GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption
         outputlen=int(PreEndYear)-int(PreStartYear)+1
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     PreStartYear="2020"
     PreEndYear="2029"
     timestep=15
-    pretype="consumption"
+    pretype="全社会用电量"
     city="云南省"
-    result=GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省")
+    result=GPRM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city)
 

@@ -19,7 +19,7 @@ import math
 
 
 
-def PCAIndustry(StartYear,EndYear,PreStartYear,PreEndYear,pretype,econamelist,city="云南省"):
+def PCAindustry(StartYear,EndYear,PreStartYear,PreEndYear,pretype,econamelist,city="云南省"):
     
     if city=="云南省":
         name=[pretype]
@@ -28,14 +28,14 @@ def PCAIndustry(StartYear,EndYear,PreStartYear,PreEndYear,pretype,econamelist,ci
         historyyear=np.arange(int(StartYear),int(EndYear)+1)
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类-行业", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
         
         #读取经济数据
         for i in range(len(econamelist)):
-            ecodatajson=getData("yunnan_year_社会经济类", econamelist[i], StartYear, EndYear)
+            ecodatajson=getData("云南省_year_社会经济类", econamelist[i], StartYear, EndYear)
             ecodata=json.loads(ecodatajson)
             finaldata.append(ecodata)
             name.append(econamelist[i])
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     EndYear="2019"
     PreStartYear="2020"
     PreEndYear="2021"
-    econamelist=["GDP1","GDP2","GDP"]
+    econamelist=["第一产业GDP","第二产业GDP","GDP"]
     pretype="第一产业用电量"
     city="云南省"
     

@@ -20,7 +20,7 @@ import json
 
 """分位数回归，未联调，已修改"""
 
-def QuantileRegression(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省"):
+def QuantileRegression(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="全社会用电量",econamelist=["GDP"],city="云南省"):
     #首先需要回归得到未来的经济数据
 
     def get_coef(data,xnamelist,yname,quatile):
@@ -60,7 +60,7 @@ def QuantileRegression(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pr
         period=int(PreEndYear)-int(PreStartYear)+1
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
@@ -68,7 +68,7 @@ def QuantileRegression(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pr
         #读取经济数据
         for i in range(len(econamelist)):
             
-            ecodatajson=getData("yunnan_year_社会经济类", econamelist[i], StartYear, EndYear)
+            ecodatajson=getData("云南省_year_社会经济类", econamelist[i], StartYear, EndYear)
             ecodata=json.loads(ecodatajson)
             finaldata.append(ecodata)
             name.append(econamelist[i])
@@ -104,4 +104,4 @@ def QuantileRegression(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pr
 
 if __name__ == '__main__':
 
-    result=QuantileRegression("1995","2019","2020","2021",quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省")
+    result=QuantileRegression("1995","2019","2020","2021")

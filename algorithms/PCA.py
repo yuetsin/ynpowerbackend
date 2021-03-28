@@ -30,7 +30,7 @@ def PCA(StartYear,EndYear,pretype,econamelist,pmin = 0.9,city="云南省"):
         pass
     else:
         for i in range(len(pretype)):
-            datajson = getData("yunnan_year_电力电量类", pretype[i], StartYear, EndYear)
+            datajson = getData("云南省_year_电力电量类", pretype[i], StartYear, EndYear)
             data=json.loads(datajson)
             finaldata.append(data)
             name.append(pretype[i])
@@ -40,7 +40,7 @@ def PCA(StartYear,EndYear,pretype,econamelist,pmin = 0.9,city="云南省"):
     else:
         #读取经济数据
         for i in range(len(econamelist)):
-            ecodatajson=getData("yunnan_year_社会经济类", econamelist[i], StartYear, EndYear)
+            ecodatajson=getData("云南省_year_社会经济类", econamelist[i], StartYear, EndYear)
             ecodata=json.loads(ecodatajson)
             finaldata.append(ecodata)
             name.append(econamelist[i])
@@ -104,7 +104,7 @@ def PCA(StartYear,EndYear,pretype,econamelist,pmin = 0.9,city="云南省"):
 if __name__ == '__main__':
     StartYear="1995"
     EndYear="2015"
-    pretype=["consumption"]
-    econamelist=["GDPperpop","energyconsumption","GDP1","GDP2","GDP","second_industry"]
+    pretype=["全社会用电量"]
+    econamelist=["GDP","第一产业GDP","第二产业GDP"]
     
     result=PCA(StartYear,EndYear,pretype,econamelist)

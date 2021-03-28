@@ -1,5 +1,6 @@
 # from dao.interface import getDataByCondition, modifyDataByCondition, getTagByKind, getAllTag, renameTag, deleteTag, \
 #     checkTag, insertAlgorithmContent, getGrain, getKind, getArea
+from algorithms.Outlier import Outlier
 from algorithms.loadcompute.default import default_jiabi, default_souku, default_f
 from algorithms.loadcompute.main import dayFeature, monthFeature, yearfeature, yearLoad, dayLoad, typicalDay, \
     yearLoadCon
@@ -16,31 +17,75 @@ import json
 def exceptQuery(category, startTime, endTime, grain, area):
     data = getDataByCondition(grain = grain, startTime = startTime, endTime = endTime, kind = category[0], dataName = category[1], area = area)
     datalist = []
+    grain1 = ['年', '月', '日', '时']
+    grain2 = ["year", "month", "day", "hour"]
+    for i in range(len(grain2)):
+        if grain2[i] == grain:
+            grain = grain1[i]
+            break
     if data is not None:
-        for d in data:
-            temp = {}
-            temp["key"] = d[0]
-            temp["category"] = [d[5], d[1]]
-            temp['region'] = d[4]
-            temp['grain'] = d[3]
-            temp['value'] = d[2]
-            temp["suggest"] = -1
-            datalist.append(temp)
+        out = Outlier(StartYear=startTime, EndYear = endTime, pretype= category[1])
+        if out["outlier"] == None:
+            for d in data:
+                temp = {}
+                temp["key"] = d[0]
+                temp["category"] = category
+                temp['region'] = area
+                temp['grain'] = grain
+                temp['value'] = d[2]
+                temp["suggest"] = out["correction"]
+                datalist.append(temp)
     else:
         return None
-    # f = getAlgorithm("Outlier")
-
-    result = datalist #异常数据检测算法
+    result = datalist
     return result
 
 def exceptResolve(originData, modifiedData):
-    re = modifyDataByCondition(modifiedData['value'], grain =originData['grain'], startTime = originData['key'], endTime = originData['key'], kind = originData['category'][0], dataName = originData['category'][1], area = originData['region'])
+    grain = originData['grain']
+    startTime = originData['key']
+    endTime = originData['key']
+    kind =  originData['category'][0]
+    dataName = originData['category'][1]
+    area = originData['region']
+    grain1 = ['年', '月', '日', '时']
+    grain2 = ["year", "month", "day", "hour"]
+    for i in range(len(grain2)):
+        if grain1[i] == grain:
+            grain = grain2[i]
+            break
+    metadata = getMetaData(area, kind, grain)
+    # print(metadata)
+    metadataId = metadata[0][0]
+    re = modifyDataByCondition(modifiedData['value'], startTime=startTime, endTime=endTime,
+                               dataName=dataName, metadataid=metadataId)
+
     return re
 
-def exceptAccept(acceptData):
-    re = modifyDataByCondition(acceptData['value'], grain=acceptData['grain'], startTime=acceptData['key'],
-                               endTime=acceptData['key'], kind=acceptData['category'][0],
-                               dataName=acceptData['category'][1], area=acceptData['region'])
+def exceptAccept(originData):
+    grain = originData['grain']
+    startTime = originData['key']
+    endTime = originData['key']
+    kind = originData['category'][0]
+    dataName = originData['category'][1]
+    area = originData['region']
+    suggest = originData["suggest"]
+    grain1 = ['年', '月', '日', '时']
+    grain2 = ["year", "month", "day", "hour"]
+    for i in range(len(grain2)):
+        if grain1[i] == grain:
+            grain = grain2[i]
+            break
+    metadata = getMetaData(area, kind, grain)
+    metadataId = metadata[0][0]
+    if type(suggest) is not int:
+        return {
+            "msg":"无效建议值",
+            "code": -1
+        }
+
+    re = modifyDataByCondition(suggest, startTime=startTime, endTime=endTime,
+                               dataName=dataName, metadataid=metadataId)
+
     return re
 
 
@@ -578,4 +623,28 @@ def getDefault(start, end):
         "gamma":gamma,
         "beta":beta
     }
+    return result
+
+def getMetaDataTree():
+    result = []
+    mtd = getMetaData()
+    saved1 = []
+    tichu = ['保山','楚雄','大理', '德宏', '迪庆', '红河', '昆明','丽江','临沧', '怒江', '普洱', '曲靖', '文山', '西双版纳', '玉溪', '昭通', 'yunnan']
+    for i in mtd:
+        # print(i)
+        if i[1] in tichu:
+            continue
+        for y in saved1:
+            if y[1] == i[1] and y[2] == i[2]:
+                continue
+        saved1.append((i[1], i[2]))
+        re = getDataNameByAreaAndKind(i[1], i[2])
+        if len(re) == 0:
+            continue
+        tmp = {"value": i[2], "label": i[2], "children": []}
+        for d in re:
+            temp = {"label": d, "value": d}
+            tmp["children"].append(temp)
+        result.append(tmp)
+    print(saved1)
     return result

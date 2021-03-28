@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
 import math
 from algorithms.train_test_set import generate_data,inverse_data
-from dao.interface import getData
+from algorithms.interface import getData
 import json 
 from sklearn.multioutput import MultiOutputRegressor
 from algorithms.evaluation import RMSE,MAPE
 """随机森林预测模型"""
 
-def RandomForest(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",n_estimators=50,city="云南省"):
+def RandomForest(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="全社会用电量",n_estimators=50,city="云南省"):
     """   
 
     Parameters
@@ -70,7 +70,7 @@ def RandomForest(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="con
         outputlen=int(PreEndYear)-int(PreStartYear)+1
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
@@ -131,7 +131,7 @@ if __name__=="__main__":
     PreStartYear="2020"
     PreEndYear="2021"
     timestep=15
-    pretype="consumption"
+    pretype="全社会用电量"
     city="云南省"
     
-    result=RandomForest(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",n_estimators=50,city="云南省")
+    result=RandomForest(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,n_estimators=50,city="云南省")

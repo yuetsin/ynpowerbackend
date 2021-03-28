@@ -22,7 +22,7 @@ import math
 
 """SVM，未联调，已修改"""
 
-def SVM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省"):
+def SVM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="全社会用电量",city="云南省"):
     #读取数据，确定参数
     if timestep > (int(EndYear)-int(StartYear)+1):
         return {"trainfromyear":None,"traintoyear":None,"trainresult":None,"prefromyear":None,"pretoyear":None,"preresult":"训练步长过大，请调整后重试.","MAPE":None,"RMSE":None}
@@ -31,7 +31,7 @@ def SVM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption"
         finaldata=[]
         outputlen=int(PreEndYear)-int(PreStartYear)+1
         
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         data=json.loads(datajson)
         finaldata.append(data)
         final=pd.DataFrame(finaldata,index=name)
@@ -90,7 +90,7 @@ if __name__=="__main__":
     PreStartYear="2020"
     PreEndYear="2021"
     timestep=10
-    pretype="consumption"
+    pretype="全社会用电量"
     city="云南省"
     
     result=SVM(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city)

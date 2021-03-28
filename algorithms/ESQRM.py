@@ -20,7 +20,7 @@ import json
 """扩展索洛分位数回归,联调成功"""
 
 
-def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省"):
+def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="全社会用电量",econamelist=["GDP"],city="云南省"):
     """
     
 
@@ -104,7 +104,7 @@ def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consum
         period=int(PreEndYear)-int(PreStartYear)+1
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
@@ -112,7 +112,7 @@ def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consum
         #读取经济数据
         for i in range(len(econamelist)):
             
-            ecodatajson=getData("yunnan_year_社会经济类", econamelist[i], StartYear, EndYear)
+            ecodatajson=getData("云南省_year_社会经济类", econamelist[i], StartYear, EndYear)
             ecodata=json.loads(ecodatajson)
             finaldata.append(ecodata)
             name.append(econamelist[i])
@@ -151,4 +151,4 @@ def ESQRM(StartYear,EndYear,PreStartYear,PreEndYear,quatile=0.95,pretype="consum
         result={"preresult":"暂不支持其他地区预测"}
     return result
 
-result=ESQRM("1995","2019","2020","2021",quatile=0.95,pretype="consumption",econamelist=["GDP"],city="云南省")
+result=ESQRM("1995","2019","2020","2021",quatile=0.95,pretype="全社会用电量",econamelist=["GDP"],city="云南省")

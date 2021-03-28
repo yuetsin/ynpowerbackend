@@ -14,6 +14,9 @@ from utils import formatMetadataCondition, formateTimeString, formatDataConditio
 
 filename = os.path.join(os.getcwd(), os.path.dirname(os.path.dirname(__file__)),'algorithms', 'args.xls')
 # filename = os.path.join(app.root_path, 'algorithms', 'args.xlsx')
+defaultFile = os.path.join(os.getcwd(), os.path.dirname(os.path.dirname(__file__)),'algorithms', 'default.xls')
+
+
 
 dbname="electric"
 user="postgres"
@@ -128,8 +131,11 @@ def getMetaData(area = None, kind = None, grain=None):
     conn = getConn()
     cur = conn.cursor()
     whe = formatMetadataCondition(grain, kind, area)
-    wherestr = " and ".join(whe)
-    sql = "select id, area, kind,  grain from metadata where " + wherestr + ";"
+    if len(whe) != 0:
+        wherestr = " and ".join(whe)
+        sql = "select id, area, kind from metadata where " + wherestr + ";"
+    else:
+        sql = "select id, area, kind from metadata"
     cur.execute(sql)
     result = cur.fetchall()
     conn.commit()
@@ -543,31 +549,44 @@ def getDataByCondition(grain = None, startTime = None, endTime = None, kind = No
     for i in meta:
         metadataIds.append(str(i[0]))
 
-    whe = formatDataCondition(startTime, endTime, dataName, grain, metadataIds)
+    whe = formatDataCondition(startTime=startTime, endTime=endTime, dataName=dataName, metadataIds=metadataIds)
     try:
         wherestr = " and ".join(whe)
-        sql = "select datatime, dataname, datavalue, metadataid from electric_data_test where " + wherestr + ";"
-        # print(sql)
+        if grain == "year":
+            sql = "select to_char(datatime::TIMESTAMP, 'yyyy') as datatime, dataname, datavalue, metadataid from electric_data_test where " + wherestr + ";"
+        elif grain == "month":
+            sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
+        elif grain == "day":
+            sql = "select to_char(datatime::TIMESTAMP , 'yyyy/mm/dd') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
+        elif grain == "hour":
+            sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
+        elif grain == "min":
+            sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh:mi') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
+        elif grain == "sec":
+            sql = "select to_char(datatime::TIMESTAMP, 'yyyy/mm/dd hh:mi:ss') as datatime, dataname, datavalue, metadataid, id from electric_data_test where " + wherestr
+
+        print(sql)
         cur.execute(sql)
         resultDict = cur.fetchall()
         conn.commit()
         re = resultDict
 
     except:
+        print("error getdata")
         re =  None
     finally:
         conn.close()
     return re
 
-def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
+def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None, metadataid=None):
     conn = getConn()
     cur = conn.cursor()
 
-    whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
+    whe = formatDataCondition(startTime=startTime, endTime=endTime, dataName=dataName, metadataIds=[str(metadataid)])
     try:
         wherestr = " and ".join(whe)
-        sql = "update electric_data set datavalue = {} where ".format(newdata) + wherestr + ";"
-        # print(sql)
+        sql = "update electric_data_test set datavalue = {} where ".format(newdata) + wherestr + ";"
+        print(sql)
         cur.execute(sql)
         conn.commit()
 
@@ -584,14 +603,14 @@ def modifyDataByCondition (newdata, grain = None, startTime = None, endTime = No
         conn.close()
     return re
 
-def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None):
+def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind = None, dataName = None, area = None, metadataid=None):
     conn = getConn()
     cur = conn.cursor()
 
-    whe = formatDataCondition(grain, startTime, endTime, kind, dataName, area)
+    whe = formatDataCondition(startTime=startTime, endTime=endTime, dataName=dataName, metadataIds=[str(metadataid)])
     try:
         wherestr = " and ".join(whe)
-        sql = "delete from  electric_data where " + wherestr + ";"
+        sql = "delete from  electric_data_test where " + wherestr + ";"
         print(sql)
         cur.execute(sql)
         conn.commit()
@@ -608,6 +627,17 @@ def deleteDataByCondition (grain = None, startTime = None, endTime = None, kind 
 
         conn.close()
     return re
+
+def createDataByMetadataid(datavalue, dataname, datatime, metadataid):
+
+    conn = getConn()
+    cur = conn.cursor()
+
+    sql = "INSERT INTO electric_data_test(datatime, dataname, datavalue, metadataid) VALUES(to_timestamp('{}','YYYY/MM/DD HH24:MI:SS'), '{}', {}, '{}') on conflict on constraint unique_cons do update set datavalue={};".format(
+                    datatime, dataname, datavalue, metadataid, datavalue)
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
 
 def getArea():
     conn = getConn()
@@ -628,12 +658,8 @@ def getArea():
         re = None
     finally:
         conn.close()
-    return re
+    return ["云南省"]
 
-#确定经济列表后补充完整
-def getEconamesList():
-    re = ["GDP","GDPP"]
-    return re
 
 def getKind():
     conn = getConn()
@@ -693,10 +719,29 @@ def getGrain():
         conn.close()
     return re
 
+def getAlgorithmArgsDefaultValue():
+    data = pd.read_excel(defaultFile, None, index_col=None)
+    args = {}
+    for row in data.values():
+        # print(row)
+        x, y = row.shape
+        header = [i for i in row.columns]
+        for j in range(1, y):
+            temp = {}
+            for i in range(1, x):
+                if row.iloc[i][0] != row.iloc[i][0] or row.iloc[i][j] != row.iloc[i][j]:
+                    break
+                if i % 3 == 0:
+                    temp[row.iloc[i-2][j]] = row.iloc[i][j]
+            args[header[j]] = temp
+    return args
+
+
 def getAlgorithmArgs(method = None, filename = None):
     # print(method)
     a, b = getAlgorithmName(filename)
     method = methodNameZhToEn(a, b, method)
+    defaultValue = getAlgorithmArgsDefaultValue()
     print(method)
     data = pd.read_excel(filename, None, index_col=None)
     args = {}
@@ -722,11 +767,28 @@ def getAlgorithmArgs(method = None, filename = None):
                     if row.iloc[i-1][j].startswith("预测省/市"):
                         temp["value"] = getArea()
                     if row.iloc[i - 1][j].startswith("社会经济因素列表"):
-                        temp["value"] = getEconamesList()
+                        temp["value"] = getDataNameByAreaAndKind(area="云南省", kind="社会经济类")
                     if row.iloc[i-1][j].startswith("组合方式"):
                         temp["value"] = getCombinationMethod()
                     if row.iloc[i - 1][j].startswith("单预测模型结果"):
                         temp["value"] = getAllTagList()
+                    if row.iloc[i - 1][j].startswith("电力变量列表") or row.iloc[i - 1][j].startswith("目标关联名称") or row.iloc[i - 1][j].startswith("关联变量列表"):
+                        temp["value"] = getDataNameByAreaAndKind(area="云南省", kind="电力电量类")
+
+                    if row.iloc[i - 1][j].startswith("预测行业名称"):
+                        temp["value"] = getDataNameByAreaAndKind(area="云南省", kind="电力电量类-行业")
+
+                    if row.iloc[i - 1][j].startswith("预测数据类型"):
+                        temp["value"] = getDataNameByAreaAndKind(area="云南省", kind="电力电量类")
+
+                    if header[j] in defaultValue.keys():
+                        if temp["key"] in defaultValue[header[j]]:
+                            if temp["kind"] == "int":
+                                temp["default"] = int(defaultValue[header[j]][temp["key"]])
+                            elif temp["kind"] == "float":
+                                temp["default"] = float(defaultValue[header[j]][temp["key"]])
+                            else:
+                                temp["default"] = defaultValue[header[j]][temp["key"]]
                     args[header[j]]["para"].append(temp)
                     temp = {}
                     count += 1
@@ -777,20 +839,32 @@ def executeAlgorithm(method, args):
     result = eval("f("+argstr+")")
     return result
 
+def getDataNameByAreaAndKind(area = "云南省", kind = "社会经济类"):
+    conn = getConn()
 
+    cur = conn.cursor()
+    sql = "select distinct dataname from electric_data_test where metadataid in (select id from metadata where area='{}' and kind = '{}');".format(area, kind)
+    # print(sql)
+    cur.execute(sql)
+    resultDict = cur.fetchall()
+    result = []
+    conn.commit()
+    for i in resultDict:
+        result.append(i[0])
+    return result
 
 
 if __name__ == '__main__':
-    conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
-                            port="32345")
-    cur = conn.cursor()
-    grain = "year"
-    area = "yunnan"
-    kind = "test"
-    data = [('2018', 'GDPperpop', 37136.0, 'year', 'yunnan', 'test'), ('2018', 'GDP', 17881.12, 'year', 'yunnan', 'test'), ('2018', 'population', 4829.5, 'year', 'yunnan', 'test'), ('2020', 'populations', 4829.5, 'year', 'yunnan', 'test')]
-    sql = "SELECT * FROM electric_data where grain = '{}' and area = '{}' and kind = '{}'".format(
-        grain, area, kind)
-    cur.execute(sql)
-    rows = cur.fetchall()
-
-    print(rows)
+    # conn = psycopg2.connect(dbname="electric", user="postgresadmin", password="admin123", host="192.168.1.108",
+    #                         port="32345")
+    # cur = conn.cursor()
+    # grain = "year"
+    # area = "yunnan"
+    # kind = "test"
+    # data = [('2018', 'GDPperpop', 37136.0, 'year', 'yunnan', 'test'), ('2018', 'GDP', 17881.12, 'year', 'yunnan', 'test'), ('2018', 'population', 4829.5, 'year', 'yunnan', 'test'), ('2020', 'populations', 4829.5, 'year', 'yunnan', 'test')]
+    # sql = "SELECT * FROM electric_data where grain = '{}' and area = '{}' and kind = '{}'".format(
+    #     grain, area, kind)
+    # cur.execute(sql)
+    # rows = cur.fetchall()
+    re = getAlgorithmArgsDefaultValue()
+    print(re)

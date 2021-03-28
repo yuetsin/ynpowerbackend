@@ -29,7 +29,7 @@ import json
 
 """BPNNindustry"""
 
-def BPNNIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city="云南省", hidden=[24,12], learningrate=0.005,epoch=1000):
+def BPNNindustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city="云南省", hidden=[24,12], learningrate=0.005,epoch=1000):
     """
 
     Parameters
@@ -114,7 +114,7 @@ def BPNNIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city
         
         
         
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类-行业", pretype, StartYear, EndYear)
         data=json.loads(datajson)
         finaldata.append(data)
         final=pd.DataFrame(finaldata,index=name)
@@ -172,7 +172,7 @@ if __name__ == '__main__':
     pretype="采矿业用电量"
     city="云南省"
     
-    result=BPNNIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city, hidden=[24,12], learningrate=0.005,epoch=1000)
+    result=BPNNindustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,city, hidden=[24,12], learningrate=0.005,epoch=1000)
 
 
 

@@ -15,6 +15,7 @@ import os
 import matplotlib.pyplot as plt
 from PyEMD import EMD
 from sklearn.multioutput import MultiOutputRegressor
+
 import algorithms.predict_economic as preeco
 
 from algorithms.evaluation import RMSE,MAPE
@@ -28,7 +29,7 @@ def EEMDIndustry(StartYear,EndYear,PreStartYear,PreEndYear,pretype,city="云南�
 
 
     #读取年度数据
-    yeardatajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+    yeardatajson=getData("云南省_year_电力电量类-行业", pretype, StartYear, EndYear)
     yeardata=json.loads(yeardatajson)
     pdyeardata=pd.DataFrame(yeardata,index=[pretype])
     pdyeardata=pdyeardata.T

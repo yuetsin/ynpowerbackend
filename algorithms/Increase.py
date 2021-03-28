@@ -19,13 +19,13 @@ import json
 
 """增长率法,不可以组合预测"""
 
-def Increase(StartYear,EndYear,PreStartYear,PreEndYear,rate,pretype="consumption",city="云南省"):
+def Increase(StartYear,EndYear,PreStartYear,PreEndYear,rate,pretype="全社会用电量",city="云南省"):
     if city == "云南省":
         name=[pretype]
         finaldata=[]
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
@@ -57,7 +57,7 @@ StartYear="1990"
 EndYear="2019"
 PreStartYear="2020"
 PreEndYear="2022"
-pretype="consumption"
+pretype="全社会用电量"
 city="云南省"
 
 result=Increase(StartYear,EndYear,PreStartYear,PreEndYear,0.1,pretype,city) 

@@ -26,7 +26,7 @@ import json
 
 """RNN，未联调，已修改"""
 """不支持组合预测"""
-def RNNpre(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省", hidden_size=24,hidden_layer=1, learningrate=0.005,epoch=1000):
+def RNNpre(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="全社会用电量",city="云南省", hidden_size=24,hidden_layer=1, learningrate=0.005,epoch=1000):
 
     #搭建LSTM模块
     def RNN(x,y,outputlen,is_training,hidden_size,num_layers,lr,optimizer,keep_pro):
@@ -101,7 +101,7 @@ def RNNpre(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumpti
     finaldata=[]
     outputlen=int(PreEndYear)-int(PreStartYear)+1
     
-    datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+    datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
     data=json.loads(datajson)
     finaldata.append(data)
     final=pd.DataFrame(finaldata,index=name)
@@ -148,7 +148,7 @@ def RNNpre(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumpti
                 # print("yes")
                 trainyear.append(final.index[count])
                 break
-    
+    ypre=np.array(ypre).squeeze()
     result={"prefromyear":PreStartYear,"pretoyear":PreEndYear,"preresult":ypre.tolist()[0],"MAPE":mape,"RMSE":rmse}
 
     
@@ -159,7 +159,7 @@ EndYear="2019"
 PreStartYear="2020"
 PreEndYear="2021"
 timestep=10
-pretype="consumption"
+pretype="全社会用电量"
 city="云南省"
 
 result=RNNpre(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype)

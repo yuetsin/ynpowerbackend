@@ -20,7 +20,7 @@ import json
 """模糊线性回归,FLR"""
 
 
-def FLR(StartYear,EndYear,PreStartYear,PreEndYear,timestep=15,pretype="consumption",city="云南省"):
+def FLR(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="全社会用电量",city="云南省"):
     """
     
 
@@ -51,7 +51,7 @@ def FLR(StartYear,EndYear,PreStartYear,PreEndYear,timestep=15,pretype="consumpti
     else:
 
         #读取数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         data=json.loads(datajson)
         
         name=[pretype]
@@ -61,11 +61,11 @@ def FLR(StartYear,EndYear,PreStartYear,PreEndYear,timestep=15,pretype="consumpti
     
         period=int(PreEndYear)-int(PreStartYear)+1
     
-        econamelist=["GDP1","GDP2","GDP3"]
+        econamelist=["第一产业GDP","第二产业GDP","第三产业GDP"]
         #读取经济数据
         for i in range(len(econamelist)):
             
-            ecodatajson=getData("yunnan_year_社会经济类", econamelist[i], StartYear, EndYear)
+            ecodatajson=getData("云南省_year_社会经济类", econamelist[i], StartYear, EndYear)
             ecodata=json.loads(ecodatajson)
             finaldata.append(ecodata)
             name.append(econamelist[i])
@@ -192,6 +192,4 @@ if __name__=="__main__":
     PreStartYear="2020"
     PreEndYear="2029"
     timestep=15
-    pretype="consumption"
-    city="云南省"
-    result=FLR(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省")
+    result=FLR(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="全社会用电量",city="云南省")

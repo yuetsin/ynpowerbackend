@@ -20,7 +20,7 @@ from algorithms.evaluation import RMSE,MAPE
 
 
 "未联调"
-def RFIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,n_estimators=50,city="云南省"):
+def RFindustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,n_estimators=50,city="云南省"):
     """   
 
     Parameters
@@ -71,7 +71,7 @@ def RFIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,n_esti
     outputlen=int(PreEndYear)-int(PreStartYear)+1
     
     #读取历史负荷数据
-    datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+    datajson=getData("云南省_year_电力电量类-行业", pretype, StartYear, EndYear)
     # print(datajson)
     data=json.loads(datajson)
     finaldata.append(data)
@@ -135,4 +135,4 @@ if __name__ == '__main__':
     pretype="第一产业用电量"
     city="云南省"
     
-    result=RFIndustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,n_estimators=50,city="云南省")
+    result=RFindustry(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype,n_estimators=50,city="云南省")

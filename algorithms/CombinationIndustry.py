@@ -19,7 +19,7 @@ import json
 
 
 
-def Combination(PreStartYear,PreEndYear,pretype,singleresult,city="云南省", comtype="等权组合"):
+def CombinationIndustry(PreStartYear,PreEndYear,pretype,singleresult,city="云南省", comtype="等权组合"):
 
     """
     
@@ -101,7 +101,7 @@ def Combination(PreStartYear,PreEndYear,pretype,singleresult,city="云南省", c
     predata=np.array(predata)
     
     #获取训练数据对应的真实数据
-    datajson=getData("云南省_year_电力电量类", pretype, trainyear[0], trainyear[1])
+    datajson=getData("云南省_year_电力电量类-行业", pretype, trainyear[0], trainyear[1])
     data=json.loads(datajson)     
     realtraindata=[]
     for i in data.values():
@@ -168,10 +168,10 @@ if __name__ == '__main__':
     PreStartYear = "2020"
     PreEndYear = "2029"
     timestep = 15
-    pretype = "全社会用电量"
+    pretype = "第一产业用电量"
     comtype="递阶组合"
     city="云南省"
-    
+    #
     # #运行单预测模型
     # resultGBDT=GBDT.GBDT(StartYear,EndYear,PreStartYear,PreEndYear,timestep)
     # resultExponentTime=ExponentTime.ExponentTime(StartYear,EndYear,PreStartYear,PreEndYear)

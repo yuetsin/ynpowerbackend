@@ -134,8 +134,6 @@ def formatDataCondition(startTime = None, endTime = None, dataName = None, grain
     else:
         startTime = formateTimeString(startTime, grain, 0)
         endTime = formateTimeString(endTime, grain, 1)
-    if grain != None:
-        whe.append("grain = '{}'".format(grain))
 
     if dataName != None:
         dataNamelist = dataName.split(',')
@@ -271,7 +269,7 @@ def formatPredictResult(result):
     while prefromyear <= pretoyear:
         temp={
             'year': prefromyear.strftime("%Y"),
-            'predict': result['preresult'][i]
+            'predict': round(result['preresult'][i],2)
         }
         tableTwoData.append(temp)
         i += 1
@@ -280,8 +278,8 @@ def formatPredictResult(result):
     re ={
         "tableOneData":[
             {
-            'mape': result["MAPE"],
-            "rmse": result["RMSE"]
+            'mape': round(result["MAPE"],2),
+            "rmse": round(result["RMSE"],2)
             }
         ],
         "tableTwoData": tableTwoData

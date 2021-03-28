@@ -31,14 +31,14 @@ from algorithms.evaluation import RMSE,MAPE
 
 
 
-def GBDT(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="consumption",city="云南省",LearningRate=0.5, MaxDepth=200, NumberofEstimators=5000):
+def GBDT(StartYear,EndYear,PreStartYear,PreEndYear,timestep,pretype="全社会用电量",city="云南省",LearningRate=0.5, MaxDepth=20, NumberofEstimators=5000):
 
     #读取数据，确定参数
     name=[pretype]
     finaldata=[]
     outputlen=int(PreEndYear)-int(PreStartYear)+1
 
-    datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+    datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
     data=json.loads(datajson)
     finaldata.append(data)
     final=pd.DataFrame(finaldata,index=name)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     PreStartYear="2020"
     PreEndYear="2021"
     timestep=10
-    pretype="consumption"
+    pretype="全社会用电量"
     city="云南省"
 
     result=GBDT(StartYear,EndYear,PreStartYear,PreEndYear,timestep)

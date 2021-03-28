@@ -17,7 +17,7 @@ from dao.interface import getData
 import json 
 import math
 
-def GrowthTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype="consumption",city="云南省",planflag=0,plan=0):
+def GrowthTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype="全社会用电量",city="云南省",planflag=0,plan=0):
 
     
     def func3(params, x):
@@ -40,7 +40,7 @@ def GrowthTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype="consumption",c
         finaldata=[]
         
         #读取历史负荷数据
-        datajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        datajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         # print(datajson)
         data=json.loads(datajson)
         finaldata.append(data)
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     EndYear="2019"
     PreStartYear="2020"
     PreEndYear="2022"
-    pretype="consumption"
+    pretype="全社会用电量"
     city="云南省"
     
     result=GrowthTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype,city)      

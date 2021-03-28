@@ -4,6 +4,19 @@ Created on Thu Mar  4 11:16:09 2021
 
 @author: ZR_YL
 """
+
+
+from algorithms.evaluation import RMSE,MAPE
+from dao.interface import getData, insertData
+import json 
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+import statsmodels.tsa.stattools as ts
+import matplotlib.pyplot as plt
+import math
+
+from algorithms.ExponentTime import ExponentTime
 from algorithms.FER import FER
 from algorithms.FLR import FLR
 from algorithms.GBDT import GBDT
@@ -14,22 +27,10 @@ from algorithms.LogarithmTime import LogarithmTime
 from algorithms.RandomForest import RandomForest
 from algorithms.SVM import SVM
 from algorithms.UnarylinearTime import UnarylinearTime
-from algorithms.evaluation import RMSE,MAPE
-from dao.interface import getData
-from dao.interface import addPowerData as insertData
-import json 
-import pandas as pd
-import numpy as np
-import statsmodels.api as sm
-import statsmodels.tsa.stattools as ts
-import matplotlib.pyplot as plt
-import math
-
-from algorithms.ExponentTime import ExponentTime
 
 def ForIndustry(StartYear,EndYear,PreStartYear,PreEndYear,rejectlsit,proposedata,Premethod):
 
-    pretype="consumption"
+    pretype="全社会用电量"
     propose = pd.read_csv(proposedata, encoding="UTF-8")
     
     if len(propose.values) != int(PreEndYear)-int(PreStartYear)+1:
@@ -39,14 +40,14 @@ def ForIndustry(StartYear,EndYear,PreStartYear,PreEndYear,rejectlsit,proposedata
         #读取年度数据
         name=[pretype]
         finaldata=[]
-        yeardatajson=getData("yunnan_year_电力电量类", pretype, StartYear, EndYear)
+        yeardatajson=getData("云南省_year_电力电量类", pretype, StartYear, EndYear)
         yeardata=json.loads(yeardatajson)
         finaldata.append(yeardata)
         
         #读取行业数据
         for i in range(len(rejectlsit)):
             
-            inddatajson=getData("yunnan_year_电力电量类", rejectlsit[i], StartYear, EndYear)
+            inddatajson=getData("云南省_year_电力电量类-行业", rejectlsit[i], StartYear, EndYear)
             inddata=json.loads(inddatajson)
             finaldata.append(inddata)
             name.append(rejectlsit[i])
@@ -69,38 +70,38 @@ def ForIndustry(StartYear,EndYear,PreStartYear,PreEndYear,rejectlsit,proposedata
         savetourl=pd.DataFrame()
         savetourl["year"]=year
         savetourl[savetype]=forpredata
-        r=insertData(savetourl, "year","yunnan", "电力电量类")
+        r=insertData(savetourl, "year","云南省", "电力电量类")
         
         
         if Premethod=="指数函数外推":
-            result= ExponentTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype = savetype, city="云南省")
+            result=ExponentTime.ExponentTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype = savetype, city="云南省")
         elif Premethod=="灰色滑动平均模型":
             T=math.floor(len(forpredata)/3)
-            result= GM(StartYear, EndYear, PreStartYear, PreEndYear, timestep=T, pretype=savetype, city="云南省")
+            result=GM.GM(StartYear,EndYear,PreStartYear,PreEndYear,timestep=T,pretype=savetype,city="云南省")
         elif Premethod== "生长函数外推":
-            result=GrowthTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
+            result=GrowthTime.GrowthTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype=savetype,city="云南省")
         elif Premethod== "一元线性外推":
-            result= UnarylinearTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
+            result=UnarylinearTime.UnarylinearTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype=savetype,city="云南省")
         elif Premethod== "对数函数外推":
-            result= LogarithmTime(StartYear, EndYear, PreStartYear, PreEndYear, pretype=savetype, city="云南省")
+            result=LogarithmTime.LogarithmTime(StartYear,EndYear,PreStartYear,PreEndYear,pretype=savetype,city="云南省")
         elif Premethod=="基于滚动机制的灰色预测模型":
             T=math.floor(len(forpredata)/3)
-            result= GPRM(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result=GPRM.GPRM(StartYear,EndYear,PreStartYear,PreEndYear,T,pretype=savetype,city="云南省")
         elif Premethod== "模糊指数平滑模型":
             T=math.floor(len(forpredata)/3)
-            result= FER(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result=FER.FER(StartYear,EndYear,PreStartYear,PreEndYear,T,pretype=savetype,city="云南省")
         elif Premethod=="模糊线性回归模型":
             T=math.floor(len(forpredata)/3)
-            result= FLR(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result=FLR.FLR(StartYear,EndYear,PreStartYear,PreEndYear,T,pretype=savetype,city="云南省")   
         elif Premethod == "梯度提升模型":
             T=math.floor(len(forpredata)/3)
-            result= GBDT(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result=GBDT.GBDT(StartYear,EndYear,PreStartYear,PreEndYear,T,pretype=savetype,city="云南省")
         elif Premethod == "支持向量机模型":
             T=math.floor(len(forpredata)/3)
-            result= SVM(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, city="云南省")
+            result=SVM.SVM(StartYear,EndYear,PreStartYear,PreEndYear,T,pretype=savetype,city="云南省")
         elif Premethod == "随机森林模型":
             T=math.floor(len(forpredata)/3)
-            result= RandomForest(StartYear, EndYear, PreStartYear, PreEndYear, T, pretype=savetype, n_estimators=50, city="云南省")
+            result=RandomForest.RandomForest(StartYear,EndYear,PreStartYear,PreEndYear,T,pretype=savetype,n_estimators=50,city="云南省")
             
         if isinstance(result["preresult"],str):
             return {"prefromyear":None,"pretoyear":None,"preresult":"预测失败，请重新选择预测方法."}
