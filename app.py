@@ -292,8 +292,22 @@ class PerformQuery(Resource):
 @register('db', 'create')
 class PerformCreate(Resource):
     def post(self):
+        grain1 = ['年', '月', '日', '时']
+        grain2 = ["year", "month", "day", "hour"]
+        area = request.json['context']["region"]
+        kind = request.json['context']["category"][0]
+        grain = request.json["context"]['grain'].strip()
+        for i in range(len(grain1)):
+            if grain1[i] == grain:
+                grain = grain2[i]
+                break
+        dataname = request.json['context']["category"][1]
+        datatime = request.json["newData"]["key"]
+        datavalue = request.json["newData"]["value"]
+        meta = getMetaData(area, kind, grain)
+        metadataid = str(meta[0][0])
 
-        # createDataByMetadataid(datavalue=, dataname=, datatime=, metadataid=)
+        createDataByMetadataid(datavalue=float(datavalue), dataname=dataname, datatime=datatime, metadataid=metadataid)
         return {
             "msg": "success",
             "code": 200
@@ -994,8 +1008,11 @@ class MunicipalDataQuery(Resource):
 class ProvincialAndMunicipalPredict(Resource):
     def post(self):
         # try_print_json()
-        year = request.json["Cooryear"]
-        result = provincialAndMunicipalPredict(request.json)
+        # year = request.json["Cooryear"]
+        args = {}
+        args["File"] = request.files["file"]
+        arg = {**args, **request.form}
+        result = provincialAndMunicipalPredict(arg)
         if result["cityname"] == None:
             re = {
                 "msg":result["cooresults"],
@@ -1006,7 +1023,7 @@ class ProvincialAndMunicipalPredict(Resource):
             tableThreeData = []
             for i in range(len(result["cityname"])):
                 temp = {}
-                temp["year"] = year
+                temp["year"] = 1234 #year
                 temp["region"] = result["cityname"][i]
                 temp["predictvalue"] = result["cooresults"][i]
                 tableThreeData.append(temp)

@@ -50,8 +50,9 @@ def CoordinationCityandProvince(File):
 
 if __name__=="__main__":
     
-    File=r"D:\lab\Yunnan_Pre\code_for_soft\联调\云南省各地市预测值.csv"
+    File=r"C:\ZHD\Project\dclab\ynpower\ynpowerbackend\algorithms\云南省各地市预测值.csv"
     result=CoordinationCityandProvince(File)
+    print(result)
 # result[year]=yeardata
 #     return {"cityname":city,"cooresults":newci}
 # else:

@@ -137,10 +137,11 @@ def miningRequest(tag, tagType, region, factors, method, arg, beginYear, endYear
     # (tag, tagType, region, factors, method, pearson, beginYear, endYear)
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
-    content = {}
-    content['arg'] = args
-    content['result'] = result
-    re = insertAlgorithmContent(tag, tagType, content)
+    if tag != None:
+        content = {}
+        content['arg'] = args
+        content['result'] = result
+        re = insertAlgorithmContent(tag, tagType, content)
 
     return result
 
@@ -149,13 +150,14 @@ def regionSinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
     print(result)
+    if tag != None:
+        content = {}
+        content['arg'] = args
+        content['result'] = result
+        re = insertAlgorithmContent(tag, tagType, content)
 
-    content = {}
-    content['arg'] = args
-    content["result"] = result
-    re = insertAlgorithmContent(tag, tagType, content)
+
     result = formatPredictResult(result)
-    print(result)
     return result
 
 def regionMixPredict(args):
@@ -168,11 +170,12 @@ def regionMixPredict(args):
     args["singleresult"] = singleresult
     result = executeAlgorithm(method, args)
 
-    content = {}
-    content['arg'] = args
-    content["result"] = result
+    if tag != None:
+        content = {}
+        content['arg'] = args
+        content['result'] = result
+        re = insertAlgorithmContent(tag, tagType, content)
 
-    re = insertAlgorithmContent(tag, tagType, content)
     result = formatPredictResult(result)
     print(result)
     return result
@@ -181,12 +184,13 @@ def regionMixPredict(args):
 def industrySinglePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
+    if tag != None:
 
-    content = {}
-    content['arg'] = args
-    content["result"] = result
+        content = {}
+        content['arg'] = args
+        content["result"] = result
 
-    re = insertAlgorithmContent(tag, tagType, content)
+        re = insertAlgorithmContent(tag, tagType, content)
     result = formatPredictResult(result)
     print(result)
     return result
@@ -200,11 +204,13 @@ def industryMixPredict(args):
         singleresult.append(json.loads(result[0]["content"])["result"])
     args["singleresult"] = singleresult
     result = executeAlgorithm(method, args)
-    content = {}
-    content['arg'] = args
-    content["result"] = result
+    if tag != None:
 
-    re = insertAlgorithmContent(tag, tagType, content)
+        content = {}
+        content['arg'] = args
+        content["result"] = result
+
+        re = insertAlgorithmContent(tag, tagType, content)
     result = formatPredictResult(result)
     print(result)
     return result
@@ -212,12 +218,13 @@ def industryMixPredict(args):
 def saturationCurvePredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
+    if tag != None:
 
-    content = {}
-    content['arg'] = args
-    content["result"] = result
+        content = {}
+        content['arg'] = args
+        content["result"] = result
 
-    re = insertAlgorithmContent(tag, tagType, content)
+        re = insertAlgorithmContent(tag, tagType, content)
     result = formatPredictResult(result)
     print(result)
     return result
@@ -225,11 +232,13 @@ def saturationCurvePredict(args):
 def payloadDensityPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result1 = executeAlgorithm(method, args)
-    content = {}
-    content['arg'] = args
-    content["result"] = result1
 
-    re = insertAlgorithmContent(tag, tagType, content)
+    if tag != None:
+        content = {}
+        content['arg'] = args
+        content["result"] = result1
+
+        re = insertAlgorithmContent(tag, tagType, content)
     result = formatPredictResult(result1)
     result["bu"] = result1["bu"]
     print(result)
@@ -258,6 +267,13 @@ def provincialAndMunicipalPredict(args):
 def bigDataPredict(args):
     beginYear, endYear, region, industry, method, tag, tagType = getArgs(args)
     result = executeAlgorithm(method, args)
+    if tag != None:
+
+        content = {}
+        content['arg'] = args
+        content["result"] = result
+
+        re = insertAlgorithmContent(tag, tagType, content)
     tableTwoData = []
     prefromyear = timeFormat(result["prefromyear"], "year")
     pretoyear = timeFormat(result["pretoyear"], "year")
@@ -274,11 +290,6 @@ def bigDataPredict(args):
         "tableTwoData": tableTwoData
     }
     print(result)
-    content = {}
-    content['arg'] = args
-    content["result"] = result
-
-    re = insertAlgorithmContent(tag, tagType, content)
 
     return result
 
@@ -300,6 +311,7 @@ def dailyPayloadTraits(args):
     #     begin = getNextDay(begin)
 
 
+    # if tag != None:
 
     # content = {}
     # content['arg'] = args
@@ -329,6 +341,7 @@ def monthlyPayloadTraits(args):
     #     begin = getNextMonth(begin)
 
 
+    # if tag != None:
 
     # content = {}
     # content['arg'] = args
@@ -355,7 +368,8 @@ def yearlyPayloadTraits(args):
     #     result.append(temp)
     #     begin = getNextYear(begin)
 
-
+    # if tag != None:
+    #
     # content = {}
     # content['arg'] = args
     # content["result"] = result
@@ -378,11 +392,13 @@ def sokuPayloadPredict(args):
     result = soukupre(start, ending, premaxload, pretotal,pregamma,prebeta, file=file)
     tag = args["tag"]
     tagType = args["tagType"]
-    content = {}
-    content['arg'] = args
-    content["result"] = result
+    if tag != None:
 
-    re = insertAlgorithmContent(tag, tagType, content)
+        content = {}
+        content['arg'] = args
+        content["result"] = result
+
+        re = insertAlgorithmContent(tag, tagType, content)
 
     return content
 
@@ -398,11 +414,13 @@ def clampingPayloadPredict(args):
     result = shuangxiangjiabi(start, ending, premaxload, pretotal,file=file)
     tag = args["tag"]
     tagType = args["tagType"]
-    content = {}
-    content['arg'] = args
-    content["result"] = result
+    if tag != None:
 
-    re = insertAlgorithmContent(tag, tagType, content)
+        content = {}
+        content['arg'] = args
+        content["result"] = result
+
+        re = insertAlgorithmContent(tag, tagType, content)
 
     return content
 
@@ -418,10 +436,12 @@ def interpolatingPayloadPredict(args):
     result = fenxingpre(start, ending, power,maxload, file=file)
     tag = args["tag"]
     tagType = args["tagType"]
-    content = {}
-    content['arg'] = args
-    content["result"] = result
-    re = insertAlgorithmContent(tag, tagType, content)
+    if tag != None:
+
+        content = {}
+        content['arg'] = args
+        content["result"] = result
+        re = insertAlgorithmContent(tag, tagType, content)
 
     return content
 
@@ -435,10 +455,12 @@ def yearlyContinuousPayloadPredict(args):
     result = zhishupinghua(start, end, Tyear = Tyear, premaxload = premaxload)
     tag = args["tag"]
     tagType = args["tagType"]
-    content = {}
-    content['arg'] = args
-    content["result"] = result
-    re = insertAlgorithmContent(tag, tagType, content)
+    if tag != None:
+
+        content = {}
+        content['arg'] = args
+        content["result"] = result
+        re = insertAlgorithmContent(tag, tagType, content)
 
     return content
 
