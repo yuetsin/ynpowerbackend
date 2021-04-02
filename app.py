@@ -1794,7 +1794,7 @@ class PayloadChartsDaily(Resource):
         result = payloadChartsDaily(day)
         payload = {
             'xName': '小时',
-            'xData': list(range(0, 24, 2)),
+            'xData': list(range(0, 24)),
             'yName': '单位：MW',
             'yData': [
                 {
@@ -1864,7 +1864,7 @@ class PayloadChartsDailyTypical(Resource):
         result = DailyTypicalOp(year,periodnum,category)
         payload = {
             'xName': '小时',
-            'xData': list(range(0, 24, 2)),
+            'xData': list(range(0, 24)),
             'yName': '单位：MW',
             'yData': [
                 {
@@ -1922,9 +1922,12 @@ class PayloadChartsYearly(Resource):
         # try_print_args()
         result = payloadChartsYearly(request.args)
 
+        begin_year = request.args['beginYear']
+        end_year = request.args['endYear']
+
         payload = {
-            # 'xName': '年份',
-            # 'xData': list(range(2000, 2012)),
+            'xName': '年份',
+            'xData': list(range(begin_year, end_year + 1)),
             'yName': '单位：MW',
             'yData': [
                 {
