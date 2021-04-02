@@ -630,20 +630,20 @@ def getDefault(start, end):
     loadmax, electricity = default_jiabi(file, start, end)
 
     result["jiabi"] = {
-        "maxPayload": loadmax,
-        "dailyAmount": electricity
+        "maxPayload": int(loadmax),
+        "dailyAmount": int(electricity)
     }
     loadmax, electricity = default_f(file, start, end)
     result["fenxing"] = {
-        "maxPayload": loadmax,
-        "dailyAmount": electricity
+        "maxPayload": int(loadmax),
+        "dailyAmount": int(electricity)
     }
-    load_max, electricity, gamma, beta = default_souku(file, start, end)
+    loadmax, electricity, gamma, beta = default_souku(file, start, end)
     result["souku"] = {
-        "maxPayload": loadmax,
-        "dailyAmount": electricity,
-        "gamma":gamma,
-        "beta":beta
+        "maxPayload": int(loadmax),
+        "dailyAmount": int(electricity),
+        "gamma": '%.3f' % gamma,
+        "beta": '%.3f' % beta
     }
     return result
 
