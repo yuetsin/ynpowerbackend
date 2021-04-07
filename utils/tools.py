@@ -25,7 +25,7 @@ def getFilenameOfLoadPre(season, type, func):
     elif season == "丰水期" and type == "最小值" and func == "jb":
         return "yunnan_year_fengshui_jiabi_min"
     elif season == "丰水期" and type == "中位值" and func == "jb":
-        return "yunnan_year_fengshui_jiabi_medien"
+        return "yunnan_year_fengshui_jiabi_median"
     elif season == "丰水期" and type == "最大值" and func == "sk":
         return "yunnan_year_fengshui_souku_max"
     elif season == "丰水期" and type == "最小值" and func == "sk":
@@ -43,7 +43,7 @@ def getFilenameOfLoadPre(season, type, func):
     elif season == "汛后枯期" and type == "最小值" and func == "jb":
         return "yunnan_year_xunhou_jiabi_min"
     elif season == "汛后枯期" and type == "中位值" and func == "jb":
-        return "yunnan_year_xunhou_jiabi_medien"
+        return "yunnan_year_xunhou_jiabi_median"
     elif season == "汛后枯期" and type == "最大值" and func == "sk":
         return "yunnan_year_xunhou_souku_max"
     elif season == "汛后枯期" and type == "最小值" and func == "sk":
@@ -61,13 +61,13 @@ def getFilenameOfLoadPre(season, type, func):
     elif season == "汛前枯期" and type == "最小值" and func == "jb":
         return "yunnan_year_xunqian_jiabi_min"
     elif season == "汛前枯期" and type == "中位值" and func == "jb":
-        return "yunnan_year_xunqian_jiabi_medien"
+        return "yunnan_year_xunqian_jiabi_median"
     elif season == "汛前枯期" and type == "最大值" and func == "sk":
-        return "yunnan_year_xunqian-souku-max"
+        return "yunnan_year_xunqian_souku_max"
     elif season == "汛前枯期" and type == "最小值" and func == "sk":
-        return "yunnan_year_xunqian-souku-min"
+        return "yunnan_year_xunqian_souku_min"
     elif season == "汛前枯期" and type == "中位值" and func == "sk":
-        return "yunnan_year_xunqian-souku-median"
+        return "yunnan_year_xunqian_souku_median"
 
 
 #flag = 0,开始时间，flag=1，结束时间
